@@ -1,5 +1,5 @@
-algorithm,iterations,max_abs_diff,top20_overlap,spearman,hits_eigengap
-PageRank,136,2.1382361159449914e-10,20,1.0,
-Weighted PageRank,68,3.163197620503766e-10,20,0.9999999652490206,
-HITS authority,182,3.7487224435750477e-10,20,0.9999999974154995,0.9424881639384879
-HITS hub,182,4.46893215860192e-13,20,0.9999999999733881,0.9424881639384879
+algorithm,iterations,max_abs_diff,top20_overlap,spearman,note,hits_eigengap
+PageRank,133,2.3996736542297725e-10,20.0,0.9999999999414632,,
+Weighted PageRank,68,3.139978971278268e-10,20.0,0.9999999742843187,,
+HITS authority,183,,,,networkx did not converge,0.9427086218098505
+HITS hub,183,,,,networkx did not converge,0.9427086218098505
