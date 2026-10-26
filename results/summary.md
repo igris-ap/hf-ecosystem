@@ -1,6 +1,6 @@
 # Mining results
 
-Generated 2026-10-26 09:09 UTC from 3023 scraped models (scraped 2026-10-26 to 2026-10-26; download counts are a snapshot of that time).
+Generated 2026-10-26 09:59 UTC from 4001 scraped models (scraped 2026-10-26 to 2026-10-26; download counts are a snapshot of that time).
 
 ## Graph
 
@@ -10,18 +10,18 @@ Sample graph = scraped models only. 'All known edges' also includes unscraped ch
 
 | statistic | sample graph | all known edges |
 |---|---|---|
-| nodes | 3023 | 7023 |
-| nodes_in_sample | 3023 | 3023 |
-| edges | 3224 | 7711 |
-| relations | {'finetune': 1225, 'adapter': 882, 'quantized': 629, 'merge': 488} | {'finetune': 3000, 'adapter': 2034, 'quantized': 1155, 'merge': 1522} |
+| nodes | 4001 | 7038 |
+| nodes_in_sample | 4001 | 4001 |
+| edges | 4235 | 7842 |
+| relations | {'finetune': 1808, 'adapter': 1115, 'quantized': 735, 'merge': 577} | {'finetune': 3000, 'adapter': 2038, 'quantized': 1155, 'merge': 1649} |
 | is_dag | True | True |
 | cycle_groups | 0 | 0 |
 | weak_components | 6 | 5 |
-| largest_component | 1511 | 4743 |
+| largest_component | 2029 | 4758 |
 | isolated_nodes | 0 | 0 |
-| roots | 10 | 303 |
-| leaves | 2959 | 6658 |
-| multi_parent_nodes | 128 | 325 |
+| roots | 10 | 318 |
+| leaves | 3928 | 6652 |
+| multi_parent_nodes | 146 | 386 |
 | temporal_anomaly_edges | 7 | 7 |
 
 ## 1. Influence ranking
@@ -32,103 +32,103 @@ Own PageRank (d = 0.85), weighted PageRank and HITS, all checked against network
 
 | algorithm | iterations | max_abs_diff | top20_overlap | spearman | hits_eigengap |
 |---|---|---|---|---|---|
-| PageRank | 151 | 6.682e-11 | 20 | 1 |  |
-| Weighted PageRank | 68 | 9.695e-11 | 20 | 1 |  |
-| HITS authority | 1843 | 2.784e-09 | 20 | 1 | 0.9949 |
-| HITS hub | 1843 | 1.699e-11 | 20 | 1 | 0.9949 |
+| PageRank | 154 | 8.414e-11 | 20 | 1 |  |
+| Weighted PageRank | 69 | 1.144e-10 | 20 | 1 |  |
+| HITS authority | 5000 | 8.771e-09 | 20 | 0.9865 | 0.9982 |
+| HITS hub | 5000 | 3.693e-11 | 20 | 1 | 0.9982 |
 
 **ranking_verification_all_edges**
 
-| algorithm | iterations | max_abs_diff | top20_overlap | spearman | note | hits_eigengap |
-|---|---|---|---|---|---|---|
-| PageRank | 133 | 2.4e-10 | 20 | 1 |  |  |
-| Weighted PageRank | 68 | 3.14e-10 | 20 | 1 |  |  |
-| HITS authority | 183 |  |  |  | networkx did not converge | 0.9427 |
-| HITS hub | 183 |  |  |  | networkx did not converge | 0.9427 |
+| algorithm | iterations | max_abs_diff | top20_overlap | spearman | hits_eigengap |
+|---|---|---|---|---|---|
+| PageRank | 130 | 2.095e-10 | 20 | 1 |  |
+| Weighted PageRank | 68 | 3.142e-10 | 20 | 1 |  |
+| HITS authority | 182 | 3.083e-10 | 20 | 1 | 0.9424 |
+| HITS hub | 182 | 4.312e-13 | 20 | 1 | 0.9424 |
 
 **ranking_top20**
 
 | rank | model | weighted_pagerank | pagerank | plain_pagerank_rank | authority | hub | derivatives_in_graph | hf_children_total | family | license | in_sample |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | meta-llama/Llama-3.1-8B | 0.07588 | 0.06219 | 2 | 0.006427 | 0 | 971 | 3267 | meta-llama/Llama-3.1-8B | llama3.1 | True |
-| 2 | Qwen/Qwen2.5-7B | 0.06221 | 0.05254 | 4 | 3.475e-06 | 0 | 824 | 2086 | Qwen/Qwen2.5-7B | apache-2.0 | True |
-| 3 | mistralai/Mistral-7B-v0.1 | 0.04995 | 0.06964 | 1 | 0.7862 | 0 | 1095 | 4000 | mistralai/Mistral-7B-v0.1 | apache-2.0 | True |
-| 4 | meta-llama/Llama-3.1-8B-Instruct | 0.0483 | 0.0007211 | 12 | 0.0001995 | 7.405e-06 | 32 | 7302 | meta-llama/Llama-3.1-8B | llama3.1 | True |
-| 5 | google-bert/bert-base-uncased | 0.04799 | 0.03163 | 8 | 8.723e-65 | 0 | 489 | 7222 | google-bert/bert-base-uncased | apache-2.0 | True |
-| 6 | Qwen/Qwen2.5-7B-Instruct | 0.04418 | 0.0005557 | 15 | 8.181e-06 | 4.004e-09 | 23 | 6669 | Qwen/Qwen2.5-7B | apache-2.0 | True |
-| 7 | Qwen/Qwen3-8B-Base | 0.03712 | 0.03364 | 6 | 4.262e-61 | 0 | 513 | 856 | Qwen/Qwen3-8B-Base | apache-2.0 | True |
-| 8 | Qwen/Qwen3-8B | 0.03404 | 0.0003246 | 18 | 8.531e-63 | 4.911e-64 | 10 | 5133 | Qwen/Qwen3-8B-Base | apache-2.0 | True |
-| 9 | meta-llama/Llama-3.2-1B | 0.01921 | 0.05796 | 3 | 2.225e-17 | 0 | 889 | 1998 | meta-llama/Llama-3.2-1B | llama3.2 | True |
-| 10 | google/gemma-3-4b-pt | 0.01458 | 0.02309 | 10 | 1.846e-92 | 0 | 346 | 395 | google/gemma-3-4b-pt | gemma | True |
-| 11 | google/gemma-2-9b | 0.01439 | 0.02839 | 9 | 9.609e-06 | 0 | 427 | 458 | google/gemma-2-9b | gemma | True |
-| 12 | google/gemma-3-4b-it | 0.01226 | 0.0001449 | 53 | 1.073e-94 | 2.127e-95 | 2 | 1850 | google/gemma-3-4b-pt | gemma | True |
-| 13 | microsoft/phi-2 | 0.01024 | 0.04445 | 5 | 5.329e-06 | 0 | 672 | 1479 | microsoft/phi-2 | mit | True |
-| 14 | google/gemma-2-9b-it | 0.008038 | 0.0001249 | 73 | 1.759e-08 | 1.107e-08 | 2 | 1213 | google/gemma-2-9b | gemma | True |
-| 15 | Qwen/Qwen2.5-Math-7B | 0.007436 | 0.0002214 | 26 | 5.31e-08 | 4.004e-09 | 7 | 1124 | Qwen/Qwen2.5-7B | apache-2.0 | True |
-| 16 | unsloth/Meta-Llama-3.1-8B-bnb-4bit | 0.006132 | 7.83e-05 | 494 | 0 | 7.405e-06 | 0 | 924 | meta-llama/Llama-3.1-8B | llama3.1 | True |
-| 17 | mistralai/Mistral-7B-Instruct-v0.1 | 0.005617 | 0.0001726 | 40 | 0.002901 | 0.0009059 | 4 | 849 | mistralai/Mistral-7B-v0.1 | apache-2.0 | True |
-| 18 | HuggingFaceH4/zephyr-7b-beta | 0.0046 | 0.0001957 | 31 | 0.004401 | 0.0009059 | 6 | 695 | mistralai/Mistral-7B-v0.1 | mit | True |
-| 19 | unsloth/gemma-2-9b-bnb-4bit | 0.004435 | 7.83e-05 | 385 | 0 | 1.107e-08 | 0 | 668 | google/gemma-2-9b | gemma | True |
-| 20 | deepseek-ai/DeepSeek-R1 | 0.0037 | 0.03293 | 7 | 1.981e-08 | 0 | 497 | 524 | deepseek-ai/DeepSeek-R1 | mit | True |
+| 1 | meta-llama/Llama-3.1-8B | 0.07581 | 0.06198 | 2 | 0.006091 | 0 | 971 | 3267 | meta-llama/Llama-3.1-8B | llama3.1 | True |
+| 2 | Qwen/Qwen2.5-7B | 0.062 | 0.05154 | 4 | 3.672e-06 | 0 | 824 | 2086 | Qwen/Qwen2.5-7B | apache-2.0 | True |
+| 3 | mistralai/Mistral-7B-v0.1 | 0.04981 | 0.0684 | 1 | 0.7501 | 0 | 1095 | 4000 | mistralai/Mistral-7B-v0.1 | apache-2.0 | True |
+| 4 | meta-llama/Llama-3.1-8B-Instruct | 0.04803 | 0.0007199 | 15 | 0.0001889 | 7.352e-06 | 32 | 7302 | meta-llama/Llama-3.1-8B | llama3.1 | True |
+| 5 | google-bert/bert-base-uncased | 0.04776 | 0.03157 | 8 | 1.627e-64 | 0 | 489 | 7222 | google-bert/bert-base-uncased | apache-2.0 | True |
+| 6 | Qwen/Qwen2.5-7B-Instruct | 0.04389 | 0.0008019 | 14 | 7.876e-06 | 4.432e-09 | 33 | 6669 | Qwen/Qwen2.5-7B | apache-2.0 | True |
+| 7 | Qwen/Qwen3-8B-Base | 0.03733 | 0.03358 | 6 | 7.59e-61 | 0 | 513 | 856 | Qwen/Qwen3-8B-Base | apache-2.0 | True |
+| 8 | Qwen/Qwen3-8B | 0.03385 | 0.000324 | 20 | 1.519e-62 | 9.161e-64 | 10 | 5133 | Qwen/Qwen3-8B-Base | apache-2.0 | True |
+| 9 | meta-llama/Llama-3.2-1B | 0.01925 | 0.05786 | 3 | 2.287e-17 | 0 | 889 | 1998 | meta-llama/Llama-3.2-1B | llama3.2 | True |
+| 10 | google/gemma-3-4b-pt | 0.0145 | 0.02305 | 10 | 4.879e-92 | 0 | 346 | 395 | google/gemma-3-4b-pt | gemma | True |
+| 11 | google/gemma-2-9b | 0.01432 | 0.02834 | 9 | 9.095e-06 | 0 | 427 | 458 | google/gemma-2-9b | gemma | True |
+| 12 | google/gemma-3-4b-it | 0.01219 | 0.0001446 | 57 | 2.837e-94 | 5.889e-95 | 2 | 1850 | google/gemma-3-4b-pt | gemma | True |
+| 13 | microsoft/phi-2 | 0.01021 | 0.04437 | 5 | 5.072e-06 | 0 | 672 | 1479 | microsoft/phi-2 | mit | True |
+| 14 | google/gemma-2-9b-it | 0.007993 | 0.0001247 | 80 | 1.664e-08 | 1.098e-08 | 2 | 1213 | google/gemma-2-9b | gemma | True |
+| 15 | Qwen/Qwen2.5-Math-7B | 0.007361 | 0.000365 | 19 | 1.138e-07 | 4.432e-09 | 14 | 1124 | Qwen/Qwen2.5-7B | apache-2.0 | True |
+| 16 | unsloth/Meta-Llama-3.1-8B-bnb-4bit | 0.006097 | 7.816e-05 | 515 | 0 | 7.352e-06 | 0 | 924 | meta-llama/Llama-3.1-8B | llama3.1 | True |
+| 17 | mistralai/Mistral-7B-Instruct-v0.1 | 0.005585 | 0.0001723 | 44 | 0.002765 | 0.0009053 | 4 | 849 | mistralai/Mistral-7B-v0.1 | apache-2.0 | True |
+| 18 | HuggingFaceH4/zephyr-7b-beta | 0.004574 | 0.0001953 | 38 | 0.004201 | 0.0009053 | 6 | 695 | mistralai/Mistral-7B-v0.1 | mit | True |
+| 19 | unsloth/gemma-2-9b-bnb-4bit | 0.00441 | 7.816e-05 | 406 | 0 | 1.098e-08 | 0 | 668 | google/gemma-2-9b | gemma | True |
+| 20 | deepseek-ai/DeepSeek-R1 | 0.003678 | 0.03287 | 7 | 1.873e-08 | 0 | 497 | 524 | deepseek-ai/DeepSeek-R1 | mit | True |
 
 **ranking_top20_sample_graph**
 
 | rank | model | weighted_pagerank | pagerank | plain_pagerank_rank | authority | hub | derivatives_in_graph | hf_children_total | family | license | in_sample |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | meta-llama/Llama-3.1-8B | 0.07643 | 0.04466 | 10 | 0.5481 | 0 | 302 | 3267 | meta-llama/Llama-3.1-8B | llama3.1 | True |
-| 2 | Qwen/Qwen2.5-7B | 0.06281 | 0.04539 | 8 | 0.01178 | 0 | 302 | 2086 | Qwen/Qwen2.5-7B | apache-2.0 | True |
-| 3 | mistralai/Mistral-7B-v0.1 | 0.05072 | 0.04544 | 6 | 0.1358 | 0 | 303 | 4000 | mistralai/Mistral-7B-v0.1 | apache-2.0 | True |
-| 4 | meta-llama/Llama-3.1-8B-Instruct | 0.04846 | 0.002302 | 11 | 0.06555 | 0.002287 | 32 | 7302 | meta-llama/Llama-3.1-8B | llama3.1 | True |
-| 5 | google-bert/bert-base-uncased | 0.04817 | 0.04552 | 4 | 3.417e-18 | 0 | 301 | 7222 | google-bert/bert-base-uncased | apache-2.0 | True |
-| 6 | Qwen/Qwen2.5-7B-Instruct | 0.04431 | 0.001737 | 12 | 0.002796 | 4.917e-05 | 23 | 6669 | Qwen/Qwen2.5-7B | apache-2.0 | True |
-| 7 | Qwen/Qwen3-8B-Base | 0.03731 | 0.04553 | 2 | 1.497e-14 | 0 | 302 | 856 | Qwen/Qwen3-8B-Base | apache-2.0 | True |
-| 8 | Qwen/Qwen3-8B | 0.03413 | 0.0009053 | 13 | 5.125e-16 | 6.247e-17 | 10 | 5133 | Qwen/Qwen3-8B-Base | apache-2.0 | True |
-| 9 | meta-llama/Llama-3.2-1B | 0.01938 | 0.04563 | 1 | 1.743e-15 | 0 | 302 | 1998 | meta-llama/Llama-3.2-1B | llama3.2 | True |
-| 10 | google/gemma-3-4b-pt | 0.0146 | 0.04549 | 5 | 3.785e-18 | 0 | 301 | 395 | google/gemma-3-4b-pt | gemma | True |
-| 11 | google/gemma-2-9b | 0.01442 | 0.04539 | 7 | 0.08478 | 0 | 301 | 458 | google/gemma-2-9b | gemma | True |
-| 12 | google/gemma-3-4b-it | 0.01228 | 0.0003279 | 30 | 2.531e-20 | 1.579e-20 | 2 | 1850 | google/gemma-3-4b-pt | gemma | True |
-| 13 | microsoft/phi-2 | 0.01029 | 0.04525 | 9 | 0.00314 | 0 | 301 | 1479 | microsoft/phi-2 | mit | True |
-| 14 | google/gemma-2-9b-it | 0.008055 | 0.0003279 | 29 | 0.000555 | 0.0003538 | 2 | 1213 | google/gemma-2-9b | gemma | True |
-| 15 | Qwen/Qwen2.5-Math-7B | 0.007451 | 0.0005162 | 19 | 0.0003135 | 4.917e-05 | 7 | 1124 | Qwen/Qwen2.5-7B | apache-2.0 | True |
-| 16 | unsloth/Meta-Llama-3.1-8B-bnb-4bit | 0.006143 | 0.0001772 | 193 | 0 | 0.002287 | 0 | 924 | meta-llama/Llama-3.1-8B | llama3.1 | True |
-| 17 | mistralai/Mistral-7B-Instruct-v0.1 | 0.005632 | 0.0004785 | 22 | 0.001789 | 0.0005666 | 4 | 849 | mistralai/Mistral-7B-v0.1 | apache-2.0 | True |
-| 18 | HuggingFaceH4/zephyr-7b-beta | 0.004629 | 0.0005727 | 18 | 0.002725 | 0.0005666 | 6 | 695 | mistralai/Mistral-7B-v0.1 | mit | True |
-| 19 | unsloth/gemma-2-9b-bnb-4bit | 0.004443 | 0.0001772 | 84 | 0 | 0.0003538 | 0 | 668 | google/gemma-2-9b | gemma | True |
-| 20 | deepseek-ai/DeepSeek-R1 | 0.003764 | 0.04552 | 3 | 3.417e-18 | 0 | 301 | 524 | deepseek-ai/DeepSeek-R1 | mit | True |
+| 1 | meta-llama/Llama-3.1-8B | 0.07637 | 0.04563 | 9 | 0.5477 | 0 | 406 | 3267 | meta-llama/Llama-3.1-8B | llama3.1 | True |
+| 2 | Qwen/Qwen2.5-7B | 0.0627 | 0.04591 | 8 | 0.02863 | 0 | 405 | 2086 | Qwen/Qwen2.5-7B | apache-2.0 | True |
+| 3 | mistralai/Mistral-7B-v0.1 | 0.05072 | 0.04609 | 6 | 0.1452 | 0 | 406 | 4000 | mistralai/Mistral-7B-v0.1 | apache-2.0 | True |
+| 4 | meta-llama/Llama-3.1-8B-Instruct | 0.04819 | 0.001741 | 12 | 0.04733 | 0.001603 | 32 | 7302 | meta-llama/Llama-3.1-8B | llama3.1 | True |
+| 5 | google-bert/bert-base-uncased | 0.04795 | 0.04628 | 3 | 1.625e-28 | 0 | 405 | 7222 | google-bert/bert-base-uncased | apache-2.0 | True |
+| 6 | Qwen/Qwen2.5-7B-Instruct | 0.04402 | 0.001786 | 11 | 0.003827 | 8.381e-05 | 33 | 6669 | Qwen/Qwen2.5-7B | apache-2.0 | True |
+| 7 | Qwen/Qwen3-8B-Base | 0.03751 | 0.04617 | 5 | 5.542e-27 | 0 | 405 | 856 | Qwen/Qwen3-8B-Base | apache-2.0 | True |
+| 8 | Qwen/Qwen3-8B | 0.03394 | 0.0006753 | 13 | 1.404e-28 | 1.622e-29 | 10 | 5133 | Qwen/Qwen3-8B-Base | apache-2.0 | True |
+| 9 | meta-llama/Llama-3.2-1B | 0.01941 | 0.04636 | 1 | 4.554e-23 | 0 | 406 | 1998 | meta-llama/Llama-3.2-1B | llama3.2 | True |
+| 10 | google/gemma-3-4b-pt | 0.01452 | 0.03953 | 10 | 4.274e-321 | 0 | 346 | 395 | google/gemma-3-4b-pt | gemma | True |
+| 11 | google/gemma-2-9b | 0.01435 | 0.04618 | 4 | 0.107 | 0 | 405 | 458 | google/gemma-2-9b | gemma | True |
+| 12 | google/gemma-3-4b-it | 0.01222 | 0.000248 | 31 | 2.47e-323 | 1.482e-323 | 2 | 1850 | google/gemma-3-4b-pt | gemma | True |
+| 13 | microsoft/phi-2 | 0.01026 | 0.04607 | 7 | 0.007883 | 0 | 405 | 1479 | microsoft/phi-2 | mit | True |
+| 14 | google/gemma-2-9b-it | 0.00801 | 0.000248 | 30 | 0.0005244 | 0.0003132 | 2 | 1213 | google/gemma-2-9b | gemma | True |
+| 15 | Qwen/Qwen2.5-Math-7B | 0.007378 | 0.0006373 | 14 | 0.001108 | 8.381e-05 | 14 | 1124 | Qwen/Qwen2.5-7B | apache-2.0 | True |
+| 16 | unsloth/Meta-Llama-3.1-8B-bnb-4bit | 0.006108 | 0.000134 | 202 | 0 | 0.001603 | 0 | 924 | meta-llama/Llama-3.1-8B | llama3.1 | True |
+| 17 | mistralai/Mistral-7B-Instruct-v0.1 | 0.0056 | 0.0003619 | 22 | 0.001431 | 0.0004251 | 4 | 849 | mistralai/Mistral-7B-v0.1 | apache-2.0 | True |
+| 18 | HuggingFaceH4/zephyr-7b-beta | 0.004602 | 0.0004316 | 19 | 0.002173 | 0.0004251 | 6 | 695 | mistralai/Mistral-7B-v0.1 | mit | True |
+| 19 | unsloth/gemma-2-9b-bnb-4bit | 0.004418 | 0.000134 | 93 | 0 | 0.0003132 | 0 | 668 | google/gemma-2-9b | gemma | True |
+| 20 | deepseek-ai/DeepSeek-R1 | 0.003742 | 0.04628 | 2 | 1.625e-28 | 0 | 405 | 524 | deepseek-ai/DeepSeek-R1 | mit | True |
 
 **ranking_top_hubs**
 
 | model | hub | parents |
 |---|---|---|
-| Naphula/Warlock-7B-v3 | 0.0009764 | 33 |
-| bartowski/Oumuamua-7b-instruct-v2-GGUF | 0.0009356 | 15 |
-| nitky/Oumuamua-7b-instruct-v2 | 0.0009356 | 15 |
-| solidrust/KatyTestHistorical-SultrySilicon-7B-V2 | 0.0009304 | 8 |
-| giraffe176/Open_Maid_Samantha_Hermes_Orca_dare_tiesv0.1 | 0.0009296 | 5 |
-| kidyu/Moza-7B-v1.0 | 0.0009288 | 10 |
-| giraffe176/WestMaid_HermesMonarchv0.1 | 0.0009262 | 5 |
-| giraffe176/WestLake_Noromaid_OpenHermes_neural-chatv0.1 | 0.0009253 | 5 |
-| giraffe176/Open_Neural_Monarch_Maidv0.1 | 0.0009245 | 5 |
-| saishf/Top-Western-Maid-7B | 0.0009245 | 4 |
+| Naphula/Warlock-7B-v3 | 0.0009783 | 33 |
+| lejelly/union_tokenizer-mistral-7b-instrcut-math-code | 0.0009457 | 4 |
+| lejelly/grid-search-w1_0_4_w2_0_1_w3_0_3-mistral-7b | 0.0009457 | 4 |
+| lejelly/grid-search-w1_0_4_w2_0_0_w3_0_5-mistral-7b | 0.0009457 | 4 |
+| lejelly/grid-search-w1_0_1_w2_0_3_w3_0_0-mistral-7b | 0.0009457 | 4 |
+| lejelly/grid-search-w1_0_2_w2_0_3_w3_0_2-mistral-7b | 0.0009457 | 4 |
+| lejelly/grid-search-w1_0_2_w2_0_4_w3_0_5-mistral-7b | 0.0009457 | 4 |
+| lejelly/grid-search-w1_0_3_w2_0_5_w3_0_2-mistral-7b | 0.0009457 | 4 |
+| lejelly/grid-search-w1_0_0_w2_0_3_w3_0_3-mistral-7b | 0.0009457 | 4 |
+| lejelly/grid-search-w1_0_5_w2_0_5_w3_0_0-mistral-7b | 0.0009457 | 4 |
 
 ## 2. Model families (Louvain, sample graph)
 
-{'communities': 10, 'modularity': 0.8972612162811174, 'largest': 306, 'weighted_purity': 0.9986768111147867, 'multi_family_communities': 2}
+{'communities': 10, 'modularity': 0.8976391988391559, 'largest': 409, 'weighted_purity': 0.9990002499375156, 'multi_family_communities': 2}
 
 **communities**
 
 | community | size | in_sample | dominant_family | purity | families | most_derived_from | internal_edges | rel_finetune | rel_adapter | rel_quantized | rel_merge | top_license_category |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 0 | 306 | 306 | Qwen/Qwen2.5-7B | 0.9902 | 3 | Qwen/Qwen2.5-7B | 353 | 76 | 76 | 76 | 125 | permissive |
-| 1 | 303 | 303 | meta-llama/Llama-3.2-1B | 1 | 1 | meta-llama/Llama-3.2-1B | 306 | 92 | 94 | 92 | 28 | restricted |
-| 2 | 303 | 303 | mistralai/Mistral-7B-v0.1 | 1 | 1 | mistralai/Mistral-7B-v0.1 | 338 | 76 | 76 | 77 | 109 | permissive |
-| 3 | 303 | 303 | Qwen/Qwen3-8B-Base | 1 | 1 | Qwen/Qwen3-8B-Base | 315 | 119 | 118 | 52 | 26 | permissive |
-| 4 | 302 | 302 | google/gemma-3-4b-pt | 1 | 1 | google/gemma-3-4b-pt | 304 | 255 | 19 | 28 | 2 | unknown |
-| 5 | 302 | 302 | deepseek-ai/DeepSeek-R1 | 1 | 1 | deepseek-ai/DeepSeek-R1 | 301 | 113 | 113 | 70 | 5 | permissive |
-| 6 | 302 | 302 | google-bert/bert-base-uncased | 1 | 1 | google-bert/bert-base-uncased | 301 | 128 | 128 | 38 | 7 | permissive |
-| 7 | 302 | 302 | meta-llama/Llama-3.1-8B | 0.9967 | 2 | meta-llama/Llama-3.1-8B | 395 | 77 | 77 | 77 | 164 | restricted |
-| 8 | 301 | 301 | google/gemma-2-9b | 1 | 1 | google/gemma-2-9b | 306 | 174 | 67 | 55 | 10 | restricted |
-| 9 | 299 | 299 | microsoft/phi-2 | 1 | 1 | microsoft/phi-2 | 299 | 115 | 114 | 64 | 6 | permissive |
+| 0 | 409 | 409 | Qwen/Qwen2.5-7B | 0.9927 | 3 | Qwen/Qwen2.5-7B | 481 | 106 | 106 | 88 | 181 | permissive |
+| 1 | 407 | 407 | meta-llama/Llama-3.2-1B | 1 | 1 | meta-llama/Llama-3.2-1B | 411 | 127 | 130 | 126 | 28 | restricted |
+| 2 | 406 | 406 | mistralai/Mistral-7B-v0.1 | 1 | 1 | mistralai/Mistral-7B-v0.1 | 446 | 102 | 101 | 103 | 140 | permissive |
+| 3 | 406 | 406 | deepseek-ai/DeepSeek-R1 | 1 | 1 | deepseek-ai/DeepSeek-R1 | 405 | 208 | 122 | 70 | 5 | permissive |
+| 4 | 406 | 406 | google-bert/bert-base-uncased | 1 | 1 | google-bert/bert-base-uncased | 405 | 216 | 144 | 38 | 7 | permissive |
+| 5 | 406 | 406 | meta-llama/Llama-3.1-8B | 0.9975 | 2 | meta-llama/Llama-3.1-8B | 499 | 112 | 112 | 111 | 164 | restricted |
+| 6 | 406 | 406 | Qwen/Qwen3-8B-Base | 1 | 1 | Qwen/Qwen3-8B-Base | 420 | 192 | 148 | 52 | 28 | permissive |
+| 7 | 405 | 405 | google/gemma-2-9b | 1 | 1 | google/gemma-2-9b | 410 | 278 | 67 | 55 | 10 | restricted |
+| 8 | 403 | 403 | microsoft/phi-2 | 1 | 1 | microsoft/phi-2 | 403 | 167 | 166 | 64 | 6 | permissive |
+| 9 | 347 | 347 | google/gemma-3-4b-pt | 1 | 1 | google/gemma-3-4b-pt | 349 | 300 | 19 | 28 | 2 | unknown |
 
 **cross_family_links**
 
@@ -143,16 +143,16 @@ Own PageRank (d = 0.85), weighted PageRank and HITS, all checked against network
 
 ## 3. Lineage
 
-max generation 15, mean generation of derived models 1.08, models per generation {0: 10, 1: 2887, 2: 107, 3: 5, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1, 12: 3, 13: 1, 14: 1, 15: 1}. Branching uses HF's exact child counts; relation share compares population vs sample.
+max generation 15, mean generation of derived models 1.07, models per generation {0: 10, 1: 3847, 2: 124, 3: 6, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1, 12: 3, 13: 1, 14: 1, 15: 1}. Branching uses HF's exact child counts; relation share compares population vs sample.
 
 **lineage_generations**
 
 | generation | models | with_children | share_with_children | branching_mean | branching_median | branching_max | observed_children_mean | hf_finetune | hf_adapter | hf_quantized | hf_merge |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 0 | 10 | 10 | 1 | 2228 | 1738 | 7222 | 301.6 | 13485 | 6952 | 1184 | 664 |
-| 1 | 2887 | 418 | 0.1448 | 11.65 | 0 | 7302 | 0.05369 | 15254 | 12584 | 4499 | 1286 |
-| 2 | 107 | 59 | 0.5566 | 1.557 | 1 | 9 | 0.06542 | 14 | 3 | 105 | 43 |
-| 3 | 5 | 4 | 0.8 | 4.4 | 3 | 14 | 0.6 | 0 | 0 | 8 | 14 |
+| 0 | 10 | 10 | 1 | 2228 | 1738 | 7222 | 399.4 | 13485 | 6952 | 1184 | 664 |
+| 1 | 3847 | 514 | 0.1339 | 8.837 | 0 | 7302 | 0.04835 | 15326 | 12600 | 4677 | 1321 |
+| 2 | 124 | 61 | 0.4959 | 1.398 | 0 | 9 | 0.07258 | 16 | 3 | 108 | 45 |
+| 3 | 6 | 5 | 0.8333 | 3.833 | 2 | 14 | 0.5 | 0 | 0 | 8 | 15 |
 | 4 | 1 | 1 | 1 | 8 | 8 | 8 | 6 | 0 | 0 | 1 | 7 |
 | 5 | 1 | 1 | 1 | 14 | 14 | 14 | 12 | 0 | 0 | 1 | 13 |
 | 6 | 1 | 1 | 1 | 5 | 5 | 5 | 4 | 0 | 0 | 1 | 4 |
@@ -170,10 +170,10 @@ max generation 15, mean generation of derived models 1.08, models per generation
 
 | relation | population_count | sample_edges | population_share | sample_share |
 |---|---|---|---|---|
-| finetune | 28753 | 1225 | 0.5119 | 0.38 |
-| adapter | 19539 | 882 | 0.3479 | 0.2736 |
-| quantized | 5820 | 629 | 0.1036 | 0.1951 |
-| merge | 2057 | 488 | 0.03662 | 0.1514 |
+| finetune | 28827 | 1808 | 0.5104 | 0.4269 |
+| adapter | 19555 | 1115 | 0.3462 | 0.2633 |
+| quantized | 6001 | 735 | 0.1063 | 0.1736 |
+| merge | 2095 | 577 | 0.03709 | 0.1362 |
 
 ## 4. License drift
 
@@ -183,56 +183,61 @@ Edges with both ends scraped. 'loosened' = child's license is less restrictive t
 
 | outcome | count |
 |---|---|
-| same | 1636 |
-| child_unknown | 920 |
-| changed_same_category | 273 |
-| changed_custom | 125 |
-| loosened | 112 |
-| tightened | 105 |
-| parent_unknown | 53 |
+| same | 2119 |
+| child_unknown | 1269 |
+| changed_same_category | 363 |
+| changed_custom | 154 |
+| loosened | 148 |
+| tightened | 127 |
+| parent_unknown | 55 |
 
 **license_transitions**
 
 | parent_category | copyleft | noncommercial | other | permissive | restricted | unknown |
 |---|---|---|---|---|---|---|
 | other | 0 | 0 | 1 | 0 | 0 | 0 |
-| permissive | 10 | 33 | 77 | 1221 | 35 | 535 |
-| restricted | 4 | 27 | 48 | 108 | 687 | 385 |
-| unknown | 0 | 0 | 0 | 0 | 0 | 53 |
+| permissive | 11 | 38 | 95 | 1633 | 46 | 740 |
+| restricted | 5 | 32 | 59 | 143 | 848 | 529 |
+| unknown | 0 | 0 | 0 | 0 | 0 | 55 |
 
 **license_by_family**
 
 | family | changed_custom | changed_same_category | child_unknown | loosened | parent_unknown | same | tightened | edges | drift_rate | conflict_rate |
 |---|---|---|---|---|---|---|---|---|---|---|
-| Qwen/Qwen2.5-7B | 11 | 5 | 147 | 0 | 2 | 186 | 0 | 351 | 0.07921 | 0 |
-| Qwen/Qwen3-8B-Base | 16 | 12 | 113 | 0 | 0 | 169 | 5 | 315 | 0.1634 | 0 |
-| deepseek-ai/DeepSeek-R1 | 11 | 102 | 57 | 0 | 0 | 95 | 36 | 301 | 0.6107 | 0 |
-| google-bert/bert-base-uncased | 3 | 44 | 75 | 0 | 0 | 173 | 6 | 301 | 0.2345 | 0 |
-| google/gemma-2-9b | 18 | 1 | 61 | 19 | 0 | 190 | 19 | 308 | 0.2308 | 0.07692 |
-| google/gemma-3-4b-pt | 9 | 0 | 141 | 14 | 0 | 140 | 0 | 304 | 0.1411 | 0.08589 |
-| meta-llama/Llama-3.1-8B | 7 | 40 | 132 | 32 | 49 | 130 | 7 | 397 | 0.3981 | 0.1481 |
-| meta-llama/Llama-3.2-1B | 14 | 5 | 51 | 47 | 2 | 186 | 1 | 306 | 0.2648 | 0.1858 |
-| microsoft/phi-2 | 32 | 29 | 64 | 0 | 0 | 174 | 4 | 303 | 0.272 | 0 |
-| mistralai/Mistral-7B-v0.1 | 4 | 35 | 79 | 0 | 0 | 193 | 27 | 338 | 0.2548 | 0 |
+| Qwen/Qwen2.5-7B | 11 | 6 | 220 | 0 | 3 | 239 | 0 | 479 | 0.06641 | 0 |
+| Qwen/Qwen3-8B-Base | 20 | 14 | 136 | 0 | 0 | 244 | 6 | 420 | 0.1408 | 0 |
+| deepseek-ai/DeepSeek-R1 | 15 | 148 | 82 | 0 | 0 | 112 | 48 | 405 | 0.6533 | 0 |
+| google-bert/bert-base-uncased | 5 | 63 | 103 | 0 | 0 | 227 | 7 | 405 | 0.2483 | 0 |
+| google/gemma-2-9b | 19 | 1 | 130 | 26 | 0 | 214 | 22 | 412 | 0.2411 | 0.0922 |
+| google/gemma-3-4b-pt | 9 | 0 | 186 | 14 | 0 | 140 | 0 | 349 | 0.1411 | 0.08589 |
+| meta-llama/Llama-3.1-8B | 11 | 53 | 145 | 52 | 49 | 182 | 9 | 501 | 0.4072 | 0.1694 |
+| meta-llama/Llama-3.2-1B | 20 | 5 | 68 | 56 | 3 | 258 | 1 | 411 | 0.2412 | 0.1647 |
+| microsoft/phi-2 | 39 | 30 | 83 | 0 | 0 | 251 | 4 | 407 | 0.2253 | 0 |
+| mistralai/Mistral-7B-v0.1 | 5 | 43 | 116 | 0 | 0 | 252 | 30 | 446 | 0.2364 | 0 |
 
 **license_by_relation**
 
 | relation | changed_custom | changed_same_category | child_unknown | loosened | parent_unknown | same | tightened | edges | drift_rate | conflict_rate |
 |---|---|---|---|---|---|---|---|---|---|---|
-| adapter | 31 | 98 | 296 | 26 | 0 | 405 | 26 | 882 | 0.3089 | 0.04437 |
-| finetune | 50 | 112 | 271 | 37 | 0 | 712 | 43 | 1225 | 0.2537 | 0.03878 |
-| merge | 10 | 13 | 281 | 3 | 53 | 103 | 25 | 488 | 0.3312 | 0.01948 |
-| quantized | 34 | 50 | 72 | 46 | 0 | 416 | 11 | 629 | 0.2531 | 0.08259 |
+| adapter | 39 | 115 | 366 | 32 | 1 | 532 | 30 | 1115 | 0.2888 | 0.04278 |
+| finetune | 67 | 179 | 456 | 53 | 0 | 995 | 58 | 1808 | 0.2641 | 0.0392 |
+| merge | 10 | 14 | 357 | 3 | 54 | 113 | 26 | 577 | 0.3193 | 0.01807 |
+| quantized | 38 | 55 | 90 | 60 | 0 | 479 | 13 | 735 | 0.2574 | 0.09302 |
 
 **license_conflicts**
 
 | child | parent | relation | family | child_license | parent_license |
 |---|---|---|---|---|---|
 | 2024-mcm-everitt-ryan/gemma-2-9b-job-bias-qlora-seq-cls | google/gemma-2-9b | quantized | google/gemma-2-9b | apache-2.0 | gemma |
+| Himalayan-wildcat/gemma-2-9b-finetune | google/gemma-2-9b | finetune | google/gemma-2-9b | mit | gemma |
+| Hizaneko/gemma-2-9b-nyan100 | google/gemma-2-9b | finetune | google/gemma-2-9b | apache-2.0 | gemma |
 | Jiangxz/Tax_Model | google/gemma-2-9b | quantized | google/gemma-2-9b | apache-2.0 | gemma |
+| Kohsaku/gemma-2-9b-finetune-4 | google/gemma-2-9b | finetune | google/gemma-2-9b | cc-by-sa-4.0 | gemma |
 | MichiganNLP/hacking-fairness-benchmarks-gemma-2-9b-z1 | google/gemma-2-9b | adapter | google/gemma-2-9b | mit | gemma |
+| Naotaka/gemma-2-9b-r16-768-512-it_lora | google/gemma-2-9b | finetune | google/gemma-2-9b | apache-2.0 | gemma |
 | SURESHBEEKHANI/Finetune_Gemma_NRE_SFT_GGUF | google/gemma-2-9b | quantized | google/gemma-2-9b | mit | gemma |
 | SinclairSchneider/german_politic_direction_gemma-2-9b | google/gemma-2-9b | finetune | google/gemma-2-9b | cc-by-4.0 | gemma |
+| SinclairSchneider/german_politic_direction_gemma-2-9b_v0.1 | google/gemma-2-9b | finetune | google/gemma-2-9b | cc-by-4.0 | gemma |
 | cplonski/cope-a-9b-merged | google/gemma-2-9b | adapter | google/gemma-2-9b | apache-2.0 | gemma |
 | divyanshukunwar/SASTRI_1_9B | google/gemma-2-9b | quantized | google/gemma-2-9b | apache-2.0 | gemma |
 | divyanshukunwar/SASTRI_1_9B_GGUF | google/gemma-2-9b | quantized | google/gemma-2-9b | apache-2.0 | gemma |
@@ -241,11 +246,13 @@ Edges with both ends scraped. 'loosened' = child's license is less restrictive t
 | megagonlabs/omnes-flores-40-lang-42-treebank-v0-ls | google/gemma-2-9b | finetune | google/gemma-2-9b | cc-by-sa-4.0 | gemma |
 | megagonlabs/omnes-flores-40-lang-42-treebank-v0-wx | google/gemma-2-9b | finetune | google/gemma-2-9b | cc-by-sa-4.0 | gemma |
 | mueggi/ka-ai-instruct | google/gemma-2-9b | adapter | google/gemma-2-9b | apache-2.0 | gemma |
+| naoa/gemma-2-9b-base71_lora | google/gemma-2-9b | finetune | google/gemma-2-9b | apache-2.0 | gemma |
 | nehuronion-dvt/nehuronion-dvt-9b | google/gemma-2-9b | finetune | google/gemma-2-9b | mit | gemma |
 | nehuronion-dvt/nehuronion-dvt-9b-adapters | google/gemma-2-9b | adapter | google/gemma-2-9b | mit | gemma |
 | nehuronion-dvt/nehuronion-dvt-9b-gguf | google/gemma-2-9b | quantized | google/gemma-2-9b | mit | gemma |
 | nicoboss/Apollo2-9B-llamacppfixed | google/gemma-2-9b | finetune | google/gemma-2-9b | apache-2.0 | gemma |
 | testmoto/gemma-2-lora-dpo-moe-1 | google/gemma-2-9b | finetune | google/gemma-2-9b | apache-2.0 | gemma |
+| ultimatemagic79/lora_gemma_9b | google/gemma-2-9b | finetune | google/gemma-2-9b | mit | gemma |
 | zaid646/gemma-2-9b-awq | google/gemma-2-9b | quantized | google/gemma-2-9b | apache-2.0 | gemma |
 | AI-for-Education/edu-qurating-core-ed-gemma-3-4b | google/gemma-3-4b-pt | finetune | google/gemma-3-4b-pt | mit | gemma |
 | AI-for-Education/edu-qurating-fl-student-gemma-3-4b | google/gemma-3-4b-pt | finetune | google/gemma-3-4b-pt | mit | gemma |
@@ -261,15 +268,8 @@ Edges with both ends scraped. 'loosened' = child's license is less restrictive t
 | keeeeesz/gemma-civil-code-pl_20250416 | google/gemma-3-4b-pt | finetune | google/gemma-3-4b-pt | apache-2.0 | gemma |
 | kmaslennikova/gemma3_lora | google/gemma-3-4b-pt | finetune | google/gemma-3-4b-pt | mit | gemma |
 | manthilaffs/Gamunu-4B-Instruct-Alpha | google/gemma-3-4b-pt | finetune | google/gemma-3-4b-pt | apache-2.0 | gemma |
-| 3adel25/Llama-3.1-8B-Customer-service-question-and-answer | meta-llama/Llama-3.1-8B | adapter | meta-llama/Llama-3.1-8B | apache-2.0 | llama3.1 |
-| Abigail45/Chyio | meta-llama/Llama-3.1-8B | merge | meta-llama/Llama-3.1-8B | apache-2.0 | llama3.1 |
-| Davidsv/CosmeticVentureV2 | meta-llama/Llama-3.1-8B | merge | meta-llama/Llama-3.1-8B | apache-2.0 | llama3.1 |
-| Delentia/delentia-slm-jitna-v0.4 | meta-llama/Llama-3.1-8B | quantized | meta-llama/Llama-3.1-8B | apache-2.0 | llama3.1 |
-| Gurubot/self-after-dark | meta-llama/Llama-3.1-8B | quantized | meta-llama/Llama-3.1-8B | apache-2.0 | llama3.1 |
-| HiTZ/Llama-3.1-GuideX-8B | meta-llama/Llama-3.1-8B | finetune | meta-llama/Llama-3.1-8B | apache-2.0 | llama3.1 |
-| Jashan887/81_Self_After_Dark_Unfiltered | meta-llama/Llama-3.1-8B | quantized | meta-llama/Llama-3.1-8B | apache-2.0 | llama3.1 |
 
-*… 72 more rows in the CSV*
+*… 108 more rows in the CSV*
 
 ## 5. Trends
 
@@ -280,72 +280,75 @@ Derivatives by creation quarter; seeds and pre-2022 placeholder dates excluded. 
 | quarter | Qwen/Qwen2.5-7B | Qwen/Qwen3-8B-Base | deepseek-ai/DeepSeek-R1 | google-bert/bert-base-uncased | google/gemma-2-9b | google/gemma-3-4b-pt | meta-llama/Llama-3.1-8B | meta-llama/Llama-3.2-1B | microsoft/phi-2 | mistralai/Mistral-7B-v0.1 |
 |---|---|---|---|---|---|---|---|---|---|---|
 | 2022-Q1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 |
-| 2022-Q2 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | 0 |
-| 2022-Q4 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 |
-| 2023-Q1 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 2022-Q2 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 2022-Q3 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 2022-Q4 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 2023-Q1 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | 0 |
 | 2023-Q2 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 |
-| 2023-Q3 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 6 |
-| 2023-Q4 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | 23 | 36 |
-| 2024-Q1 | 0 | 0 | 0 | 17 | 0 | 0 | 0 | 0 | 82 | 156 |
-| 2024-Q2 | 0 | 0 | 0 | 29 | 6 | 0 | 0 | 0 | 25 | 44 |
-| 2024-Q3 | 37 | 0 | 0 | 21 | 82 | 0 | 72 | 16 | 16 | 11 |
-| 2024-Q4 | 46 | 0 | 0 | 25 | 56 | 0 | 40 | 86 | 8 | 6 |
-| 2025-Q1 | 72 | 0 | 244 | 32 | 13 | 44 | 66 | 40 | 13 | 9 |
-| 2025-Q2 | 19 | 50 | 16 | 32 | 39 | 118 | 42 | 22 | 31 | 6 |
-| 2025-Q3 | 52 | 41 | 16 | 29 | 12 | 21 | 12 | 53 | 33 | 6 |
-| 2025-Q4 | 12 | 33 | 0 | 31 | 6 | 15 | 12 | 35 | 37 | 3 |
-| 2026-Q1 | 16 | 29 | 7 | 10 | 46 | 13 | 7 | 10 | 16 | 4 |
-| 2026-Q2 | 14 | 31 | 2 | 11 | 27 | 30 | 22 | 15 | 5 | 8 |
-| 2026-Q3 | 16 | 86 | 9 | 31 | 10 | 34 | 21 | 19 | 7 | 4 |
-| 2026-Q4 | 18 | 32 | 0 | 10 | 4 | 26 | 7 | 6 | 4 | 3 |
+| 2023-Q3 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 | 6 |
+| 2023-Q4 | 0 | 0 | 0 | 11 | 0 | 0 | 0 | 0 | 32 | 52 |
+| 2024-Q1 | 0 | 0 | 0 | 18 | 0 | 0 | 0 | 0 | 142 | 188 |
+| 2024-Q2 | 0 | 0 | 0 | 31 | 6 | 0 | 0 | 0 | 33 | 58 |
+| 2024-Q3 | 38 | 0 | 0 | 24 | 92 | 0 | 100 | 18 | 20 | 15 |
+| 2024-Q4 | 73 | 0 | 0 | 37 | 72 | 0 | 58 | 117 | 8 | 7 |
+| 2025-Q1 | 89 | 0 | 347 | 47 | 15 | 44 | 78 | 65 | 14 | 20 |
+| 2025-Q2 | 33 | 55 | 17 | 37 | 106 | 118 | 50 | 36 | 34 | 15 |
+| 2025-Q3 | 70 | 45 | 16 | 33 | 15 | 60 | 19 | 69 | 40 | 16 |
+| 2025-Q4 | 18 | 57 | 0 | 42 | 7 | 21 | 21 | 41 | 45 | 3 |
+| 2026-Q1 | 21 | 34 | 7 | 22 | 50 | 13 | 15 | 13 | 18 | 6 |
+| 2026-Q2 | 19 | 52 | 2 | 14 | 27 | 30 | 27 | 19 | 7 | 9 |
+| 2026-Q3 | 26 | 117 | 9 | 48 | 11 | 34 | 27 | 21 | 7 | 7 |
+| 2026-Q4 | 18 | 45 | 0 | 16 | 4 | 26 | 10 | 7 | 4 | 3 |
 
 **trend_task_quarterly**
 
-| quarter | feature-extraction | fill-mask | image-text-to-text | other | sentence-similarity | text-classification | text-generation |
+| quarter | fill-mask | image-text-to-text | other | question-answering | sentence-similarity | text-classification | text-generation |
 |---|---|---|---|---|---|---|---|
 | 2022-Q1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 |
-| 2022-Q2 | 0 | 0 | 0 | 0 | 0 | 4 | 0 |
-| 2022-Q4 | 0 | 0 | 0 | 2 | 0 | 0 | 0 |
-| 2023-Q1 | 0 | 2 | 0 | 1 | 0 | 0 | 0 |
-| 2023-Q2 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |
-| 2023-Q3 | 0 | 0 | 0 | 1 | 0 | 1 | 6 |
-| 2023-Q4 | 0 | 7 | 1 | 0 | 0 | 3 | 58 |
-| 2024-Q1 | 0 | 11 | 0 | 3 | 0 | 5 | 236 |
-| 2024-Q2 | 0 | 16 | 0 | 5 | 5 | 2 | 76 |
-| 2024-Q3 | 1 | 9 | 1 | 5 | 6 | 3 | 230 |
-| 2024-Q4 | 0 | 10 | 0 | 12 | 7 | 8 | 230 |
-| 2025-Q1 | 5 | 11 | 41 | 63 | 15 | 44 | 354 |
-| 2025-Q2 | 5 | 11 | 109 | 18 | 4 | 19 | 209 |
-| 2025-Q3 | 3 | 16 | 18 | 12 | 1 | 14 | 211 |
-| 2025-Q4 | 1 | 17 | 10 | 4 | 2 | 15 | 135 |
-| 2026-Q1 | 5 | 5 | 13 | 7 | 2 | 3 | 123 |
-| 2026-Q2 | 11 | 6 | 16 | 2 | 0 | 5 | 125 |
-| 2026-Q3 | 4 | 3 | 28 | 7 | 1 | 32 | 162 |
-| 2026-Q4 | 1 | 3 | 5 | 0 | 2 | 8 | 91 |
+| 2022-Q2 | 0 | 0 | 0 | 0 | 0 | 8 | 0 |
+| 2022-Q3 | 0 | 0 | 0 | 0 | 0 | 1 | 0 |
+| 2022-Q4 | 0 | 0 | 3 | 0 | 0 | 0 | 0 |
+| 2023-Q1 | 2 | 0 | 0 | 1 | 0 | 1 | 0 |
+| 2023-Q2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 2023-Q3 | 2 | 0 | 2 | 1 | 0 | 1 | 6 |
+| 2023-Q4 | 7 | 1 | 0 | 0 | 0 | 4 | 83 |
+| 2024-Q1 | 11 | 0 | 2 | 1 | 0 | 6 | 328 |
+| 2024-Q2 | 16 | 0 | 5 | 0 | 7 | 2 | 98 |
+| 2024-Q3 | 10 | 1 | 5 | 2 | 6 | 4 | 279 |
+| 2024-Q4 | 11 | 0 | 11 | 8 | 11 | 12 | 319 |
+| 2025-Q1 | 13 | 42 | 84 | 18 | 23 | 62 | 477 |
+| 2025-Q2 | 11 | 109 | 20 | 6 | 5 | 23 | 327 |
+| 2025-Q3 | 18 | 57 | 16 | 0 | 1 | 18 | 273 |
+| 2025-Q4 | 18 | 16 | 7 | 1 | 5 | 24 | 184 |
+| 2026-Q1 | 10 | 13 | 12 | 1 | 3 | 9 | 151 |
+| 2026-Q2 | 6 | 16 | 17 | 0 | 3 | 5 | 159 |
+| 2026-Q3 | 5 | 28 | 15 | 1 | 2 | 43 | 213 |
+| 2026-Q4 | 5 | 5 | 1 | 0 | 4 | 11 | 107 |
 
 **trend_relation_quarterly**
 
 | quarter | adapter | finetune | merge | mixed | quantized |
 |---|---|---|---|---|---|
 | 2022-Q1 | 0 | 1 | 0 | 0 | 0 |
-| 2022-Q2 | 0 | 4 | 0 | 0 | 0 |
-| 2022-Q4 | 0 | 2 | 0 | 0 | 0 |
-| 2023-Q1 | 0 | 2 | 0 | 0 | 1 |
+| 2022-Q2 | 0 | 8 | 0 | 0 | 0 |
+| 2022-Q3 | 0 | 1 | 0 | 0 | 0 |
+| 2022-Q4 | 0 | 3 | 0 | 0 | 0 |
+| 2023-Q1 | 0 | 3 | 0 | 0 | 1 |
 | 2023-Q2 | 0 | 0 | 0 | 0 | 1 |
-| 2023-Q3 | 1 | 3 | 0 | 0 | 4 |
-| 2023-Q4 | 21 | 32 | 0 | 0 | 16 |
-| 2024-Q1 | 99 | 70 | 47 | 0 | 39 |
-| 2024-Q2 | 41 | 22 | 26 | 0 | 15 |
-| 2024-Q3 | 47 | 101 | 21 | 0 | 86 |
-| 2024-Q4 | 43 | 101 | 36 | 0 | 87 |
-| 2025-Q1 | 177 | 199 | 58 | 0 | 99 |
-| 2025-Q2 | 67 | 211 | 23 | 0 | 74 |
-| 2025-Q3 | 105 | 87 | 35 | 0 | 48 |
-| 2025-Q4 | 56 | 79 | 17 | 0 | 32 |
-| 2026-Q1 | 37 | 79 | 4 | 0 | 38 |
-| 2026-Q2 | 62 | 58 | 12 | 5 | 28 |
-| 2026-Q3 | 89 | 101 | 5 | 0 | 42 |
-| 2026-Q4 | 30 | 66 | 1 | 1 | 12 |
+| 2023-Q3 | 1 | 7 | 0 | 0 | 4 |
+| 2023-Q4 | 30 | 45 | 0 | 0 | 20 |
+| 2024-Q1 | 133 | 118 | 51 | 0 | 46 |
+| 2024-Q2 | 51 | 27 | 33 | 0 | 17 |
+| 2024-Q3 | 61 | 120 | 21 | 0 | 105 |
+| 2024-Q4 | 56 | 164 | 44 | 0 | 108 |
+| 2025-Q1 | 213 | 333 | 62 | 0 | 111 |
+| 2025-Q2 | 79 | 302 | 32 | 0 | 88 |
+| 2025-Q3 | 130 | 141 | 59 | 0 | 53 |
+| 2025-Q4 | 71 | 128 | 17 | 0 | 39 |
+| 2026-Q1 | 52 | 96 | 5 | 0 | 46 |
+| 2026-Q2 | 77 | 81 | 12 | 5 | 31 |
+| 2026-Q3 | 117 | 140 | 5 | 0 | 45 |
+| 2026-Q4 | 36 | 82 | 1 | 1 | 13 |
 
 **trend_relation_share_quarterly**
 
@@ -353,23 +356,24 @@ Derivatives by creation quarter; seeds and pre-2022 placeholder dates excluded. 
 |---|---|---|---|---|---|
 | 2022-Q1 | 0 | 1 | 0 | 0 | 0 |
 | 2022-Q2 | 0 | 1 | 0 | 0 | 0 |
+| 2022-Q3 | 0 | 1 | 0 | 0 | 0 |
 | 2022-Q4 | 0 | 1 | 0 | 0 | 0 |
-| 2023-Q1 | 0 | 0.667 | 0 | 0 | 0.333 |
+| 2023-Q1 | 0 | 0.75 | 0 | 0 | 0.25 |
 | 2023-Q2 | 0 | 0 | 0 | 0 | 1 |
-| 2023-Q3 | 0.125 | 0.375 | 0 | 0 | 0.5 |
-| 2023-Q4 | 0.304 | 0.464 | 0 | 0 | 0.232 |
-| 2024-Q1 | 0.388 | 0.275 | 0.184 | 0 | 0.153 |
-| 2024-Q2 | 0.394 | 0.212 | 0.25 | 0 | 0.144 |
-| 2024-Q3 | 0.184 | 0.396 | 0.082 | 0 | 0.337 |
-| 2024-Q4 | 0.161 | 0.378 | 0.135 | 0 | 0.326 |
-| 2025-Q1 | 0.332 | 0.373 | 0.109 | 0 | 0.186 |
-| 2025-Q2 | 0.179 | 0.563 | 0.061 | 0 | 0.197 |
-| 2025-Q3 | 0.382 | 0.316 | 0.127 | 0 | 0.175 |
-| 2025-Q4 | 0.304 | 0.429 | 0.092 | 0 | 0.174 |
-| 2026-Q1 | 0.234 | 0.5 | 0.025 | 0 | 0.241 |
-| 2026-Q2 | 0.376 | 0.352 | 0.073 | 0.03 | 0.17 |
-| 2026-Q3 | 0.376 | 0.426 | 0.021 | 0 | 0.177 |
-| 2026-Q4 | 0.273 | 0.6 | 0.009 | 0.009 | 0.109 |
+| 2023-Q3 | 0.083 | 0.583 | 0 | 0 | 0.333 |
+| 2023-Q4 | 0.316 | 0.474 | 0 | 0 | 0.211 |
+| 2024-Q1 | 0.382 | 0.339 | 0.147 | 0 | 0.132 |
+| 2024-Q2 | 0.398 | 0.211 | 0.258 | 0 | 0.133 |
+| 2024-Q3 | 0.199 | 0.391 | 0.068 | 0 | 0.342 |
+| 2024-Q4 | 0.151 | 0.441 | 0.118 | 0 | 0.29 |
+| 2025-Q1 | 0.296 | 0.463 | 0.086 | 0 | 0.154 |
+| 2025-Q2 | 0.158 | 0.603 | 0.064 | 0 | 0.176 |
+| 2025-Q3 | 0.339 | 0.368 | 0.154 | 0 | 0.138 |
+| 2025-Q4 | 0.278 | 0.502 | 0.067 | 0 | 0.153 |
+| 2026-Q1 | 0.261 | 0.482 | 0.025 | 0 | 0.231 |
+| 2026-Q2 | 0.374 | 0.393 | 0.058 | 0.024 | 0.15 |
+| 2026-Q3 | 0.381 | 0.456 | 0.016 | 0 | 0.147 |
+| 2026-Q4 | 0.271 | 0.617 | 0.008 | 0.008 | 0.098 |
 
 ## 6. Data quality
 
@@ -377,22 +381,22 @@ Derivatives by creation quarter; seeds and pre-2022 placeholder dates excluded. 
 
 | metric | value | detail |
 |---|---|---|
-| models scraped | 3023 | of 6730 queued |
+| models scraped | 4001 | of 6730 queued |
 | crawl failures | 0 | 0.0 % |
 | models with a parse error | 0 | 0.0 % |
-| missing license | 826 | 27.3 % |
-| missing pipeline_tag (as published) | 1050 | 34.7 % |
-|   of which filled from parent | 1050 | see pipeline_tag_source |
-| missing library_name | 503 | 16.6 % |
+| missing license | 1149 | 28.7 % |
+| missing pipeline_tag (as published) | 1476 | 36.9 % |
+|   of which filled from parent | 1476 | see pipeline_tag_source |
+| missing library_name | 696 | 17.4 % |
 | missing created_at | 0 | 0.0 % |
-| created_at is HF's pre-2022 placeholder | 1 | excluded from trends |
-| declared base_model values | 4117 |  |
-|   linked by HF | 3690 | 89.6 % |
-|   old name of a renamed repo | 253 | 6.1 % |
-|   not linked (broken parent link) | 174 | 4.2 % |
+| created_at is HF's pre-2022 placeholder | 2 | excluded from trends |
+| declared base_model values | 5250 |  |
+|   linked by HF | 4706 | 89.6 % |
+|   old name of a renamed repo | 336 | 6.4 % |
+|   not linked (broken parent link) | 208 | 4.0 % |
 |   malformed (URL/path/free text) | 0 |  |
-| listing edges confirmed by child's tags | 3016 | 100.0 % of 3016 |
-| tag edges to a parent outside the sample | 780 | 19.5 % |
+| listing edges confirmed by child's tags | 3994 | 100.0 % of 3994 |
+| tag edges to a parent outside the sample | 878 | 17.2 % |
 | child created >7 days before its parent | 7 | temporal anomaly |
 | self-loops | 1 |  |
 | relation conflicts (tags vs listing) | 0 |  |

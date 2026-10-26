@@ -1,20 +1,20 @@
 metric,value,detail
-models scraped,3023,of 6730 queued
+models scraped,4001,of 6730 queued
 crawl failures,0,0.0 %
 models with a parse error,0,0.0 %
-missing license,826,27.3 %
-missing pipeline_tag (as published),1050,34.7 %
-  of which filled from parent,1050,see pipeline_tag_source
-missing library_name,503,16.6 %
+missing license,1149,28.7 %
+missing pipeline_tag (as published),1476,36.9 %
+  of which filled from parent,1476,see pipeline_tag_source
+missing library_name,696,17.4 %
 missing created_at,0,0.0 %
-created_at is HF's pre-2022 placeholder,1,excluded from trends
-declared base_model values,4117,
-  linked by HF,3690,89.6 %
-  old name of a renamed repo,253,6.1 %
-  not linked (broken parent link),174,4.2 %
+created_at is HF's pre-2022 placeholder,2,excluded from trends
+declared base_model values,5250,
+  linked by HF,4706,89.6 %
+  old name of a renamed repo,336,6.4 %
+  not linked (broken parent link),208,4.0 %
   malformed (URL/path/free text),0,
-listing edges confirmed by child's tags,3016,100.0 % of 3016
-tag edges to a parent outside the sample,780,19.5 %
+listing edges confirmed by child's tags,3994,100.0 % of 3994
+tag edges to a parent outside the sample,878,17.2 %
 child created >7 days before its parent,7,temporal anomaly
 self-loops,1,
 relation conflicts (tags vs listing),0,
