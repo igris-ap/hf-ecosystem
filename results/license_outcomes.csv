@@ -1,8 +1,8 @@
 outcome,count
-same,2119
-child_unknown,1269
-changed_same_category,363
-changed_custom,154
-loosened,148
-tightened,127
-parent_unknown,55
+same,2724
+child_unknown,1578
+changed_same_category,432
+changed_custom,178
+loosened,176
+tightened,148
+parent_unknown,57
