@@ -19,7 +19,62 @@ turn. This project maps that family tree. It crawls the public model pages, buil
 The results are browsable as an interactive family tree, and every number comes with the table
 behind it.
 
-<!-- RESULTS -->
+<!-- RESULTS:START -->
+
+## Results
+
+> **Snapshot of a crawl in progress:** 697 of 20,000 models scraped (updated 2026-10-26 12:42 India Standard Time). This section is regenerated every 1,000 models.
+
+### At a glance
+
+| | |
+|---|---|
+| Models scraped | 697 |
+| Models seen in total (incl. unscraped children and parents) | 6,895 |
+| Lineage edges | 7,070 |
+| Model families found (Louvain) | 10, matching the seed families with 100 % purity |
+| Deepest derivation chain | 3 generations |
+| Likely license conflicts | 28 of 734 parent-child pairs |
+| Scraped models with no license | 135 (19.4 %) |
+| Broken parent links in model cards | 48 (4.5 %) |
+| API spot-check | 100.0% match (50 random models x 11 fields; every field 100 %) |
+
+### Most influential models
+
+Weighted PageRank over all known lineage edges (see *Why a weighted PageRank*, below). *Plain rank* is the position before correcting for the crawl cap.
+
+| # | Model | Weighted PageRank | Plain rank | Direct children on HF | Seed family |
+|---|---|---|---|---|---|
+| 1 | `meta-llama/Llama-3.1-8B` | 0.0761 | 2 | 3,267 | Llama-3.1-8B |
+| 2 | `Qwen/Qwen2.5-7B` | 0.0634 | 4 | 2,086 | Qwen2.5-7B |
+| 3 | `meta-llama/Llama-3.1-8B-Instruct` | 0.0500 | 13 | 7,302 | Llama-3.1-8B |
+| 4 | `google-bert/bert-base-uncased` | 0.0496 | 8 | 7,222 | bert-base-uncased |
+| 5 | `mistralai/Mistral-7B-v0.1` | 0.0492 | 1 | 4,000 | Mistral-7B-v0.1 |
+| 6 | `Qwen/Qwen2.5-7B-Instruct` | 0.0457 | 11 | 6,669 | Qwen2.5-7B |
+| 7 | `Qwen/Qwen3-8B-Base` | 0.0379 | 6 | 856 | Qwen3-8B-Base |
+| 8 | `Qwen/Qwen3-8B` | 0.0352 | 12 | 5,133 | Qwen3-8B-Base |
+| 9 | `meta-llama/Llama-3.2-1B` | 0.0191 | 3 | 1,998 | Llama-3.2-1B |
+| 10 | `google/gemma-3-4b-pt` | 0.0149 | 10 | 395 | gemma-3-4b-pt |
+
+### Findings so far
+
+- **What derivatives are made of.** Across the direct children Hugging Face lists for every scraped model: fine-tunes 52 %, adapters 35 %, quantizations 10 %, merges 3 %. The crawl sample is deliberately balanced, so it shows each at roughly 25 % instead.
+- **Most derivatives are dead ends.** Of 646 first-generation derivatives, 72 % have no children of their own. The median is 0 children, but the mean is 50, pulled up by a few models that are major bases themselves (up to 7,302 children).
+- **License drift.** 28 derivatives carry a *less* restrictive license than their parent. The most common case is a `llama3.2` model republished as `apache-2.0` (10 times). The highest conflict rates are Llama-3.2-1B 23 %, Llama-3.1-8B 12 %, gemma-2-9b 11 %. Another 155 derivatives declare no license at all.
+- **Families mostly stay apart.** Louvain finds 10 communities that match the seed families with 100 % purity. The exceptions are 4 lineage links between families, 100 % of them merges.
+- **Latest quarter (2026-Q4, 47 sampled derivatives):** finetune 51 %, adapter 32 %, quantized 15 %, merge 2 %.
+
+### Figures
+
+| | |
+|---|---|
+| ![Top models by weighted PageRank](results/figures/ranking_top20.png) | ![Derivatives per base model](results/figures/family_sizes.png) |
+| ![License drift by family](results/figures/license_drift.png) | ![Relation types: population vs sample](results/figures/relation_share.png) |
+| ![Relation mix over time](results/figures/trend_relation_share.png) | ![Release waves by family](results/figures/trend_by_family.png) |
+
+All tables: [`results/summary.md`](results/summary.md) (CSV files in [`results/`](results/)). Interactive family tree: download the repo and open `results/tree/family_tree.html` (GitHub shows HTML files as source).
+
+<!-- RESULTS:END -->
 
 ---
 
