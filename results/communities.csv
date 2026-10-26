@@ -1,9 +1,9 @@
 community,size,in_sample,dominant_family,purity,families,most_derived_from,internal_edges,rel_finetune,rel_adapter,rel_quantized,rel_merge,top_license_category
-0,555,555,Qwen/Qwen2.5-7B,0.9945945945945946,3,Qwen/Qwen2.5-7B,649,164,163,88,234,permissive
-1,552,552,meta-llama/Llama-3.2-1B,1.0,1,meta-llama/Llama-3.2-1B,556,175,178,175,28,restricted
-2,552,552,mistralai/Mistral-7B-v0.1,1.0,1,mistralai/Mistral-7B-v0.1,592,138,138,140,176,permissive
-3,551,551,meta-llama/Llama-3.1-8B,1.0,1,meta-llama/Llama-3.1-8B,645,161,161,160,163,restricted
-4,549,549,microsoft/phi-2,1.0,1,microsoft/phi-2,549,240,239,64,6,permissive
+0,775,775,Qwen/Qwen2.5-7B,0.9961290322580645,3,Qwen/Qwen2.5-7B,871,274,273,88,236,permissive
+1,772,772,meta-llama/Llama-3.2-1B,1.0,1,meta-llama/Llama-3.2-1B,776,249,251,248,28,restricted
+2,771,771,meta-llama/Llama-3.1-8B,1.0,1,meta-llama/Llama-3.1-8B,870,234,236,233,167,restricted
+3,770,770,mistralai/Mistral-7B-v0.1,1.0,1,mistralai/Mistral-7B-v0.1,811,193,193,194,231,permissive
+4,670,670,microsoft/phi-2,1.0,1,microsoft/phi-2,670,300,300,64,6,permissive
 5,514,514,Qwen/Qwen3-8B-Base,1.0,1,Qwen/Qwen3-8B-Base,528,300,148,52,28,permissive
 6,498,498,deepseek-ai/DeepSeek-R1,1.0,1,deepseek-ai/DeepSeek-R1,497,300,122,70,5,permissive
 7,490,490,google-bert/bert-base-uncased,1.0,1,google-bert/bert-base-uncased,489,300,144,38,7,permissive
