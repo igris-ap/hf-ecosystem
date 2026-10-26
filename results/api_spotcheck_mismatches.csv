@@ -1,4 +1,3 @@
 model,field,scraped,api
-QuantFactory/dolphin-2.9.4-llama3.1-8b-GGUF,downloads (within 10 %),1135,1010
-WijewardhanaNT/xnli_en_and_hi_5000_percentage_1_40_DoRA_Qwen3-8b,downloads (within 10 %),7,8
-sravanthib/llama-3-2-1b-custom-100-steps-logging-old-deepspeed,downloads (within 10 %),13,10
+DataAttributionEval/Llama-3.2-1B-XSTest-response-Het,downloads (within 10 %),13,30
+Irfanuruchi/phi-2-chat,downloads (within 10 %),7,3
