@@ -1,5 +1,7 @@
 parent_category,copyleft,noncommercial,other,permissive,restricted,unknown
-other,0,0,1,0,0,0
-permissive,14,48,121,2425,62,1200
-restricted,7,34,78,220,1314,716
-unknown,0,0,0,2,0,58
+copyleft,2,0,0,0,0,0
+noncommercial,0,31,0,2,3,18
+other,0,2,51,4,0,16
+permissive,16,57,140,3502,68,1630
+restricted,10,41,105,493,2044,1040
+unknown,0,0,3,29,5,317

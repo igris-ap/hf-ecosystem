@@ -1,2 +1,4 @@
 model,field,scraped,api
-nagayama0706/language_model,downloads (within 10 %),23,20
+QuantFactory/dolphin-2.9.4-llama3.1-8b-GGUF,downloads (within 10 %),1135,1010
+WijewardhanaNT/xnli_en_and_hi_5000_percentage_1_40_DoRA_Qwen3-8b,downloads (within 10 %),7,8
+sravanthib/llama-3-2-1b-custom-100-steps-logging-old-deepspeed,downloads (within 10 %),13,10
