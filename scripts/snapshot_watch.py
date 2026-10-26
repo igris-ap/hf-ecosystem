@@ -8,7 +8,8 @@ Every `--every` scraped models it:
      API gives a consistent copy, and the analysis never locks the crawler's DB),
   2. runs clean -> API spot-check -> report -> charts -> family tree on the copy,
   3. regenerates the README's Results section from the new tables,
-  4. commits results/ and README.md, then pushes.
+  4. refreshes the explorer site's data (site/data.js),
+  5. commits results/, site/ and README.md, then pushes.
 
 It stops after a final snapshot once the crawl log shows the crawl has ended.
 """
@@ -91,14 +92,14 @@ def snapshot(final=False, push=True):
     copy_database()
     env = {**os.environ, "HF_ECOSYSTEM_DATA": str(SNAP_DIR), "PYTHONIOENCODING": "utf-8"}
     for step in (["-m", "preprocess.clean"], ["-m", "validate.api_spotcheck"], ["-m", "mining.report"],
-                 ["-m", "viz.charts"], ["-m", "viz.family_tree"]):
+                 ["-m", "viz.charts"], ["-m", "viz.family_tree"], ["-m", "viz.site_data"]):
         t = time.monotonic()
         run(*step, env=env)
         log(f"  {step[-1]:<24} {time.monotonic() - t:6.0f} s")
     readme_args = ["scripts/update_readme_results.py", "--done", str(done), "--target", str(config.MAX_MODELS)]
     run(*readme_args, *(["--final"] if final else []))
 
-    git("add", "results", "README.md")
+    git("add", "results", "site", "README.md")
     if not git("diff", "--cached", "--name-only").strip():
         log("  nothing changed, no commit")
         return done

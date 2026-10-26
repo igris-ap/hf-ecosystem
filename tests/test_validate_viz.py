@@ -92,6 +92,28 @@ def test_family_tree_written_page_is_offline(tmp_path):
     assert "stabilizationIterationsDone" in html and "physics: false" in html
 
 
+def test_site_data_export(tmp_path):
+    from preprocess.clean import run as clean
+    from tests.rawdb import make_db
+    from viz.site_data import export
+    conn = make_db(tmp_path / "db", {
+        "meta-llama/Llama-3.1-8B": {"license": "llama3.1", "children_counts_json": '{"finetune": 5}'},
+        "kid/a": {"license": "apache-2.0", "downloads": 50},
+    }, [("kid/a", "meta-llama/Llama-3.1-8B", "finetune", "tags"),
+        ("unscraped/b", "meta-llama/Llama-3.1-8B", "finetune", "listing")],
+        queue={"meta-llama/Llama-3.1-8B": (0, "meta-llama/Llama-3.1-8B"), "kid/a": (1, "meta-llama/Llama-3.1-8B")})
+    clean(conn)
+    d = export(conn)
+    assert d["ids"][0] == "meta-llama/Llama-3.1-8B"          # sorted by influence
+    assert len(d["ids"]) == len(d["pr"]) == len(d["m"]) == 3
+    assert d["m"][d["ids"].index("unscraped/b")] is None    # seen in a listing only
+    row = d["m"][d["ids"].index("kid/a")]
+    assert row[d["meta"]["fields"].index("license_category")] == "permissive"
+    assert row[d["meta"]["fields"].index("seed")] == d["meta"]["seeds"].index("meta-llama/Llama-3.1-8B")
+    assert len(d["e"]) == 2 * 4                               # two edges, 4 numbers each
+    json.dumps(d)                                             # must be serialisable
+
+
 def test_charts_render(tmp_path, monkeypatch):
     monkeypatch.setattr(charts, "FIG_DIR", tmp_path)
     G = _tree_graph()

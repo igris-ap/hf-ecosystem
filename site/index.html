@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Model Lineage Explorer</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one search bar on top; below it a two-column workbench. Left column =
+   the model's card, drawbacks and alternatives (what to decide); right column =
+   its lineage chain, graph and charts (the evidence). Stacks to one column on phones. */
+:root {
+  --bg: #f4f6f5;          /* slightly green-grey paper */
+  --surface: #ffffff;
+  --sunken: #eaeeec;
+  --ink: #15201c;
+  --ink-2: #47534e;
+  --muted: #76827d;
+  --line: #d9e0dc;
+  --accent: #0e6b61;      /* deep teal: links, focus, selected */
+  --accent-wash: #e1f0ed;
+  --anc: #2a78d6;         /* lineage roles: validated all-pairs-safe trio */
+  --self: #eb6834;
+  --kid: #1baf7a;
+  --sib: #a9aea9;
+  --crit: #c23b3b;
+  --warn: #a86a00;
+  --note: #47534e;
+  --crit-wash: #fbeaea;
+  --warn-wash: #fbf1dc;
+  --note-wash: #eef1ef;
+  --good: #1d7a3d;
+  --font-display: "Archivo", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
+  --radius: 8px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111715; --surface: #18201d; --sunken: #0d1311; --ink: #e8eeeb; --ink-2: #b7c2bd;
+    --muted: #87938e; --line: #2a3531; --accent: #4fc1b0; --accent-wash: #16302b;
+    --anc: #3987e5; --self: #d95926; --kid: #199e70; --sib: #5e6662;
+    --crit: #ef7d7d; --warn: #e3a93a; --note: #b7c2bd;
+    --crit-wash: #3a1c1c; --warn-wash: #3a2e14; --note-wash: #222b28; --good: #5fcf86;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111715; --surface: #18201d; --sunken: #0d1311; --ink: #e8eeeb; --ink-2: #b7c2bd;
+  --muted: #87938e; --line: #2a3531; --accent: #4fc1b0; --accent-wash: #16302b;
+  --anc: #3987e5; --self: #d95926; --kid: #199e70; --sib: #5e6662;
+  --crit: #ef7d7d; --warn: #e3a93a; --note: #b7c2bd;
+  --crit-wash: #3a1c1c; --warn-wash: #3a2e14; --note-wash: #222b28; --good: #5fcf86;
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.5 var(--font-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 48px;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.mono { font-family: var(--font-mono); font-size: 0.92em; }
+.wrap { max-width: 1240px; margin: 0 auto; }
+
+/* ---------- header + search ---------- */
+header.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: var(--bg); padding-block: 18px 14px; border-bottom: 1px solid var(--line);
+}
+.brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+.brand h1 { font: 700 1.35rem/1.1 var(--font-display); letter-spacing: -0.01em; margin: 0; }
+.brand .sub { color: var(--muted); font-size: 0.9rem; }
+.search { position: relative; }
+.search input {
+  width: 100%; font: 500 1.05rem var(--font-mono); padding: 12px 14px; color: var(--ink);
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+}
+.search input:focus { outline: 2px solid var(--accent); outline-offset: 0; border-color: transparent; }
+.suggest {
+  position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 6; list-style: none; margin: 0; padding: 4px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: 0 8px 24px rgba(0,0,0,.12); max-height: 60vh; overflow-y: auto;
+}
+.suggest li { display: flex; justify-content: space-between; gap: 12px; padding: 8px 10px; border-radius: 6px; cursor: pointer; }
+.suggest li[aria-selected="true"], .suggest li:hover { background: var(--accent-wash); }
+.suggest .id { font-family: var(--font-mono); font-size: 0.9rem; overflow-wrap: anywhere; min-width: 0; }
+.suggest .meta { color: var(--muted); font-size: 0.82rem; white-space: nowrap; }
+.suggest .none { color: var(--ink-2); cursor: default; }
+.examples { display: flex; flex-wrap: wrap; gap: 6px 8px; margin-top: 10px; align-items: center; font-size: 0.88rem; color: var(--muted); }
+.examples button {
+  font: 500 0.82rem var(--font-mono); color: var(--ink-2); background: var(--surface);
+  border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; cursor: pointer;
+}
+.examples button:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ---------- workbench ---------- */
+main { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 20px; margin-top: 20px; }
+@media (max-width: 900px) { main { grid-template-columns: minmax(0, 1fr); } }
+.col { display: grid; gap: 20px; align-content: start; min-width: 0; }
+section.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; min-width: 0; }
+section.panel > h2 { font: 600 0.78rem var(--font-display); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 12px; }
+.empty { color: var(--muted); font-size: 0.95rem; margin: 0; }
+
+/* model card */
+.model-id { font: 600 1.25rem/1.3 var(--font-mono); margin: 0 0 6px; overflow-wrap: anywhere; text-wrap: balance; }
+.links { font-size: 0.9rem; margin-bottom: 12px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.chip { font-size: 0.82rem; padding: 2px 9px; border-radius: 999px; background: var(--sunken); color: var(--ink-2); border: 1px solid var(--line); }
+.chip.lic-permissive { color: var(--good); }
+.chip.lic-restricted, .chip.lic-noncommercial { color: var(--warn); }
+.chip.lic-unknown { color: var(--crit); }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 12px; margin: 0; }
+.stats div { min-width: 0; }
+.stats dt { font-size: 0.75rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.stats dd { margin: 0; font: 600 1.15rem var(--font-display); font-variant-numeric: tabular-nums; }
+.note { margin: 12px 0 0; font-size: 0.88rem; color: var(--ink-2); background: var(--note-wash); padding: 8px 10px; border-radius: 6px; }
+
+/* drawbacks */
+.issues { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.issue { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 10px; padding: 10px 12px; border-radius: 6px; }
+.issue.crit { background: var(--crit-wash); } .issue.warn { background: var(--warn-wash); } .issue.note { background: var(--note-wash); }
+.sev { font: 700 0.72rem var(--font-display); text-transform: uppercase; letter-spacing: .06em; display: inline-flex; gap: 5px; align-items: center; padding-top: 2px; white-space: nowrap; }
+.crit .sev { color: var(--crit); } .warn .sev { color: var(--warn); } .note .sev { color: var(--note); }
+.issue strong { display: block; font-weight: 600; }
+.issue p { margin: 2px 0 0; color: var(--ink-2); font-size: 0.92rem; }
+.ok { color: var(--good); font-weight: 600; margin: 0; }
+
+/* recommendations */
+.recs { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.rec { border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; }
+.rec button.goto { all: unset; cursor: pointer; font: 500 0.95rem var(--font-mono); color: var(--accent); overflow-wrap: anywhere; }
+.rec button.goto:hover { text-decoration: underline; }
+.rec button.goto:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+.rec .rel { color: var(--muted); font-size: 0.85rem; }
+.why { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.why span { font-size: 0.8rem; padding: 1px 8px; border-radius: 999px; background: var(--accent-wash); color: var(--ink); }
+
+/* chain */
+.chains { display: grid; gap: 10px; }
+.chain { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; font-size: 0.88rem; padding-bottom: 10px; border-bottom: 1px dashed var(--line); }
+.chain:last-child { border-bottom: 0; padding-bottom: 0; }
+.chain .node { font-family: var(--font-mono); padding: 2px 8px; border-radius: 5px; background: var(--sunken); cursor: pointer; border: 0; color: var(--ink); font-size: 0.85rem; }
+.chain .node.self { background: var(--self); color: #fff; cursor: default; }
+.chain .node:not(.self):hover { outline: 1px solid var(--accent); }
+.chain .arrow { color: var(--muted); font-size: 0.78rem; white-space: nowrap; }
+.chain .more { color: var(--muted); }
+
+/* graph */
+#graph { height: 460px; border-radius: 6px; background: var(--sunken); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 10px; font-size: 0.85rem; color: var(--ink-2); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
+.legend svg { vertical-align: middle; margin-right: 6px; }
+
+/* charts */
+.charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+.chart h3 { font: 600 0.95rem var(--font-display); margin: 0 0 2px; }
+.chart .cap { color: var(--muted); font-size: 0.82rem; margin: 0 0 8px; }
+.chart svg { width: 100%; height: auto; display: block; }
+.chart svg text { fill: var(--ink-2); font-family: var(--font-body); }
+.chart svg .val { fill: var(--ink); font-variant-numeric: tabular-nums; }
+.chart svg .grid { stroke: var(--line); }
+
+footer { margin-top: 28px; color: var(--muted); font-size: 0.85rem; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>Model Lineage Explorer</h1>
+      <span class="sub" id="coverage">Loading lineage data…</span>
+    </div>
+    <div class="search" role="combobox" aria-haspopup="listbox" aria-owns="suggest" aria-expanded="false" id="combo">
+      <label for="q" class="sub" style="position:absolute;left:-9999px">Model name</label>
+      <input id="q" type="search" autocomplete="off" spellcheck="false"
+             placeholder="Type a model name, e.g. zephyr-7b-beta or Qwen/Qwen2.5-7B-Instruct" aria-controls="suggest">
+      <ul class="suggest" id="suggest" role="listbox" hidden></ul>
+    </div>
+    <div class="examples" id="examples"><span>Try:</span></div>
+  </header>
+
+  <main>
+    <div class="col">
+      <section class="panel" id="card" aria-live="polite"></section>
+      <section class="panel"><h2>Drawbacks</h2><div id="drawbacks"></div></section>
+      <section class="panel"><h2>Better alternatives</h2><div id="recs"></div></section>
+    </div>
+    <div class="col">
+      <section class="panel"><h2>Lineage chain</h2><div class="chains" id="chains"></div></section>
+      <section class="panel">
+        <h2>Family graph</h2>
+        <div id="graph" role="img" aria-label="Lineage graph around the selected model"></div>
+        <div class="legend" id="legend"></div>
+      </section>
+      <section class="panel"><h2>Numbers</h2><div class="charts" id="charts"></div></section>
+    </div>
+  </main>
+  <footer id="foot"></footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.9/standalone/umd/vis-network.min.js"></script>
+<script src="data.js"></script>
+<script>
+"use strict";
+const D = window.LINEAGE;
+const F = Object.fromEntries(D.meta.fields.map((f, i) => [f, i]));
+const REL = D.meta.relations;
+const N = D.ids.length;
+const lowerIndex = new Map(D.ids.map((id, i) => [id.toLowerCase(), i]));
+const parents = Array.from({ length: N }, () => []);   // [parentIndex, relation, flags]
+const children = Array.from({ length: N }, () => []);
+for (let k = 0; k < D.e.length; k += 4) {
+  const [c, p, r, f] = [D.e[k], D.e[k + 1], REL[D.e[k + 2]], D.e[k + 3]];
+  parents[c].push([p, r, f]);
+  children[p].push([c, r, f]);
+}
+const LEVEL = { permissive: 0, copyleft: 1, restricted: 2, noncommercial: 3 };
+const REL_VERB = { finetune: "fine-tuned", adapter: "adapter", quantized: "quantized", merge: "merged", unknown: "derived" };
+const REL_NOUN = { finetune: "fine-tune", adapter: "adapter", quantized: "quantization", merge: "merge", unknown: "derivative" };
+const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch]));
+const fmt = (n) => n == null ? "–" : n >= 1e6 ? (n / 1e6).toFixed(1).replace(/\.0$/, "") + "M" : n >= 1e3 ? (n / 1e3).toFixed(1).replace(/\.0$/, "") + "K" : String(n);
+const short = (id) => id.includes("/") ? id.split("/").slice(1).join("/") : id;
+
+// ---- model accessors ------------------------------------------------------------------
+const M = (i) => D.m[i];                     // null = only seen in a listing, not scraped
+const get = (i, f) => (D.m[i] ? D.m[i][F[f]] : null);
+const family = (i) => {
+  const s = get(i, "seed");
+  if (s != null) return D.meta.families[s];
+  for (const [p] of parents[i]) { const f = family(p); if (f) return f; }   // unscraped: inherit
+  return null;
+};
+const seedOf = (i) => {          // the base model this one was crawled from
+  const s = get(i, "seed");
+  if (s != null) return s;
+  for (const [p] of parents[i]) { const t = seedOf(p); if (t != null) return t; }
+  return null;
+};
+const dl = (i) => get(i, "downloads") ?? 0;
+const relationsOf = (i) => [...new Set(parents[i].map(([, r]) => r))];
+
+function hasLicenseConflict(i) {
+  const cat = get(i, "license_category");
+  return parents[i].filter(([p]) => {
+    const pc = get(p, "license_category");
+    return cat in LEVEL && pc in LEVEL && LEVEL[cat] < LEVEL[pc];
+  }).map(([p]) => p);
+}
+
+// ---- search ---------------------------------------------------------------------------
+const q = $("q"), list = $("suggest"), combo = $("combo");
+let hits = [], active = -1;
+function search(text) {
+  const t = text.trim().toLowerCase().replace(/^https?:\/\/(www\.)?huggingface\.co\//, "");
+  if (!t) return [];
+  const out = lowerIndex.has(t) ? [[0, lowerIndex.get(t)]] : [];   // exact id (or pasted URL) always first
+  for (let i = 0; i < N && out.length < 400; i++) {
+    const id = D.ids[i].toLowerCase();
+    const pos = id.indexOf(t);
+    if (pos < 0 || id === t) continue;
+    // exact > name starts with query > id starts with query > contains; ties by influence (index order)
+    const name = id.split("/").pop();
+    const score = id === t ? 0 : name.startsWith(t) ? 1 : pos === 0 ? 2 : 3;
+    out.push([score, i]);
+  }
+  return out.sort((a, b) => a[0] - b[0] || a[1] - b[1]).slice(0, 12).map(([, i]) => i);
+}
+function renderSuggest() {
+  const text = q.value.trim();
+  if (!text) { list.hidden = true; combo.setAttribute("aria-expanded", "false"); return; }
+  hits = search(text);
+  active = hits.length ? 0 : -1;
+  if (!hits.length) {
+    list.innerHTML = `<li class="none" role="option" aria-disabled="true">No model in this dataset matches “${esc(text)}”.
+      It covers ${D.meta.known.toLocaleString()} models descended from ${D.meta.seeds.length} base models.
+      <a href="https://huggingface.co/models?search=${encodeURIComponent(text)}" target="_blank" rel="noopener">Search Hugging Face ↗</a></li>`;
+  } else {
+    list.innerHTML = hits.map((i, k) => `<li role="option" id="opt${k}" aria-selected="${k === active}" data-i="${i}">
+      <span class="id">${esc(D.ids[i])}</span>
+      <span class="meta">${family(i) ?? ""}${M(i) ? " · " + fmt(dl(i)) + " dl" : " · not scraped"}</span></li>`).join("");
+  }
+  list.hidden = false; combo.setAttribute("aria-expanded", "true");
+}
+function moveActive(d) {
+  if (!hits.length) return;
+  active = (active + d + hits.length) % hits.length;
+  [...list.children].forEach((li, k) => li.setAttribute("aria-selected", k === active));
+  list.children[active].scrollIntoView({ block: "nearest" });
+}
+q.addEventListener("input", renderSuggest);
+q.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowDown") { e.preventDefault(); moveActive(1); }
+  else if (e.key === "ArrowUp") { e.preventDefault(); moveActive(-1); }
+  else if (e.key === "Enter" && active >= 0) { e.preventDefault(); select(hits[active]); }
+  else if (e.key === "Escape") { list.hidden = true; }
+});
+list.addEventListener("mousedown", (e) => {
+  const li = e.target.closest("li[data-i]");
+  if (li) { e.preventDefault(); select(+li.dataset.i); }
+});
+q.addEventListener("blur", () => setTimeout(() => (list.hidden = true), 120));
+
+// ---- selection --------------------------------------------------------------------------
+let network = null;
+function select(i) {
+  q.value = D.ids[i];
+  list.hidden = true; combo.setAttribute("aria-expanded", "false");
+  renderCard(i); renderDrawbacks(i); renderRecs(i); renderChains(i); renderGraph(i); renderCharts(i);
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-go]");
+  if (b) select(+b.dataset.go);
+});
+
+// ---- card -------------------------------------------------------------------------------
+function renderCard(i) {
+  const id = D.ids[i];
+  const fam = family(i);
+  const rels = relationsOf(i);
+  let html = `<h2>Model</h2><p class="model-id">${esc(id)}</p>
+    <div class="links"><a href="https://huggingface.co/${esc(id)}" target="_blank" rel="noopener">Open on Hugging Face ↗</a></div>`;
+  if (!M(i)) {
+    const p = parents[i].map(([pi, r]) => `${REL_NOUN[r]} of <span class="mono">${esc(D.ids[pi])}</span>`).join("; ");
+    $("card").innerHTML = html + `<div class="chips">${fam ? `<span class="chip">${fam} family</span>` : ""}</div>
+      <p class="note">Seen in its parent's listing (${p || "no parent recorded"}) but not scraped yet, so there's no metadata for it.
+      The crawl takes the most-downloaded children first; this one may appear in a later update.</p>`;
+    return;
+  }
+  const lic = get(i, "license"), cat = get(i, "license_category");
+  const chips = [
+    fam && `<span class="chip">${fam} family</span>`,
+    rels.length ? `<span class="chip">${rels.map((r) => REL_NOUN[r]).join(" + ")}</span>` : `<span class="chip">base model</span>`,
+    `<span class="chip lic-${cat}">${lic ? "license: " + esc(lic) : "no license"} · ${cat}</span>`,
+    get(i, "task") && `<span class="chip">${esc(get(i, "task"))}${get(i, "task_source") === "i" ? " (inferred)" : ""}</span>`,
+    get(i, "gated") && get(i, "gated") !== "no" && `<span class="chip">gated</span>`,
+  ].filter(Boolean).join("");
+  const created = get(i, "created_at_is_floor") ? "≤ 2022-03" : get(i, "created_month") ?? "–";
+  html += `<div class="chips">${chips}</div>
+    <dl class="stats">
+      <div><dt>Downloads (30 d)</dt><dd>${fmt(dl(i))}</dd></div>
+      <div><dt>Likes</dt><dd>${fmt(get(i, "likes"))}</dd></div>
+      <div><dt>Created</dt><dd>${created}</dd></div>
+      <div><dt>Children on HF</dt><dd>${fmt(get(i, "hf_children_total"))}</dd></div>
+      <div><dt>Influence rank</dt><dd>#${(i + 1).toLocaleString()}</dd></div>
+    </dl>`;
+  $("card").innerHTML = html;
+}
+
+// ---- drawbacks (rule-based, from the data) ---------------------------------------------------
+function siblingsOf(i) {
+  const s = new Map();
+  for (const [p] of parents[i]) for (const [c, r] of children[p]) if (c !== i && M(c)) s.set(c, r);
+  return [...s.keys()];
+}
+const median = (xs) => { if (!xs.length) return 0; const s = [...xs].sort((a, b) => a - b); const m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
+
+function drawbacks(i) {
+  const out = [];   // [severity, title, text]
+  if (!M(i)) return [["note", "Limited data", "This model was only seen in a listing, so its license, task and downloads aren't known yet."]];
+  const lic = get(i, "license"), cat = get(i, "license_category");
+  for (const p of hasLicenseConflict(i)) {
+    out.push(["crit", "License likely conflicts with its parent",
+      `It's published as ${lic}, but it derives from ${D.ids[p]} (${get(p, "license")}, ${get(p, "license_category")}). ` +
+      `Derivatives of ${get(p, "license_category")} models usually have to keep the parent's terms, so the more permissive license may not be valid.`]);
+  }
+  if (!lic) out.push(["warn", "No license declared", "Without a license, reuse rights are unclear. Treat it as all rights reserved until the author says otherwise."]);
+  else if (cat === "noncommercial") out.push(["warn", "Non-commercial license", `${lic} rules out commercial use.`]);
+  else if (cat === "restricted") out.push(["note", "License with use restrictions", `${lic} comes with an acceptable-use policy or user caps. Check it before deploying.`]);
+  else if (cat === "other") out.push(["note", "Custom license", "The license is a custom text (\"other\"), so its terms have to be read on the model page."]);
+  for (const [p, , f] of parents[i]) if (f & 1)
+    out.push(["warn", "Lineage claim looks doubtful", `It was created more than a week before ${D.ids[p]}, the parent it claims. The repo was probably re-used or relabelled.`]);
+  for (const [issue, detail] of D.q[i] || []) {
+    if (issue === "declared_base_not_linked") out.push(["note", "Broken parent link", `Its card names ${detail} as a base, but Hugging Face can't link that repo (typo, renamed or removed).`]);
+    if (issue === "parse_error") out.push(["note", "Incomplete metadata", `The field "${detail}" couldn't be read from its page.`]);
+  }
+  if (get(i, "gated") && get(i, "gated") !== "no") out.push(["note", "Gated", "You have to accept the author's terms on Hugging Face before downloading."]);
+  const rels = relationsOf(i);
+  const firstParent = parents[i][0] ? D.ids[parents[i][0][0]] : "its parent";
+  if (rels.includes("quantized")) out.push(["note", "Quantized weights", `Smaller and faster than ${firstParent}, usually with some loss in output quality.`]);
+  if (rels.includes("adapter")) out.push(["note", "Adapter only", `It needs ${firstParent} loaded underneath; it can't run on its own.`]);
+  if (rels.includes("merge") && parents[i].length >= 4) out.push(["warn", `Merge of ${parents[i].length} models`, "Merging many models makes behaviour hard to predict. Look for evaluations before relying on it."]);
+  if (get(i, "task_source") === "i") out.push(["note", "Task not declared", "The model card doesn't say what task it's for; it's inferred from its parent."]);
+  const sibs = siblingsOf(i);
+  if (sibs.length >= 5) {
+    const med = median(sibs.map(dl));
+    if (med > 0 && dl(i) < 0.1 * med) out.push(["warn", "Low adoption", `${fmt(dl(i))} downloads in 30 days, against a median of ${fmt(Math.round(med))} for its ${sibs.length} siblings.`]);
+  }
+  const order = { crit: 0, warn: 1, note: 2 };
+  return out.sort((a, b) => order[a[0]] - order[b[0]]);
+}
+const SEV = { crit: ["Critical", "⛔"], warn: ["Warning", "⚠"], note: ["Note", "ℹ"] };
+function renderDrawbacks(i) {
+  const list = drawbacks(i);
+  $("drawbacks").innerHTML = list.length
+    ? `<ul class="issues">${list.map(([s, t, x]) => `<li class="issue ${s}"><span class="sev"><span aria-hidden="true">${SEV[s][1]}</span>${SEV[s][0]}</span>
+        <div><strong>${esc(t)}</strong><p>${esc(x)}</p></div></li>`).join("")}</ul>`
+    : `<p class="ok">✓ No drawbacks found in the data: licensed, consistent lineage, normal adoption.</p>`;
+}
+
+// ---- recommendations ------------------------------------------------------------------------
+const LIC_BONUS = { permissive: 0.6, copyleft: 0.2, restricted: 0, noncommercial: -0.5, other: -0.3, unknown: -1 };
+function quality(i) {
+  if (!M(i)) return -Infinity;
+  let s = Math.log10(dl(i) + 1) + 0.4 * Math.log10((get(i, "likes") ?? 0) + 1) + (LIC_BONUS[get(i, "license_category")] ?? 0);
+  if (hasLicenseConflict(i).length) s -= 1;
+  if (parents[i].some(([, , f]) => f & 1)) s -= 1;
+  return s;
+}
+function recommendations(i) {
+  const task = get(i, "task");
+  const cand = new Map();     // index -> how it relates
+  const add = (c, why) => { if (c !== i && M(c) && !cand.has(c)) cand.set(c, why); };
+  for (const [p, r] of parents[i]) add(p, r === "quantized" || r === "adapter" ? "the full original model" : "its parent");
+  for (const [p] of parents[i]) for (const [c, r] of children[p]) add(c, `sibling: also a ${REL_NOUN[r]} of ${short(D.ids[p])}`);
+  for (const [c, r] of children[i]) add(c, `a ${REL_NOUN[r]} of this model`);
+  // Same base model only: the data has no parameter counts, and a different base
+  // (say an 8B vs a 1B Llama) is rarely a drop-in replacement.
+  const seed = seedOf(i);
+  if (seed != null) for (let k = 0, n = 0; k < N && n < 60; k++)
+    if (k !== i && M(k) && seedOf(k) === seed && (!task || get(k, "task") === task)) { add(k, `built on the same base (${short(D.meta.seeds[seed])})`); n++; }
+  const mine = quality(i);
+  const myRels = new Set(relationsOf(i));
+  // a small nudge towards the same kind of model (another quantization for a quantization)
+  const fit = (c) => quality(c) + (relationsOf(c).some((r) => myRels.has(r)) ? 0.3 : 0);
+  const ranked = [...cand.entries()]
+    .filter(([c]) => !task || !get(c, "task") || get(c, "task") === task)
+    .filter(([c]) => quality(c) > mine + 0.15)
+    .map(([c, why]) => [c, why, fit(c)])
+    .sort((a, b) => b[2] - a[2]).slice(0, 5);
+  return ranked.map(([c, why]) => [c, why, reasons(i, c)]);
+}
+function reasons(i, c) {
+  const r = [];
+  const a = dl(i), b = dl(c);
+  if (b > a * 1.5 && b > 100) r.push(a > 0 ? `${b / a >= 10 ? Math.round(b / a) : (b / a).toFixed(1)}× more downloads` : `${fmt(b)} downloads`);
+  const ca = get(i, "license_category"), cb = get(c, "license_category");
+  if ((LIC_BONUS[cb] ?? 0) > (LIC_BONUS[ca] ?? 0)) r.push(`${cb} license (${get(c, "license")})`);
+  if (hasLicenseConflict(i).length && !hasLicenseConflict(c).length) r.push("no license conflict");
+  if ((get(c, "likes") ?? 0) > 2 * (get(i, "likes") ?? 0) && (get(c, "likes") ?? 0) >= 10) r.push(`${fmt(get(c, "likes"))} likes`);
+  if (c < i) r.push(`influence #${c + 1}`);
+  if (get(c, "task") && get(c, "task") === get(i, "task")) r.push(`same task`);
+  return r.length ? r : ["stronger overall signals"];
+}
+function renderRecs(i) {
+  const recs = recommendations(i);
+  $("recs").innerHTML = recs.length
+    ? `<ul class="recs">${recs.map(([c, why, rs]) => `<li class="rec">
+        <button class="goto" data-go="${c}">${esc(D.ids[c])}</button>
+        <div class="rel">${esc(why)} · ${fmt(dl(c))} downloads · ${esc(get(c, "license") ?? "no license")}</div>
+        <div class="why">${rs.map((x) => `<span>${esc(x)}</span>`).join("")}</div></li>`).join("")}</ul>`
+    : `<p class="empty">Nothing in its lineage or family beats it on adoption with an equal or cleaner license, so it's already a strong choice here.</p>`;
+}
+
+// ---- lineage chain (every path up to a root) ----------------------------------------------
+function paths(i, limit = 12) {
+  const out = [];
+  (function up(node, path, seen) {
+    if (out.length >= limit) return;
+    const ps = parents[node].filter(([p]) => !seen.has(p));
+    if (!ps.length) { out.push(path); return; }
+    for (const [p, r] of ps) up(p, [[p, r], ...path], new Set([...seen, p]));
+  })(i, [[i, null]], new Set([i]));
+  return out;
+}
+function renderChains(i) {
+  const ps = paths(i);
+  const kids = children[i].length;
+  // each step is [model, relation of the next model down to it]
+  const html = ps.map((path) => `<div class="chain">${path.map(([n, rel], k) => {
+      const node = n === i ? `<span class="node self">${esc(D.ids[n])}</span>` : `<button class="node" data-go="${n}">${esc(D.ids[n])}</button>`;
+      return node + (k < path.length - 1 ? `<span class="arrow">→ ${REL_VERB[rel]} →</span>` : "");
+    }).join("")}${kids ? `<span class="arrow">→</span><span class="more">${kids.toLocaleString()} known derivative${kids > 1 ? "s" : ""}</span>` : ""}</div>`).join("");
+  $("chains").innerHTML = ps.length === 1 && ps[0].length === 1
+    ? `<p class="empty">This is a base model: it doesn't derive from anything in the data. It has ${kids.toLocaleString()} known derivatives.</p>`
+    : html + (ps.length >= 12 ? `<p class="empty">Showing the first 12 paths.</p>` : "");
+}
+
+// ---- graph ------------------------------------------------------------------------------------
+const DASH = { finetune: false, adapter: [6, 4], quantized: [2, 3], merge: [10, 3, 2, 3], unknown: [1, 4] };
+function renderGraph(i) {
+  const role = new Map();
+  // Big merges can have 30+ parents: show the 8 most influential (ids are sorted by
+  // influence, so a lower index is a stronger model) with their chains.
+  const MAX_PARENTS = 8;
+  const allParents = [...new Set(parents[i].map(([p]) => p))].sort((a, b) => a - b);
+  const shown = new Set(allParents.slice(0, MAX_PARENTS));
+  for (const path of paths(i, 40)) {
+    if (path.length > 1 && !shown.has(path[path.length - 2][0])) continue;
+    for (const [n] of path) if (n !== i) role.set(n, "anc");
+  }
+  role.set(i, "self");
+  // Each generation is one row in the layout, so keep rows short enough to read.
+  // Siblings only make sense for a model with one or a few parents.
+  if (allParents.length <= 3) {
+    let added = 0;
+    for (const p of allParents) for (const [c] of children[p].slice().sort((a, b) => a[0] - b[0]).slice(0, 8))
+      if (!role.has(c) && added < 10) { role.set(c, "sib"); added++; }
+  }
+  for (const [c] of children[i].slice().sort((a, b) => a[0] - b[0]).slice(0, 12)) if (!role.has(c)) role.set(c, "kid");
+  const color = { anc: css("--anc"), self: css("--self"), kid: css("--kid"), sib: css("--sib") };
+  const ids = [...role.keys()];
+  const maxPr = Math.max(...ids.map((n) => D.pr[n]));
+  // labels: this model, its ancestors, and the 3 most influential others; the rest on hover
+  const top = new Set(ids.filter((n) => role.get(n) === "sib" || role.get(n) === "kid").sort((a, b) => a - b).slice(0, 3));
+  const labelled = (n) => n === i || role.get(n) === "anc" || top.has(n);
+
+  // Rows are set explicitly: ancestors by generation, this model and its siblings
+  // on one row, derivatives on the row below.
+  const gen = new Map();
+  (function depth(n) {
+    if (gen.has(n)) return gen.get(n);
+    gen.set(n, 0);                                   // guard; real value below
+    const ps = parents[n].filter(([p]) => role.get(p) === "anc");
+    const g = ps.length ? 1 + Math.max(...ps.map(([p]) => depth(p))) : 0;
+    gen.set(n, g); return g;
+  })(i);
+  const selfRow = gen.get(i);
+  const row = (n) => role.get(n) === "anc" ? gen.get(n) ?? 0 : role.get(n) === "kid" ? selfRow + 1 : selfRow;
+  for (const n of ids) if (role.get(n) === "anc" && !gen.has(n)) gen.set(n, 0);
+
+  const nodes = ids.map((n) => ({
+    id: n, level: row(n), label: labelled(n) ? short(D.ids[n]) : " ", title: D.ids[n],
+    size: 8 + 22 * Math.sqrt(D.pr[n] / maxPr), shape: "dot",
+    color: { background: color[role.get(n)], border: css("--surface"), highlight: { background: color[role.get(n)], border: css("--ink") } },
+    borderWidth: 2, font: { color: css("--ink"), size: n === i ? 16 : 12, face: "JetBrains Mono, monospace", strokeWidth: 3, strokeColor: css("--sunken") },
+  }));
+  // Only edges that explain this model: the ancestor chain, siblings to the shared
+  // parent, derivatives to this model. A derivative's *other* parents (merges point
+  // at many models) would just tangle the picture.
+  const keep = (n, p) => {
+    const rn = role.get(n), rp = role.get(p);
+    if (!rp) return false;
+    if (rn === "kid") return p === i;
+    if (rn === "sib") return rp === "anc";
+    return rp === "anc";                              // self or ancestor -> ancestor
+  };
+  const edges = [];
+  for (const n of ids) for (const [p, r] of parents[n]) if (keep(n, p))
+    edges.push({ from: n, to: p, dashes: DASH[r], title: r, arrows: { to: { enabled: true, scaleFactor: 0.45 } }, color: { color: css("--muted") }, width: 1.2 });
+  const data = { nodes: new vis.DataSet(nodes), edges: new vis.DataSet(edges) };
+  const options = {
+    layout: { hierarchical: { enabled: true, direction: "UD", sortMethod: "directed", levelSeparation: 130, nodeSpacing: 175 } },
+    physics: false, interaction: { hover: true, tooltipDelay: 100 },
+    edges: { smooth: { type: "cubicBezier", forceDirection: "vertical", roundness: 0.4 } },
+  };
+  if (network) network.destroy();
+  network = new vis.Network($("graph"), data, options);
+  network.on("doubleClick", (e) => { if (e.nodes.length && e.nodes[0] !== i) select(e.nodes[0]); });
+  const swatch = (v, t) => `<span><i style="background:${color[v]}"></i>${t}</span>`;
+  const line = (r) => `<span><svg width="30" height="8" aria-hidden="true"><line x1="0" y1="4" x2="30" y2="4" stroke="${css("--muted")}" stroke-width="2" ${DASH[r] ? `stroke-dasharray="${DASH[r].join(" ")}"` : ""}/></svg>${r}</span>`;
+  $("legend").innerHTML = swatch("anc", "ancestors") + swatch("self", "this model") + swatch("kid", "derivatives") + swatch("sib", "siblings")
+    + ["finetune", "adapter", "quantized", "merge"].map(line).join("")
+    + (allParents.length > MAX_PARENTS ? `<span>Showing the ${MAX_PARENTS} most influential of its ${allParents.length} parents (all are in the chain list).</span>` : "")
+    + (children[i].length > 12 ? `<span>Showing 12 of ${children[i].length.toLocaleString()} known derivatives.</span>` : "")
+    + `<span>Arrows point to the parent. Hover for names; double-click a model to open it.</span>`;
+}
+
+// ---- charts (inline SVG, drawn to scale) ---------------------------------------------------------
+function hbar(rows, { log = false, highlight = -1, unit = "" } = {}) {
+  // rows: [label, value]; one series, so one colour (the highlighted row = this model)
+  const W = 520, rowH = 26, left = 150, right = 70, top = 6;
+  const H = top + rows.length * rowH + 22;
+  const max = Math.max(1, ...rows.map((r) => r[1]));
+  const sx = (v) => left + (W - left - right) * (log ? Math.log10(v + 1) / Math.log10(max + 1) : v / max);
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img">`;
+  const ticks = log ? [1, 10, 100, 1e3, 1e4, 1e5, 1e6, 1e7].filter((t) => t <= max * 1.01) : [0, max / 2, max];
+  for (const t of ticks) s += `<line class="grid" x1="${sx(t)}" x2="${sx(t)}" y1="${top}" y2="${H - 18}"/><text x="${sx(t)}" y="${H - 4}" font-size="11" text-anchor="middle">${fmt(Math.round(t))}</text>`;
+  rows.forEach(([label, v], k) => {
+    const y = top + k * rowH;
+    const fill = k === highlight ? css("--self") : css("--anc");
+    s += `<text x="${left - 8}" y="${y + 17}" font-size="12" text-anchor="end">${esc(label.length > 22 ? label.slice(0, 21) + "…" : label)}</text>`;
+    s += `<rect x="${left}" y="${y + 5}" width="${Math.max(2, sx(v) - left)}" height="16" rx="3" fill="${fill}"/>`;
+    s += `<text class="val" x="${sx(v) + 6}" y="${y + 17}" font-size="12">${fmt(v)}${unit}</text>`;
+  });
+  return s + "</svg>";
+}
+function renderCharts(i) {
+  const parts = [];
+  const kids = get(i, "hf_children");
+  if (kids) {
+    const rows = ["finetune", "adapter", "quantized", "merge"].map((r, k) => [REL_NOUN[r] + "s", kids[k] || 0]);
+    parts.push(`<div class="chart"><h3>What's built on it</h3><p class="cap">Direct children on Hugging Face, by relation (exact counts).</p>${hbar(rows)}</div>`);
+  }
+  const sibs = siblingsOf(i).sort((a, b) => dl(b) - dl(a)).slice(0, 9);
+  if (M(i) && sibs.length) {
+    const rows = [...sibs, i].sort((a, b) => dl(b) - dl(a)).map((n) => [short(D.ids[n]), dl(n)]);
+    const hi = rows.findIndex(([l]) => l === short(D.ids[i]));
+    parts.push(`<div class="chart"><h3>Downloads vs its siblings</h3><p class="cap">Last 30 days, log scale; orange is this model.</p>${hbar(rows, { log: true, highlight: hi })}</div>`);
+  }
+  $("charts").innerHTML = parts.join("") || `<p class="empty">No numbers to chart for this model yet.</p>`;
+}
+
+// ---- boot ----------------------------------------------------------------------------------------
+(function boot() {
+  const m = D.meta;
+  $("coverage").textContent = `${m.scraped.toLocaleString()} models scraped · ${m.known.toLocaleString()} known · ${m.edges.toLocaleString()} lineage links`;
+  $("foot").innerHTML = `Data scraped from public Hugging Face model pages between ${m.scraped_dates[0].slice(0, 10)} and ${m.scraped_dates[1].slice(0, 10)}
+    (export ${m.generated.replace("T", " ")} UTC). Downloads are 30-day counts at scrape time. Drawbacks and alternatives are rule-based
+    readings of that metadata, not evaluations of model quality. Source: <a href="https://github.com/igris-ap/hf-ecosystem" target="_blank" rel="noopener">hf-ecosystem</a>.`;
+  // examples picked from the data: top derivative, a license conflict, a quantization, the biggest merge
+  const pick = (test) => { for (let k = 0; k < N; k++) if (M(k) && test(k)) return k; return -1; };
+  const ex = [
+    ["most influential derivative", pick((k) => parents[k].length > 0)],
+    ["license conflict", pick((k) => hasLicenseConflict(k).length > 0)],
+    ["quantization", pick((k) => relationsOf(k).includes("quantized"))],
+    ["merge", (() => { let best = -1; for (let k = 0; k < N; k++) if (M(k) && relationsOf(k).includes("merge") && (best < 0 || parents[k].length > parents[best].length)) best = k; return best; })()],
+  ].filter(([, k]) => k >= 0);
+  $("examples").insertAdjacentHTML("beforeend", ex.map(([t, k]) => `<button data-go="${k}" title="${t}">${esc(short(D.ids[k]))}</button>`).join(""));
+  select(ex.length ? ex[0][1] : 0);
+  q.value = "";
+})();
+</script>
+</body>
+</html>
