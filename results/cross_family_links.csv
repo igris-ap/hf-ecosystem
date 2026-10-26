@@ -3,3 +3,4 @@ Optitransfer/Qwen2.5-7B-Instruct-converge-collective-v2,microsoft/phi-2,merge,Qw
 Optitransfer/Qwen2.5-7B-Instruct-converge-v1remerge-maskn_project,Qwen/Qwen2.5-7B-Instruct,merge,microsoft/phi-2,Qwen/Qwen2.5-7B
 Optitransfer/Qwen2.5-7B-Instruct-converge-collective-v1,Qwen/Qwen2.5-7B-Instruct,merge,microsoft/phi-2,Qwen/Qwen2.5-7B
 Haker18/Llama-Gemma-Hybrid-9B,meta-llama/Llama-3.1-8B,merge,google/gemma-2-9b,meta-llama/Llama-3.1-8B
+Davidsv/CosmeticVentureV2,mistralai/Mistral-7B-v0.1,merge,meta-llama/Llama-3.1-8B,mistralai/Mistral-7B-v0.1

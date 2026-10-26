@@ -1,14 +1,14 @@
 statistic,sample graph,all known edges
-nodes,1006,6922
-nodes_in_sample,1006,1006
-edges,1085,7241
-relations,"{'finetune': 309, 'adapter': 274, 'quantized': 279, 'merge': 223}","{'finetune': 3000, 'adapter': 2006, 'quantized': 1152, 'merge': 1083}"
+nodes,2024,6993
+nodes_in_sample,2024,2024
+edges,2191,7542
+relations,"{'finetune': 719, 'adapter': 575, 'quantized': 512, 'merge': 385}","{'finetune': 3000, 'adapter': 2025, 'quantized': 1154, 'merge': 1363}"
 is_dag,True,True
 cycle_groups,0,0
-weak_components,8,7
-largest_component,202,2612
+weak_components,7,7
+largest_component,608,2667
 isolated_nodes,0,0
-roots,10,202
-leaves,966,6676
-multi_parent_nodes,63,149
-temporal_anomaly_edges,5,5
+roots,10,273
+leaves,1968,6661
+multi_parent_nodes,104,245
+temporal_anomaly_edges,6,6
