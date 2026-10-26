@@ -60,15 +60,17 @@ def parse_model_page(html):
     field("created_at", lambda: _str(model["createdAt"]))
 
     # Optional: legitimately absent on many community repos -> None, no error.
-    field("license", lambda: card.get("license") or _license_from_tags(model.get("tags", [])))
-    field("license_name", lambda: card.get("license_name"))
-    field("pipeline_tag", lambda: model.get("pipeline_tag"))
-    field("library_name", lambda: model.get("library_name"))
+    # Card YAML is free-form, so single-value fields go through _text (a card
+    # can say `license: [llama3.1]`, a list, and a list can't be stored as text).
+    field("license", lambda: _text(card.get("license")) or _license_from_tags(model.get("tags", [])))
+    field("license_name", lambda: _text(card.get("license_name")))
+    field("pipeline_tag", lambda: _text(model.get("pipeline_tag")))
+    field("library_name", lambda: _text(model.get("library_name")))
     field("downloads_all_time", lambda: _int_or_none(model.get("downloadsAllTime")))
-    field("last_modified", lambda: model.get("lastModified"))
-    field("gated", lambda: model.get("gated", False))   # False, "auto" or "manual"
+    field("last_modified", lambda: _text(model.get("lastModified")))
+    field("gated", lambda: _gated(model.get("gated", False)))   # False, "auto" or "manual"
     field("card_base_model", lambda: as_list(card.get("base_model")))
-    field("card_base_model_relation", lambda: card.get("base_model_relation"))
+    field("card_base_model_relation", lambda: _text(card.get("base_model_relation")))
     field("card_datasets", lambda: as_list(card.get("datasets")))
     field("card_language", lambda: as_list(card.get("language")))
 
@@ -144,6 +146,28 @@ def _str(value):
 
 def _int_or_none(value):
     return None if value is None else int(value)
+
+
+def _text(value):
+    """A single-value field as text: None stays None; ['x'] -> 'x';
+    ['a', 'b'] -> 'a, b'; numbers become strings. Anything else (a mapping,
+    a nested list) raises, so field() records it as a parse error."""
+    if value is None or isinstance(value, str):
+        return value.strip() or None if isinstance(value, str) else None
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        return str(value)
+    if isinstance(value, (list, tuple)) and all(isinstance(v, (str, int, float)) for v in value):
+        parts = [str(v).strip() for v in value if str(v).strip()]
+        return ", ".join(parts) or None
+    raise ValueError(f"expected text, got {type(value).__name__}: {value!r:.60}")
+
+
+def _gated(value):
+    if value is False or value is None:
+        return False
+    if isinstance(value, str):
+        return value
+    raise ValueError(f"unexpected gated value {value!r:.40}")
 
 
 def _dedupe(pairs):

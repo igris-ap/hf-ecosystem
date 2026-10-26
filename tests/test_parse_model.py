@@ -107,6 +107,21 @@ def test_one_bad_field_does_not_lose_the_others():
     assert m["id"] == "a/b" and m["likes"] == 3
 
 
+def test_list_valued_text_fields_are_flattened():
+    # Real case that crashed the crawl: mradermacher/AstroSage-8B-GGUF has `license: [llama3.1]`
+    page = make_page("ModelHeader", {"model": {
+        "id": "a/b", "author": "a", "tags": [], "downloads": 1, "likes": 0,
+        "createdAt": "2025-01-01T00:00:00.000Z",
+        "cardData": {"license": ["llama3.1"], "license_name": ["one", "two"],
+                     "base_model_relation": {"weird": 1}},
+    }})
+    m = parse_model_page(page)
+    assert m["license"] == "llama3.1"
+    assert m["license_name"] == "one, two"
+    assert m["card_base_model_relation"] is None
+    assert m["parse_errors"] == ["card_base_model_relation"]
+
+
 def test_missing_optional_fields_are_not_errors():
     page = make_page("ModelHeader", {"model": {
         "id": "a/b", "author": "a", "tags": [], "downloads": 0, "likes": 0,

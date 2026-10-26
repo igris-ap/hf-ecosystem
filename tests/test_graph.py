@@ -1,6 +1,7 @@
 import networkx as nx
+import pytest
 
-from mining.graph import break_cycles, build_graph, describe, find_cycle_groups
+from mining.graph import break_cycles, build_graph, describe, find_cycle_groups, looks_like_secret
 from preprocess.clean import run
 from tests.rawdb import make_db
 
@@ -40,6 +41,29 @@ def test_external_graph_adds_unscraped_endpoints_without_metadata(tmp_path):
     assert {"other/base", "unscraped/kid"} <= set(G)
     assert G.nodes["other/base"] == {"in_sample": False}
     assert G.number_of_edges() == 4
+
+
+def test_token_shaped_model_ids_are_left_out(tmp_path):
+    token_repo = "someone/hf_" + "A1b2C3d4" * 4 + "zz"        # a repo named like an HF token
+    conn = make_db(tmp_path / "db", {"base/m": {}, "kid/ok": {}}, [
+        ("kid/ok", "base/m", "finetune", "tags"),
+        (token_repo, "base/m", "finetune", "listing"),
+    ])
+    run(conn)
+    G = build_graph(conn, include_external=True)
+    assert token_repo not in G
+    assert G.has_edge("kid/ok", "base/m")
+
+
+@pytest.mark.parametrize("model_id, secret", [
+    ("someone/hf_" + "x" * 34, True),
+    ("org/ghp_" + "a" * 36, True),
+    ("org/my-sk-model", False),                 # too short to be a key
+    ("meta-llama/Llama-3.1-8B", False),
+    ("org/hf_model", False),
+])
+def test_looks_like_secret(model_id, secret):
+    assert looks_like_secret(model_id) is secret
 
 
 def test_describe(tmp_path):

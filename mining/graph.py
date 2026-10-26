@@ -14,6 +14,7 @@ Two views of the same data:
 """
 import json
 import logging
+import re
 import sqlite3
 import sys
 from collections import Counter
@@ -29,7 +30,32 @@ NODE_ATTRS = ("author", "license", "license_category", "pipeline_tag", "pipeline
               "created_at_is_floor", "gated", "depth", "root", "hf_children_total")
 
 
+# Some people name a repo after an access token (seen in the wild:
+# "<user>/hf_<34 chars>"). Everything we publish is built from this graph, so
+# credential-shaped ids are dropped here and never reach results/ or site/,
+# whether or not the token is live.
+SECRET_PATTERN = re.compile(
+    r"hf_[A-Za-z0-9]{30,}"               # Hugging Face access token
+    r"|gh[pousr]_[A-Za-z0-9]{36,}"       # GitHub tokens
+    r"|sk-[A-Za-z0-9_-]{20,}"            # OpenAI-style keys
+    r"|AKIA[0-9A-Z]{16}"                 # AWS access key id
+)
+
+
+def looks_like_secret(model_id):
+    return bool(SECRET_PATTERN.search(model_id))
+
+
 def build_graph(conn, include_external=False):
+    G = _build_graph(conn, include_external)
+    hidden = [n for n in G if looks_like_secret(n)]
+    if hidden:
+        log.warning("left out %d model id(s) that look like access tokens", len(hidden))
+        G.remove_nodes_from(hidden)
+    return G
+
+
+def _build_graph(conn, include_external):
     conn.row_factory = sqlite3.Row
     G = nx.DiGraph()
     for row in conn.execute(f"SELECT id, hf_children_json, {', '.join(NODE_ATTRS)} FROM clean_models"):

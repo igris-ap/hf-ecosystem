@@ -175,6 +175,23 @@ def test_transient_failures_are_retried_on_next_run_permanent_ones_are_not(tmp_p
     assert conn.execute("SELECT error FROM crawl_queue WHERE id='gone/model'").fetchone()[0] == "missing_or_private"
 
 
+def test_unstorable_model_fails_alone(tmp_path, monkeypatch):
+    # If a value ever slips past the parser, that model fails; the crawl goes on.
+    from crawler import crawl as crawl_mod
+    real_parse = crawl_mod.parse_model_page
+
+    def bad_parse(html):
+        m = real_parse(html)
+        if m["id"] == "a/1":
+            m["license"] = ["a", "list"]     # sqlite can't bind a list
+        return m
+
+    monkeypatch.setattr(crawl_mod, "parse_model_page", bad_parse)
+    conn = run(tmp_path, small_hub(), ["A/base", "B/base"])
+    assert conn.execute("SELECT error FROM crawl_queue WHERE id='a/1'").fetchone()[0] == "store_error"
+    assert {"a/2", "a/3", "b/m"} <= set(done(conn))
+
+
 def test_legacy_id_is_stored_under_canonical_id(tmp_path):
     hub = FakeHub()
     hub.add("google-bert/bert-base-uncased", url_id="bert-base-uncased")

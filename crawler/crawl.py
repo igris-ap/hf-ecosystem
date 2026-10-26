@@ -198,21 +198,27 @@ def scrape_one(conn, fetcher, queue_id):
     if m["id"] != queue_id:
         log.info("%s is now %s", queue_id, m["id"])   # renamed / legacy id redirect
 
-    with conn:
-        conn.execute(
-            "INSERT OR REPLACE INTO models VALUES "
-            "(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-            (m["id"], m["author"], m["license"], m["license_name"], m["pipeline_tag"],
-             m["library_name"], _json(m["tags"]), m["downloads"], m["downloads_all_time"],
-             m["likes"], m["created_at"], m["last_modified"], _gated(m["gated"]),
-             _json(m["card_base_model"]), m["card_base_model_relation"],
-             _json(m["card_datasets"]), _json(m["card_language"]),
-             _json(m["children_counts"]), _json(m["parse_errors"]), result.fetched_at))
-        conn.execute("DELETE FROM edges WHERE child_id = ? AND source = 'tags'", (m["id"],))
-        conn.executemany("INSERT OR IGNORE INTO edges VALUES (?, ?, ?, 'tags')",
-                         [(m["id"], parent, rel) for parent, rel in (m["parents"] or [])])
-        conn.execute("UPDATE crawl_queue SET status = 'done', error = NULL, model_id = ? WHERE id = ?",
-                     (m["id"], queue_id))
+    try:
+        with conn:
+            conn.execute(
+                "INSERT OR REPLACE INTO models VALUES "
+                "(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                (m["id"], m["author"], m["license"], m["license_name"], m["pipeline_tag"],
+                 m["library_name"], _json(m["tags"]), m["downloads"], m["downloads_all_time"],
+                 m["likes"], m["created_at"], m["last_modified"], _gated(m["gated"]),
+                 _json(m["card_base_model"]), m["card_base_model_relation"],
+                 _json(m["card_datasets"]), _json(m["card_language"]),
+                 _json(m["children_counts"]), _json(m["parse_errors"]), result.fetched_at))
+            conn.execute("DELETE FROM edges WHERE child_id = ? AND source = 'tags'", (m["id"],))
+            conn.executemany("INSERT OR IGNORE INTO edges VALUES (?, ?, ?, 'tags')",
+                             [(m["id"], parent, rel) for parent, rel in (m["parents"] or [])])
+            conn.execute("UPDATE crawl_queue SET status = 'done', error = NULL, model_id = ? WHERE id = ?",
+                         (m["id"], queue_id))
+    except (sqlite3.InterfaceError, sqlite3.ProgrammingError, TypeError) as exc:
+        # A value the parser should have normalised but didn't: lose this one
+        # model (the transaction rolled back), never the whole crawl.
+        log.error("could not store %s: %s", queue_id, exc)
+        return _fail(conn, queue_id, "store_error")
     if m["parse_errors"]:
         log.warning("%s parsed with errors in %s", m["id"], m["parse_errors"])
 

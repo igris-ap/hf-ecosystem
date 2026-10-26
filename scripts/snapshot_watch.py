@@ -54,11 +54,23 @@ def done_count():
 
 
 def crawl_ended():
+    """Has the *latest* crawl run ended? A resumed crawl appends to the same log,
+    so only the text after the last "crawl start:" line counts; an earlier
+    run's crash must not look like the end of the current one."""
     try:
-        text = CRAWL_LOG.read_text(encoding="utf-8", errors="replace")[-20000:]
+        text = CRAWL_LOG.read_text(encoding="utf-8", errors="replace")
     except FileNotFoundError:
         return False
-    return any(marker in text for marker in CRAWL_ENDED)
+    latest = text[text.rfind("crawl start:"):]
+    return any(marker in latest for marker in CRAWL_ENDED)
+
+
+def crawl_finished_normally():
+    """True only when the latest run reached its budget or ran out of models,
+    i.e. the results really are final (not a crash or a Ctrl+C)."""
+    text = CRAWL_LOG.read_text(encoding="utf-8", errors="replace")
+    latest = text[text.rfind("crawl start:"):]
+    return "crawl summary:" in latest and "Traceback" not in latest and "interrupted;" not in latest
 
 
 def copy_database():
@@ -123,15 +135,18 @@ def main():
     push = not args.no_push
 
     if args.once:
-        snapshot(final=crawl_ended(), push=push)
+        snapshot(final=crawl_finished_normally(), push=push)
         return
 
     next_mark = (done_count() // args.every + 1) * args.every
     log(f"watching: next snapshot at {next_mark:,} models")
     while True:
         if crawl_ended():
-            snapshot(final=True, push=push)
-            log("crawl ended; watcher done")
+            final = crawl_finished_normally()
+            snapshot(final=final, push=push)
+            log("crawl finished; watcher done" if final else
+                "crawl stopped early (crash or Ctrl+C); published a snapshot, NOT final results. "
+                "Resume the crawl and restart this watcher.")
             return
         done = done_count()
         if done >= next_mark:
