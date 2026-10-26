@@ -1,0 +1,23 @@
+# Phase 1-2: collection
+requests==2.34.2
+beautifulsoup4==4.15.0
+PyYAML==6.0.3
+# Makes Python trust the OS certificate store (fixes CERTIFICATE_VERIFY_FAILED on
+# machines with antivirus/proxy root certs). TLS verification stays on.
+truststore==0.10.5
+
+# Phase 4-5: graph + mining
+networkx==3.7
+pandas==3.1.0
+# numpy/scipy: needed by networkx's reference PageRank/HITS (we compare ours
+# against them) and by the HITS eigengap diagnostic
+numpy==2.5.4
+scipy==1.18.1
+
+# Phase 6: visualisation (plotly from the brief wasn't needed: static charts are
+# matplotlib, the interactive tree is pyvis)
+matplotlib==3.11.2
+pyvis==0.3.2
+
+# Tests
+pytest==9.1.1

@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Crawl data normally lives outside the repo (~/hf-ecosystem-data, see config.py).
+# If someone points HF_ECOSYSTEM_DATA at a folder inside the repo, keep it out of git.
+# The committed demo dataset is sample_data/.
+data/
+*.tmp

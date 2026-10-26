@@ -1,0 +1,12 @@
+field,compared,matches,accuracy
+id,50,50,1.0
+author,50,50,1.0
+license,50,50,1.0
+pipeline_tag,50,50,1.0
+library_name,50,50,1.0
+created_at,50,50,1.0
+gated,50,50,1.0
+parents (edges),50,50,1.0
+tags (exact set),50,50,1.0
+downloads (within 10 %),50,50,1.0
+likes (within 10 %),50,50,1.0
