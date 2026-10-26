@@ -19,7 +19,7 @@ log = logging.getLogger(__name__)
 
 
 # ============================================================================
-# PageRank: the math (viva notes)
+# PageRank: the math
 # ----------------------------------------------------------------------------
 # Edge u -> v means "u is derived from v". Picture a random surfer that starts
 # on a random model. At every step:
@@ -80,7 +80,7 @@ def pagerank(G, d=0.85, tol=1e-12, max_iter=1000, stands_for=None):
 
 
 # ============================================================================
-# Weighted PageRank: correcting for the crawl cap (viva notes)
+# Weighted PageRank: correcting for the crawl cap
 # ----------------------------------------------------------------------------
 # The crawler reads at most 300 children per (parent, relation). So
 # bert-base-uncased has 7 033 fine-tunes on HF but only 300 in our graph, and

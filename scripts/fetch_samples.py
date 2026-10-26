@@ -13,13 +13,16 @@ from pathlib import Path
 import requests
 import truststore
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+import config  # noqa: E402
+
 # Use the OS certificate store (some Windows machines have AV/proxy roots
 # that certifi doesn't know about). Verification stays ON.
 truststore.inject_into_ssl()
 
-USER_AGENT = "hf-ecosystem-student-project/0.1 (academic web-mining project; contact: CONTACT_EMAIL_PLACEHOLDER)"
-DELAY_SECONDS = 1.5
-SAMPLES_DIR = Path(__file__).resolve().parent.parent / "samples"
+USER_AGENT = config.USER_AGENT
+DELAY_SECONDS = config.MIN_REQUEST_INTERVAL
+SAMPLES_DIR = config.SAMPLES_DIR
 
 
 def main(pairs):

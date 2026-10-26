@@ -145,7 +145,7 @@ def write(net, legend, path):
     path.parent.mkdir(parents=True, exist_ok=True)
     html = net.generate_html()
     # pyvis's template links Bootstrap from a CDN even in "in_line" mode. It only
-    # styles a card wrapper, so drop it: the page must work offline in the viva.
+    # styles a card wrapper, so drop it: the page must work offline.
     html = re.sub(r'<link[^>]+bootstrap[^>]*>\s*', "", html)
     html = re.sub(r'<script[^>]+bootstrap[^>]*>\s*</script>\s*', "", html)
     html = html.replace("<body>", "<body>" + legend, 1).replace("</body>", _FREEZE + "</body>", 1)

@@ -21,7 +21,7 @@ SEEDS = [
 
 # --- Crawl limits ----------------------------------------------------------
 MAX_DEPTH = 3              # seeds are depth 0
-MAX_MODELS = 500           # global cap; 500 for testing, 20_000 for the full run
+MAX_MODELS = 20_000        # global cap (use --max-models 500 for a quick test run)
 # Without a per-parent cap, bert-base-uncased alone (7k fine-tunes) would eat a
 # third of the full budget. We take the most-downloaded children first.
 MAX_CHILDREN_PER_RELATION = 300
@@ -33,10 +33,9 @@ RELATIONS = ("finetune", "adapter", "quantized", "merge")
 
 # --- Politeness ------------------------------------------------------------
 BASE_URL = "https://huggingface.co"
-USER_AGENT = (
-    "hf-ecosystem-student-project/0.1 "
-    "(academic web-mining project; contact: CONTACT_EMAIL_PLACEHOLDER)"
-)
+# Identifies the crawler and gives HF a way to reach us: the "+URL" form is the
+# usual convention for bots (the repo page has the contact/issue tracker).
+USER_AGENT = "hf-ecosystem-crawler/1.0 (+https://github.com/igris-ap/hf-ecosystem)"
 # HF advertises `RateLimit-Policy: "fixed window";"pages";q=100;w=300`, i.e. 100
 # page requests per 5 minutes for anonymous clients. 300 s / 100 = 3 s per request
 # keeps us under it (stricter than the brief's ~1 req/s ceiling). The fetcher also

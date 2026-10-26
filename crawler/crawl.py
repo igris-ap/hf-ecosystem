@@ -103,6 +103,21 @@ def add_seeds(conn, seeds):
                          (seed, seed, rank))
 
 
+def retry_transient_failures(conn):
+    """Put failures that might succeed now back in the queue; return how many.
+
+    A network outage or an HF server error (5xx, or 429 even after backoff)
+    says nothing about the model, so a later run should try again. Missing or
+    private repos (401), 404s and unparseable pages stay failed: retrying
+    those would just repeat the same answer.
+    """
+    with conn:
+        cur = conn.execute("UPDATE crawl_queue SET status = 'pending', error = NULL "
+                           "WHERE status = 'failed' AND (error = 'network' OR error = 'http_429' "
+                           "OR error LIKE 'http\\_5%' ESCAPE '\\')")
+    return cur.rowcount
+
+
 def _count(conn, where, params=()):
     return conn.execute(f"SELECT COUNT(*) FROM crawl_queue WHERE {where}", params).fetchone()[0]
 
@@ -360,6 +375,17 @@ def _gated(value):
     return "no" if value is False else value
 
 
+def _keep_system_awake():
+    """Ask Windows not to idle-sleep while this process runs (a full crawl takes
+    about a day). Changes no power settings: the request ends automatically
+    when the process exits. A closed laptop lid still sleeps. No-op elsewhere."""
+    if sys.platform != "win32":
+        return
+    import ctypes
+    ES_CONTINUOUS, ES_SYSTEM_REQUIRED = 0x80000000, 0x00000001
+    ctypes.windll.kernel32.SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED)
+
+
 def _setup_logging():
     config.LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
     fmt = logging.Formatter("%(asctime)s %(levelname)-7s %(name)s: %(message)s", "%Y-%m-%d %H:%M:%S")
@@ -382,7 +408,11 @@ def main(argv=None):
     _setup_logging()
     conn = connect(config.DB_PATH)
     add_seeds(conn, config.SEEDS)
+    retried = retry_transient_failures(conn)
+    if retried:
+        log.info("retrying %d models that failed on network/server errors last time", retried)
     fetcher = Fetcher()
+    _keep_system_awake()
     log.info("crawl start: max_models=%d max_depth=%d per_relation_cap=%d",
              args.max_models, args.max_depth, args.per_relation_cap)
     try:

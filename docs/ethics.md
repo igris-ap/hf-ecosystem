@@ -26,7 +26,7 @@ an alternative discovery source.
 | Rate | **1 request / 3 s** | HF's response headers advertise `RateLimit-Policy: "fixed window";"pages";q=100;w=300` (100 pages per 5 min for anonymous clients), so 300 s / 100 = 3 s. Stricter than the brief's ~1 req/s ceiling. |
 | Quota header | read `RateLimit: "pages";r=<left>;t=<reset s>` on every response; when `r=0`, pause until the reset | never send a request we know will be refused |
 | Backoff | exponential on 429 / 5xx (2, 4, 8, 16, 32 s, then mark failed), or the server's `Retry-After` if longer (capped at 300 s) | don't hammer a struggling server |
-| User-Agent | `hf-ecosystem-student-project/0.1 (academic web-mining project; contact: <email>)` | lets HF identify and contact us |
+| User-Agent | `hf-ecosystem-crawler/1.0 (+https://github.com/igris-ap/hf-ecosystem)` | identifies the bot and points HF to the project page to reach us |
 | Caching | every raw response stored on disk; never re-fetched | crawl is resumable and repeatable without new load |
 | Concurrency | 1 connection, synchronous | no async or parallel crawling |
 | Terminal statuses | 401 (missing/private/gated file) and 400 (listing past end) are never retried | they won't change on retry |

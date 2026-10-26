@@ -147,6 +147,34 @@ def test_missing_child_fails_but_crawl_continues(tmp_path):
     assert "a/ok" in done(conn)
 
 
+def test_transient_failures_are_retried_on_next_run_permanent_ones_are_not(tmp_path):
+    from crawler.crawl import retry_transient_failures
+    hub = FakeHub()
+    hub.add("A/base", children={"finetune": ["a/flaky", "gone/model"]})
+    hub.add("a/flaky", parents=[("A/base", "finetune")])
+    url = f"{BASE_URL}/a/flaky"
+    good_page = hub.pages[url]
+    hub.pages[url] = None                    # first run: this page isn't reachable...
+    original_get = hub.get
+
+    def outage(u, timeout):                  # ...because of a server outage (503)
+        if u == url and hub.pages[url] is None:
+            hub.calls.append(u)
+            return _Resp(503, b"", u)
+        return original_get(u, timeout)
+
+    hub.get = outage
+    conn = run(tmp_path, hub, ["A/base"])
+    errors = dict(conn.execute("SELECT id, error FROM crawl_queue WHERE status='failed'").fetchall())
+    assert errors == {"a/flaky": "http_503", "gone/model": "missing_or_private"}
+
+    hub.pages[url] = good_page               # HF is back
+    assert retry_transient_failures(conn) == 1
+    conn = run(tmp_path, hub, ["A/base"])
+    assert "a/flaky" in done(conn)
+    assert conn.execute("SELECT error FROM crawl_queue WHERE id='gone/model'").fetchone()[0] == "missing_or_private"
+
+
 def test_legacy_id_is_stored_under_canonical_id(tmp_path):
     hub = FakeHub()
     hub.add("google-bert/bert-base-uncased", url_id="bert-base-uncased")
