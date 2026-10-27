@@ -23,20 +23,20 @@ behind it.
 
 ## Results
 
-> **Snapshot of a crawl in progress:** 14,000 of 20,000 models scraped (updated 2026-10-27 12:10 India Standard Time). This section is regenerated every 1,000 models.
+> **Snapshot of a crawl in progress:** 15,026 of 20,000 models scraped (updated 2026-10-27 13:02 India Standard Time). This section is regenerated every 1,000 models.
 
 ### At a glance
 
 | | |
 |---|---|
-| Models scraped | 13,989 |
-| Models seen in total (incl. unscraped children and parents) | 22,480 |
-| Lineage edges | 25,214 |
-| Model families found (Louvain) | 74, matching the seed families with 100 % purity |
-| Deepest derivation chain | 17 generations |
-| Likely license conflicts | 1,627 of 14,830 parent-child pairs |
-| Scraped models with no license | 3720 (26.6 %) |
-| Broken parent links in model cards | 498 (2.8 %) |
+| Models scraped | 15,014 |
+| Models seen in total (incl. unscraped children and parents) | 22,499 |
+| Lineage edges | 25,339 |
+| Model families found (Louvain) | 71, matching the seed families with 100 % purity |
+| Deepest derivation chain | 18 generations |
+| Likely license conflicts | 1,795 of 15,927 parent-child pairs |
+| Scraped models with no license | 3985 (26.5 %) |
+| Broken parent links in model cards | 521 (2.8 %) |
 | API spot-check | 99.6% match (50 random models x 11 fields; lowest field: downloads (within 10 %) 96%) |
 
 ### Most influential models
@@ -45,24 +45,24 @@ Weighted PageRank over all known lineage edges (see *Why a weighted PageRank*, b
 
 | # | Model | Weighted PageRank | Plain rank | Direct children on HF | Seed family |
 |---|---|---|---|---|---|
-| 1 | `Qwen/Qwen2.5-7B` | 0.0672 | 3 | 2,086 | Qwen2.5-7B |
-| 2 | `meta-llama/Llama-3.1-8B` | 0.0636 | 2 | 3,267 | Llama-3.1-8B |
-| 3 | `Qwen/Qwen2.5-7B-Instruct` | 0.0499 | 8 | 6,669 | Qwen2.5-7B |
-| 4 | `meta-llama/Llama-3.1-8B-Instruct` | 0.0473 | 9 | 7,302 | Llama-3.1-8B |
-| 5 | `mistralai/Mistral-7B-v0.1` | 0.0355 | 1 | 4,000 | Mistral-7B-v0.1 |
-| 6 | `google-bert/bert-base-uncased` | 0.0305 | 18 | 7,222 | bert-base-uncased |
+| 1 | `Qwen/Qwen2.5-7B` | 0.0669 | 3 | 2,086 | Qwen2.5-7B |
+| 2 | `meta-llama/Llama-3.1-8B` | 0.0638 | 2 | 3,267 | Llama-3.1-8B |
+| 3 | `Qwen/Qwen2.5-7B-Instruct` | 0.0497 | 8 | 6,669 | Qwen2.5-7B |
+| 4 | `meta-llama/Llama-3.1-8B-Instruct` | 0.0476 | 9 | 7,302 | Llama-3.1-8B |
+| 5 | `mistralai/Mistral-7B-v0.1` | 0.0354 | 1 | 4,000 | Mistral-7B-v0.1 |
+| 6 | `google-bert/bert-base-uncased` | 0.0303 | 18 | 7,222 | bert-base-uncased |
 | 7 | `Qwen/Qwen3-8B-Base` | 0.0298 | 5 | 856 | Qwen3-8B-Base |
 | 8 | `Qwen/Qwen3-8B` | 0.0281 | 10 | 5,133 | Qwen3-8B-Base |
-| 9 | `unsloth/Qwen2.5-7B-Instruct` | 0.0225 | 1618 | 5,360 | Qwen2.5-7B |
-| 10 | `google/gemma-3-4b-pt` | 0.0207 | 7 | 395 | gemma-3-4b-pt |
+| 9 | `unsloth/Qwen2.5-7B-Instruct` | 0.0224 | 1644 | 5,360 | Qwen2.5-7B |
+| 10 | `google/gemma-3-4b-pt` | 0.0205 | 7 | 395 | gemma-3-4b-pt |
 
 ### Findings so far
 
-- **What derivatives are made of.** Across the direct children Hugging Face lists for every scraped model: fine-tunes 54 %, adapters 30 %, quantizations 12 %, merges 4 %. The crawl sample is deliberately balanced, so it shows each at roughly 25 % instead.
-- **Most derivatives are dead ends.** Of 6,486 first-generation derivatives, 88 % have no children of their own. The median is 0 children, but the mean is 5, pulled up by a few models that are major bases themselves (up to 7,302 children).
-- **License drift.** 1,627 derivatives carry a *less* restrictive license than their parent. The most common case is a `gemma` model republished as `apache-2.0` (663 times). The highest conflict rates are Llama-3.2-1B 39 %, gemma-2-9b 36 %, gemma-3-4b-pt 33 %. Another 3,852 derivatives declare no license at all.
-- **Families mostly stay apart.** Louvain finds 74 communities that match the seed families with 100 % purity. The exceptions are 6 lineage links between families, 100 % of them merges.
-- **Latest quarter (2026-Q4, 345 sampled derivatives):** finetune 52 %, adapter 25 %, quantized 17 %, merge 6 %, mixed 1 %.
+- **What derivatives are made of.** Across the direct children Hugging Face lists for every scraped model: fine-tunes 53 %, adapters 30 %, quantizations 12 %, merges 4 %. The crawl sample is deliberately balanced, so it shows each at roughly 25 % instead.
+- **Most derivatives are dead ends.** Of 6,484 first-generation derivatives, 88 % have no children of their own. The median is 0 children, but the mean is 5, pulled up by a few models that are major bases themselves (up to 7,302 children).
+- **License drift.** 1,795 derivatives carry a *less* restrictive license than their parent. The most common case is a `gemma` model republished as `apache-2.0` (730 times). The highest conflict rates are Llama-3.2-1B 39 %, gemma-2-9b 38 %, gemma-3-4b-pt 32 %. Another 4,160 derivatives declare no license at all.
+- **Families mostly stay apart.** Louvain finds 71 communities that match the seed families with 100 % purity. The exceptions are 6 lineage links between families, 100 % of them merges.
+- **Latest quarter (2026-Q4, 393 sampled derivatives):** finetune 51 %, adapter 27 %, quantized 16 %, merge 5 %, mixed 1 %.
 
 ### Figures
 
