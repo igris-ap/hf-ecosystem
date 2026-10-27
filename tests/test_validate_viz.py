@@ -114,6 +114,19 @@ def test_site_data_export(tmp_path):
     json.dumps(d)                                             # must be serialisable
 
 
+def test_site_findings_export():
+    # runs on the committed results/ tables, the same files the site ships
+    from viz.site_findings import export
+    d = export()
+    g = d["glance"]
+    assert 0 < g["scraped"] <= g["known"] and 0 < g["conflicts"] < g["pairs_compared"]
+    assert 0.9 < g["purity"] <= 1
+    assert d["ranking"][0]["rank"] == 1 and len(d["ranking"]) == 20
+    assert {r["relation"] for r in d["relations"]} == {"finetune", "adapter", "quantized", "merge"}
+    assert len(d["trends"]["quarters"]) == len(d["trends"]["counts"]) == len(d["trends"]["share"]["merge"])
+    assert "NaN" not in json.dumps(d)                         # nulls, not invalid JSON
+
+
 def test_charts_render(tmp_path, monkeypatch):
     monkeypatch.setattr(charts, "FIG_DIR", tmp_path)
     G = _tree_graph()
