@@ -1,6 +1,6 @@
 # Mining results
 
-Generated 2026-10-26 18:52 UTC from 13000 scraped models (scraped 2026-10-26 to 2026-10-26; download counts are a snapshot of that time).
+Generated 2026-10-27 06:40 UTC from 14000 scraped models (scraped 2026-10-26 to 2026-10-27; download counts are a snapshot of that time).
 
 ## Graph
 
@@ -10,18 +10,18 @@ Sample graph = scraped models only. 'All known edges' also includes unscraped ch
 
 | statistic | sample graph | all known edges |
 |---|---|---|
-| nodes | 12991 | 22460 |
-| nodes_in_sample | 12991 | 12991 |
-| edges | 13781 | 25085 |
-| relations | {'finetune': 5150, 'adapter': 3115, 'quantized': 3680, 'merge': 1815, 'unknown': 21} | {'finetune': 8498, 'adapter': 6606, 'quantized': 5212, 'merge': 4743, 'unknown': 26} |
+| nodes | 13989 | 22480 |
+| nodes_in_sample | 13989 | 13989 |
+| edges | 14830 | 25214 |
+| relations | {'finetune': 5532, 'adapter': 3418, 'quantized': 3935, 'merge': 1924, 'unknown': 21} | {'finetune': 8498, 'adapter': 6606, 'quantized': 5213, 'merge': 4871, 'unknown': 26} |
 | is_dag | True | True |
 | cycle_groups | 0 | 0 |
 | weak_components | 6 | 3 |
-| largest_component | 7483 | 20375 |
+| largest_component | 8035 | 20395 |
 | isolated_nodes | 0 | 0 |
-| roots | 10 | 636 |
-| leaves | 12033 | 20822 |
-| multi_parent_nodes | 479 | 1174 |
+| roots | 10 | 656 |
+| leaves | 13022 | 20816 |
+| multi_parent_nodes | 503 | 1225 |
 | temporal_anomaly_edges | 23 | 23 |
 
 ## 1. Influence ranking
@@ -32,69 +32,69 @@ Own PageRank (d = 0.85), weighted PageRank and HITS, all checked against network
 
 | algorithm | iterations | max_abs_diff | top20_overlap | spearman | hits_eigengap |
 |---|---|---|---|---|---|
-| PageRank | 52 | 2.874e-10 | 20 | 1 |  |
-| Weighted PageRank | 53 | 2.892e-10 | 20 | 1 |  |
-| HITS authority | 164 | 3.466e-10 | 20 | 0.9052 | 0.936 |
-| HITS hub | 164 | 3.504e-13 | 20 | 0.9982 | 0.936 |
+| PageRank | 56 | 2.459e-10 | 20 | 1 |  |
+| Weighted PageRank | 54 | 4.362e-10 | 20 | 1 |  |
+| HITS authority | 164 | 3.566e-10 | 20 | 0.9039 | 0.936 |
+| HITS hub | 164 | 3.608e-13 | 20 | 0.9983 | 0.936 |
 
 **ranking_verification_all_edges**
 
 | algorithm | iterations | max_abs_diff | top20_overlap | spearman | hits_eigengap |
 |---|---|---|---|---|---|
-| PageRank | 76 | 7.951e-10 | 20 | 1 |  |
-| Weighted PageRank | 52 | 8.776e-10 | 20 | 1 |  |
-| HITS authority | 181 | 1.666e-10 | 20 | 0.9891 | 0.9411 |
-| HITS hub | 181 | 4.558e-13 | 20 | 0.9992 | 0.9411 |
+| PageRank | 76 | 1.309e-09 | 20 | 1 |  |
+| Weighted PageRank | 53 | 8.666e-10 | 20 | 1 |  |
+| HITS authority | 181 | 1.659e-10 | 20 | 0.9783 | 0.9411 |
+| HITS hub | 181 | 4.546e-13 | 20 | 0.9992 | 0.9411 |
 
 **ranking_top20**
 
 | rank | model | weighted_pagerank | pagerank | plain_pagerank_rank | authority | hub | derivatives_in_graph | hf_children_total | family | license | in_sample |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | Qwen/Qwen2.5-7B | 0.06787 | 0.0457 | 3 | 5.694e-06 | 0 | 824 | 2086 | Qwen/Qwen2.5-7B | apache-2.0 | True |
-| 2 | meta-llama/Llama-3.1-8B | 0.06422 | 0.0591 | 2 | 0.001995 | 0 | 972 | 3267 | meta-llama/Llama-3.1-8B | llama3.1 | True |
-| 3 | Qwen/Qwen2.5-7B-Instruct | 0.05035 | 0.01723 | 8 | 3.202e-05 | 9.575e-09 | 1068 | 6669 | Qwen/Qwen2.5-7B | apache-2.0 | True |
-| 4 | meta-llama/Llama-3.1-8B-Instruct | 0.04754 | 0.0159 | 9 | 0.0002762 | 3.354e-06 | 977 | 7302 | meta-llama/Llama-3.1-8B | llama3.1 | True |
-| 5 | mistralai/Mistral-7B-v0.1 | 0.03429 | 0.068 | 1 | 0.4741 | 0 | 1112 | 4000 | mistralai/Mistral-7B-v0.1 | apache-2.0 | True |
-| 6 | google-bert/bert-base-uncased | 0.03097 | 0.00854 | 18 | 2.053e-72 | 0 | 489 | 7222 | google-bert/bert-base-uncased | apache-2.0 | True |
-| 7 | Qwen/Qwen3-8B-Base | 0.03009 | 0.02931 | 5 | 4.914e-13 | 0 | 514 | 856 | Qwen/Qwen3-8B-Base | apache-2.0 | True |
-| 8 | Qwen/Qwen3-8B | 0.02834 | 0.01514 | 10 | 3.402e-11 | 8.263e-16 | 939 | 5133 | Qwen/Qwen3-8B-Base | apache-2.0 | True |
-| 9 | unsloth/Qwen2.5-7B-Instruct | 0.02287 | 2.039e-05 | 1594 | 7.02e-07 | 5.385e-08 | 1 | 5360 | Qwen/Qwen2.5-7B | apache-2.0 | True |
-| 10 | google/gemma-3-4b-pt | 0.02094 | 0.02197 | 7 | 7.96e-27 | 0 | 346 | 395 | google/gemma-3-4b-pt | gemma | True |
-| 11 | google/gemma-3-4b-it | 0.01838 | 0.01476 | 11 | 2.217e-24 | 1.339e-29 | 903 | 1850 | google/gemma-3-4b-pt | gemma | True |
-| 12 | meta-llama/Llama-3.2-1B | 0.01285 | 0.02969 | 4 | 7.434e-10 | 0 | 889 | 1998 | meta-llama/Llama-3.2-1B | llama3.2 | True |
-| 13 | google/gemma-2-9b | 0.01206 | 0.02632 | 6 | 2.529e-06 | 0 | 427 | 458 | google/gemma-2-9b | gemma | True |
-| 14 | unsloth/Meta-Llama-3.1-8B-Instruct | 0.01033 | 5.844e-05 | 392 | 9.797e-08 | 4.644e-07 | 12 | 2425 | meta-llama/Llama-3.1-8B | llama3.1 | True |
-| 15 | Qwen/Qwen2.5-Coder-7B | 0.008759 | 0.004724 | 27 | 4.438e-07 | 9.575e-09 | 292 | 291 | Qwen/Qwen2.5-7B | apache-2.0 | True |
-| 16 | google/gemma-2-9b-it | 0.008163 | 0.01284 | 12 | 1.206e-08 | 4.253e-09 | 793 | 1213 | google/gemma-2-9b | gemma | True |
-| 17 | Qwen/Qwen2.5-Coder-7B-Instruct | 0.007162 | 0.000442 | 64 | 1.249e-06 | 7.463e-10 | 60 | 1701 | Qwen/Qwen2.5-7B | apache-2.0 | True |
-| 18 | Qwen/Qwen2.5-Math-7B | 0.006895 | 0.006157 | 25 | 8.922e-07 | 9.575e-09 | 392 | 1124 | Qwen/Qwen2.5-7B | apache-2.0 | True |
-| 19 | unsloth/Meta-Llama-3.1-8B-Instruct-bnb-4bit | 0.006694 | 1.922e-05 | 9410 | 0 | 4.644e-07 | 0 | 1568 | meta-llama/Llama-3.1-8B | llama3.1 | True |
-| 20 | microsoft/phi-2 | 0.006666 | 0.0121 | 13 | 4.658e-06 | 0 | 673 | 1479 | microsoft/phi-2 | mit | True |
+| 1 | Qwen/Qwen2.5-7B | 0.06718 | 0.04566 | 3 | 5.702e-06 | 0 | 824 | 2086 | Qwen/Qwen2.5-7B | apache-2.0 | True |
+| 2 | meta-llama/Llama-3.1-8B | 0.06364 | 0.05898 | 2 | 0.001988 | 0 | 972 | 3267 | meta-llama/Llama-3.1-8B | llama3.1 | True |
+| 3 | Qwen/Qwen2.5-7B-Instruct | 0.0499 | 0.01718 | 8 | 3.197e-05 | 9.603e-09 | 1068 | 6669 | Qwen/Qwen2.5-7B | apache-2.0 | True |
+| 4 | meta-llama/Llama-3.1-8B-Instruct | 0.04726 | 0.01593 | 9 | 0.000275 | 3.348e-06 | 977 | 7302 | meta-llama/Llama-3.1-8B | llama3.1 | True |
+| 5 | mistralai/Mistral-7B-v0.1 | 0.03553 | 0.06778 | 1 | 0.4728 | 0 | 1112 | 4000 | mistralai/Mistral-7B-v0.1 | apache-2.0 | True |
+| 6 | google-bert/bert-base-uncased | 0.03049 | 0.008538 | 18 | 1.992e-72 | 0 | 489 | 7222 | google-bert/bert-base-uncased | apache-2.0 | True |
+| 7 | Qwen/Qwen3-8B-Base | 0.02976 | 0.0293 | 5 | 4.916e-13 | 0 | 514 | 856 | Qwen/Qwen3-8B-Base | apache-2.0 | True |
+| 8 | Qwen/Qwen3-8B | 0.02806 | 0.01514 | 10 | 3.404e-11 | 8.279e-16 | 939 | 5133 | Qwen/Qwen3-8B-Base | apache-2.0 | True |
+| 9 | unsloth/Qwen2.5-7B-Instruct | 0.02251 | 2.038e-05 | 1618 | 7.021e-07 | 5.385e-08 | 1 | 5360 | Qwen/Qwen2.5-7B | apache-2.0 | True |
+| 10 | google/gemma-3-4b-pt | 0.02066 | 0.02196 | 7 | 7.726e-27 | 0 | 346 | 395 | google/gemma-3-4b-pt | gemma | True |
+| 11 | google/gemma-3-4b-it | 0.01815 | 0.01475 | 11 | 2.152e-24 | 1.301e-29 | 903 | 1850 | google/gemma-3-4b-pt | gemma | True |
+| 12 | meta-llama/Llama-3.2-1B | 0.01265 | 0.02969 | 4 | 7.399e-10 | 0 | 889 | 1998 | meta-llama/Llama-3.2-1B | llama3.2 | True |
+| 13 | google/gemma-2-9b | 0.01191 | 0.02631 | 6 | 2.52e-06 | 0 | 427 | 458 | google/gemma-2-9b | gemma | True |
+| 14 | unsloth/Meta-Llama-3.1-8B-Instruct | 0.01016 | 7.823e-05 | 250 | 1.924e-07 | 4.633e-07 | 18 | 2425 | meta-llama/Llama-3.1-8B | llama3.1 | True |
+| 15 | Qwen/Qwen2.5-Coder-7B | 0.008656 | 0.00473 | 27 | 4.472e-07 | 9.603e-09 | 292 | 291 | Qwen/Qwen2.5-7B | apache-2.0 | True |
+| 16 | google/gemma-2-9b-it | 0.008079 | 0.01284 | 12 | 1.201e-08 | 4.244e-09 | 793 | 1213 | google/gemma-2-9b | gemma | True |
+| 17 | Qwen/Qwen2.5-Coder-7B-Instruct | 0.00704 | 0.0004651 | 63 | 1.314e-06 | 7.532e-10 | 64 | 1701 | Qwen/Qwen2.5-7B | apache-2.0 | True |
+| 18 | Qwen/Qwen2.5-Math-7B | 0.006819 | 0.006165 | 25 | 8.934e-07 | 9.603e-09 | 392 | 1124 | Qwen/Qwen2.5-7B | apache-2.0 | True |
+| 19 | unsloth/Meta-Llama-3.1-8B-Instruct-bnb-4bit | 0.00659 | 1.922e-05 | 9436 | 0 | 4.633e-07 | 0 | 1568 | meta-llama/Llama-3.1-8B | llama3.1 | True |
+| 20 | microsoft/phi-2 | 0.006562 | 0.0121 | 13 | 4.657e-06 | 0 | 673 | 1479 | microsoft/phi-2 | mit | True |
 
 **ranking_top20_sample_graph**
 
 | rank | model | weighted_pagerank | pagerank | plain_pagerank_rank | authority | hub | derivatives_in_graph | hf_children_total | family | license | in_sample |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | Qwen/Qwen2.5-7B | 0.06845 | 0.04428 | 4 | 1.003e-06 | 0 | 824 | 2086 | Qwen/Qwen2.5-7B | apache-2.0 | True |
-| 2 | meta-llama/Llama-3.1-8B | 0.06482 | 0.049 | 2 | 0.006604 | 0 | 972 | 3267 | meta-llama/Llama-3.1-8B | llama3.1 | True |
-| 3 | Qwen/Qwen2.5-7B-Instruct | 0.05027 | 0.003068 | 20 | 6.755e-06 | 9.828e-10 | 127 | 6669 | Qwen/Qwen2.5-7B | apache-2.0 | True |
-| 4 | meta-llama/Llama-3.1-8B-Instruct | 0.04761 | 0.002377 | 23 | 0.0002068 | 6.469e-06 | 81 | 7302 | meta-llama/Llama-3.1-8B | llama3.1 | True |
-| 5 | mistralai/Mistral-7B-v0.1 | 0.03618 | 0.05353 | 1 | 0.9115 | 0 | 1111 | 4000 | mistralai/Mistral-7B-v0.1 | apache-2.0 | True |
-| 6 | google-bert/bert-base-uncased | 0.03106 | 0.01585 | 11 | 3.001e-59 | 0 | 489 | 7222 | google-bert/bert-base-uncased | apache-2.0 | True |
-| 7 | Qwen/Qwen3-8B-Base | 0.03028 | 0.03718 | 5 | 1.261e-55 | 0 | 514 | 856 | Qwen/Qwen3-8B-Base | apache-2.0 | True |
-| 8 | Qwen/Qwen3-8B | 0.02849 | 0.008412 | 14 | 5.366e-57 | 1.235e-58 | 279 | 5133 | Qwen/Qwen3-8B-Base | apache-2.0 | True |
-| 9 | unsloth/Qwen2.5-7B-Instruct | 0.02288 | 3.96e-05 | 958 | 7.182e-09 | 6.617e-09 | 1 | 5360 | Qwen/Qwen2.5-7B | apache-2.0 | True |
-| 10 | google/gemma-3-4b-pt | 0.02097 | 0.03279 | 7 | 1.092e-43 | 0 | 346 | 395 | google/gemma-3-4b-pt | gemma | True |
-| 11 | google/gemma-3-4b-it | 0.0184 | 0.01855 | 9 | 1.535e-41 | 1.07e-46 | 627 | 1850 | google/gemma-3-4b-pt | gemma | True |
-| 12 | meta-llama/Llama-3.2-1B | 0.01326 | 0.04823 | 3 | 1.127e-16 | 0 | 889 | 1998 | meta-llama/Llama-3.2-1B | llama3.2 | True |
-| 13 | google/gemma-2-9b | 0.0122 | 0.03483 | 6 | 9.649e-06 | 0 | 427 | 458 | google/gemma-2-9b | gemma | True |
-| 14 | unsloth/Meta-Llama-3.1-8B-Instruct | 0.01038 | 0.0002017 | 158 | 4.113e-08 | 2.025e-07 | 12 | 2425 | meta-llama/Llama-3.1-8B | llama3.1 | True |
-| 15 | Qwen/Qwen2.5-Coder-7B | 0.008858 | 0.002608 | 22 | 3.693e-08 | 9.828e-10 | 75 | 291 | Qwen/Qwen2.5-7B | apache-2.0 | True |
-| 16 | google/gemma-2-9b-it | 0.00823 | 0.01286 | 12 | 2.863e-08 | 9.452e-09 | 433 | 1213 | google/gemma-2-9b | gemma | True |
-| 17 | Qwen/Qwen2.5-Coder-7B-Instruct | 0.00718 | 0.0008386 | 44 | 1.17e-07 | 3.617e-11 | 60 | 1701 | Qwen/Qwen2.5-7B | apache-2.0 | True |
-| 18 | Qwen/Qwen2.5-Math-7B | 0.006978 | 0.002354 | 24 | 1.044e-07 | 9.828e-10 | 80 | 1124 | Qwen/Qwen2.5-7B | apache-2.0 | True |
-| 19 | unsloth/Meta-Llama-3.1-8B-Instruct-bnb-4bit | 0.006698 | 3.468e-05 | 8730 | 0 | 2.025e-07 | 0 | 1568 | meta-llama/Llama-3.1-8B | llama3.1 | True |
-| 20 | microsoft/phi-2 | 0.006695 | 0.02198 | 8 | 4.891e-08 | 0 | 673 | 1479 | microsoft/phi-2 | mit | True |
+| 1 | Qwen/Qwen2.5-7B | 0.06776 | 0.04353 | 4 | 1.051e-06 | 0 | 824 | 2086 | Qwen/Qwen2.5-7B | apache-2.0 | True |
+| 2 | meta-llama/Llama-3.1-8B | 0.06431 | 0.04818 | 2 | 0.006604 | 0 | 972 | 3267 | meta-llama/Llama-3.1-8B | llama3.1 | True |
+| 3 | Qwen/Qwen2.5-7B-Instruct | 0.04985 | 0.003791 | 18 | 7.038e-06 | 1.03e-09 | 166 | 6669 | Qwen/Qwen2.5-7B | apache-2.0 | True |
+| 4 | meta-llama/Llama-3.1-8B-Instruct | 0.04736 | 0.002805 | 22 | 0.0002107 | 6.471e-06 | 98 | 7302 | meta-llama/Llama-3.1-8B | llama3.1 | True |
+| 5 | mistralai/Mistral-7B-v0.1 | 0.03749 | 0.05233 | 1 | 0.9109 | 0 | 1111 | 4000 | mistralai/Mistral-7B-v0.1 | apache-2.0 | True |
+| 6 | google-bert/bert-base-uncased | 0.03057 | 0.01455 | 12 | 2.995e-59 | 0 | 489 | 7222 | google-bert/bert-base-uncased | apache-2.0 | True |
+| 7 | Qwen/Qwen3-8B-Base | 0.02995 | 0.03755 | 5 | 1.661e-55 | 0 | 514 | 856 | Qwen/Qwen3-8B-Base | apache-2.0 | True |
+| 8 | Qwen/Qwen3-8B | 0.02821 | 0.0117 | 13 | 1.866e-56 | 1.627e-58 | 426 | 5133 | Qwen/Qwen3-8B-Base | apache-2.0 | True |
+| 9 | unsloth/Qwen2.5-7B-Instruct | 0.02252 | 3.635e-05 | 967 | 7.509e-09 | 6.895e-09 | 1 | 5360 | Qwen/Qwen2.5-7B | apache-2.0 | True |
+| 10 | google/gemma-3-4b-pt | 0.02069 | 0.03353 | 7 | 1.088e-28 | 0 | 346 | 395 | google/gemma-3-4b-pt | gemma | True |
+| 11 | google/gemma-3-4b-it | 0.01817 | 0.02106 | 8 | 2.339e-26 | 1.066e-31 | 776 | 1850 | google/gemma-3-4b-pt | gemma | True |
+| 12 | meta-llama/Llama-3.2-1B | 0.01305 | 0.04768 | 3 | 1.125e-16 | 0 | 889 | 1998 | meta-llama/Llama-3.2-1B | llama3.2 | True |
+| 13 | google/gemma-2-9b | 0.01205 | 0.03536 | 6 | 9.649e-06 | 0 | 427 | 458 | google/gemma-2-9b | gemma | True |
+| 14 | unsloth/Meta-Llama-3.1-8B-Instruct | 0.01021 | 0.0002483 | 119 | 7.809e-08 | 2.064e-07 | 18 | 2425 | meta-llama/Llama-3.1-8B | llama3.1 | True |
+| 15 | Qwen/Qwen2.5-Coder-7B | 0.008742 | 0.003232 | 20 | 6.166e-08 | 1.03e-09 | 108 | 291 | Qwen/Qwen2.5-7B | apache-2.0 | True |
+| 16 | google/gemma-2-9b-it | 0.008145 | 0.01476 | 10 | 3.411e-08 | 9.454e-09 | 542 | 1213 | google/gemma-2-9b | gemma | True |
+| 17 | Qwen/Qwen2.5-Coder-7B-Instruct | 0.007057 | 0.0008082 | 48 | 1.373e-07 | 6.041e-11 | 64 | 1701 | Qwen/Qwen2.5-7B | apache-2.0 | True |
+| 18 | Qwen/Qwen2.5-Math-7B | 0.006894 | 0.002541 | 24 | 1.181e-07 | 1.03e-09 | 95 | 1124 | Qwen/Qwen2.5-7B | apache-2.0 | True |
+| 19 | unsloth/Meta-Llama-3.1-8B-Instruct-bnb-4bit | 0.006594 | 3.184e-05 | 8739 | 0 | 2.064e-07 | 0 | 1568 | meta-llama/Llama-3.1-8B | llama3.1 | True |
+| 20 | microsoft/phi-2 | 0.006591 | 0.02018 | 9 | 5.102e-08 | 0 | 673 | 1479 | microsoft/phi-2 | mit | True |
 
 **ranking_top_hubs**
 
@@ -113,54 +113,54 @@ Own PageRank (d = 0.85), weighted PageRank and HITS, all checked against network
 
 ## 2. Model families (Louvain, sample graph)
 
-{'communities': 78, 'modularity': 0.9232103377556561, 'largest': 1437, 'weighted_purity': 0.9997690708952351, 'multi_family_communities': 1}
+{'communities': 74, 'modularity': 0.9272419472838722, 'largest': 1412, 'weighted_purity': 0.9997855457859747, 'multi_family_communities': 1}
 
 **communities**
 
 | community | size | in_sample | dominant_family | purity | families | most_derived_from | internal_edges | rel_finetune | rel_adapter | rel_quantized | rel_merge | top_license_category |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 0 | 1437 | 1437 | Qwen/Qwen2.5-7B | 0.9979 | 3 | Qwen/Qwen2.5-7B | 1732 | 405 | 362 | 431 | 534 | permissive |
-| 1 | 1294 | 1294 | mistralai/Mistral-7B-v0.1 | 1 | 1 | mistralai/Mistral-7B-v0.1 | 1313 | 273 | 315 | 421 | 298 | permissive |
-| 2 | 1103 | 1103 | meta-llama/Llama-3.1-8B | 1 | 1 | meta-llama/Llama-3.1-8B | 1118 | 320 | 313 | 444 | 41 | restricted |
+| 0 | 1412 | 1412 | Qwen/Qwen2.5-7B | 0.9979 | 3 | Qwen/Qwen2.5-7B | 1683 | 408 | 381 | 411 | 483 | permissive |
+| 1 | 1287 | 1287 | mistralai/Mistral-7B-v0.1 | 1 | 1 | mistralai/Mistral-7B-v0.1 | 1304 | 275 | 307 | 426 | 290 | permissive |
+| 2 | 1126 | 1126 | meta-llama/Llama-3.1-8B | 1 | 1 | meta-llama/Llama-3.1-8B | 1141 | 328 | 320 | 452 | 41 | restricted |
 | 3 | 1015 | 1015 | meta-llama/Llama-3.2-1B | 1 | 1 | meta-llama/Llama-3.2-1B | 1024 | 312 | 317 | 352 | 43 | restricted |
-| 4 | 734 | 734 | microsoft/phi-2 | 1 | 1 | microsoft/phi-2 | 738 | 321 | 301 | 103 | 12 | permissive |
-| 5 | 641 | 641 | Qwen/Qwen3-8B-Base | 1 | 1 | Qwen/Qwen3-8B-Base | 649 | 326 | 162 | 144 | 16 | permissive |
-| 6 | 633 | 633 | google/gemma-3-4b-pt | 1 | 1 | google/gemma-3-4b-it | 643 | 208 | 208 | 208 | 19 | restricted |
-| 7 | 547 | 547 | deepseek-ai/DeepSeek-R1 | 1 | 1 | deepseek-ai/DeepSeek-R1 | 546 | 311 | 124 | 106 | 5 | permissive |
-| 8 | 546 | 546 | google-bert/bert-base-uncased | 1 | 1 | google-bert/bert-base-uncased | 545 | 342 | 144 | 52 | 7 | permissive |
-| 9 | 497 | 497 | google/gemma-2-9b | 1 | 1 | google/gemma-2-9b | 500 | 318 | 72 | 99 | 11 | restricted |
-| 10 | 496 | 496 | google/gemma-2-9b | 1 | 1 | google/gemma-2-9b-it | 521 | 147 | 146 | 162 | 66 | restricted |
-| 11 | 402 | 402 | google/gemma-3-4b-pt | 1 | 1 | google/gemma-3-4b-pt | 402 | 311 | 25 | 64 | 2 | unknown |
-| 12 | 387 | 387 | mistralai/Mistral-7B-v0.1 | 1 | 1 | NousResearch/Hermes-2-Pro-Mistral-7B | 453 | 59 | 73 | 142 | 179 | permissive |
-| 13 | 324 | 324 | google/gemma-2-9b | 1 | 1 | unsloth/gemma-2-9b-bnb-4bit | 323 | 139 | 46 | 138 | 0 | permissive |
-| 14 | 306 | 306 | Qwen/Qwen3-8B-Base | 1 | 1 | Qwen/Qwen3-8B | 309 | 82 | 83 | 100 | 44 | permissive |
-| 15 | 281 | 281 | meta-llama/Llama-3.2-1B | 1 | 1 | unsloth/Llama-3.2-1B | 280 | 123 | 131 | 22 | 4 | restricted |
-| 16 | 268 | 268 | meta-llama/Llama-3.2-1B | 1 | 1 | unsloth/Llama-3.2-1B-bnb-4bit | 300 | 125 | 8 | 70 | 97 | permissive |
-| 17 | 237 | 237 | meta-llama/Llama-3.1-8B | 1 | 1 | meta-llama/Llama-3.1-8B-Instruct | 303 | 33 | 21 | 97 | 152 | restricted |
-| 18 | 195 | 195 | meta-llama/Llama-3.1-8B | 1 | 1 | NousResearch/Hermes-3-Llama-3.1-8B | 215 | 50 | 30 | 63 | 72 | unknown |
-| 19 | 188 | 188 | meta-llama/Llama-3.2-1B | 1 | 1 | unsloth/Llama-3.2-1B-unsloth-bnb-4bit | 187 | 131 | 18 | 38 | 0 | permissive |
-| 20 | 125 | 125 | google/gemma-3-4b-pt | 1 | 1 | unsloth/gemma-3-4b-pt-unsloth-bnb-4bit | 124 | 112 | 8 | 4 | 0 | permissive |
-| 21 | 109 | 109 | Qwen/Qwen3-8B-Base | 1 | 1 | Qwen/Qwen3-Embedding-8B | 108 | 46 | 18 | 44 | 0 | permissive |
-| 22 | 96 | 96 | Qwen/Qwen3-8B-Base | 1 | 1 | unsloth/Qwen3-8B-Base | 95 | 79 | 11 | 5 | 0 | permissive |
-| 23 | 92 | 92 | Qwen/Qwen2.5-7B | 1 | 1 | unsloth/Qwen2.5-7B | 93 | 24 | 21 | 30 | 18 | permissive |
-| 24 | 76 | 76 | Qwen/Qwen3-8B-Base | 1 | 1 | unsloth/Qwen3-8B-Base-unsloth-bnb-4bit | 75 | 72 | 1 | 2 | 0 | permissive |
-| 25 | 65 | 65 | Qwen/Qwen3-8B-Base | 1 | 1 | Qwen/Qwen3-Reranker-8B | 64 | 9 | 6 | 49 | 0 | permissive |
-| 26 | 40 | 40 | Qwen/Qwen3-8B-Base | 1 | 1 | OpenDataArena/Qwen3-8B-ODA-Math-460k | 39 | 39 | 0 | 0 | 0 | unknown |
-| 27 | 35 | 35 | mistralai/Mistral-7B-v0.1 | 1 | 1 | mistralai/Mistral-7B-Instruct-v0.1 | 34 | 7 | 7 | 8 | 12 | permissive |
-| 28 | 35 | 35 | mistralai/Mistral-7B-v0.1 | 1 | 1 | GritLM/GritLM-7B | 35 | 8 | 12 | 9 | 6 | permissive |
-| 29 | 34 | 34 | meta-llama/Llama-3.1-8B | 1 | 1 | unsloth/Meta-Llama-3.1-8B-bnb-4bit | 33 | 11 | 11 | 11 | 0 | permissive |
-| 30 | 33 | 33 | Qwen/Qwen2.5-7B | 1 | 1 | unsloth/Qwen2.5-7B-bnb-4bit | 32 | 16 | 9 | 7 | 0 | permissive |
-| 31 | 31 | 31 | mistralai/Mistral-7B-v0.1 | 1 | 1 | mlabonne/Daredevil-7B | 30 | 8 | 0 | 13 | 9 | permissive |
-| 32 | 31 | 31 | Qwen/Qwen3-8B-Base | 1 | 1 | jackf857/qwen3-8b-base-sft-ultrachat-4xh200-batch-128 | 30 | 30 | 0 | 0 | 0 | unknown |
-| 33 | 28 | 28 | meta-llama/Llama-3.1-8B | 1 | 1 | unsloth/Llama-3.1-8B | 27 | 11 | 11 | 5 | 0 | permissive |
-| 34 | 26 | 26 | google/gemma-3-4b-pt | 1 | 1 | unsloth/gemma-3-4b-pt | 25 | 22 | 3 | 0 | 0 | permissive |
-| 35 | 25 | 25 | meta-llama/Llama-3.1-8B | 1 | 1 | fdtn-ai/Foundation-Sec-8B | 24 | 8 | 3 | 11 | 2 | permissive |
-| 36 | 24 | 24 | microsoft/phi-2 | 1 | 1 | ma921/phi-2-sft-golden-hh | 23 | 22 | 0 | 1 | 0 | permissive |
-| 37 | 24 | 24 | mistralai/Mistral-7B-v0.1 | 1 | 1 | danish-foundation-models/munin-7b-alpha | 25 | 5 | 4 | 4 | 12 | permissive |
-| 38 | 23 | 23 | google/gemma-3-4b-pt | 1 | 1 | google/medgemma-4b-pt | 22 | 16 | 1 | 5 | 0 | other |
-| 39 | 21 | 21 | meta-llama/Llama-3.1-8B | 1 | 1 | meta-llama/Llama-Guard-3-8B | 20 | 6 | 3 | 11 | 0 | restricted |
+| 4 | 782 | 782 | google/gemma-3-4b-pt | 1 | 1 | google/gemma-3-4b-it | 792 | 258 | 258 | 257 | 19 | restricted |
+| 5 | 734 | 734 | microsoft/phi-2 | 1 | 1 | microsoft/phi-2 | 738 | 321 | 301 | 103 | 12 | permissive |
+| 6 | 656 | 656 | Qwen/Qwen3-8B-Base | 1 | 1 | Qwen/Qwen3-8B-Base | 664 | 341 | 162 | 144 | 16 | permissive |
+| 7 | 605 | 605 | google/gemma-2-9b | 1 | 1 | google/gemma-2-9b-it | 630 | 184 | 181 | 199 | 66 | restricted |
+| 8 | 547 | 547 | deepseek-ai/DeepSeek-R1 | 1 | 1 | deepseek-ai/DeepSeek-R1 | 546 | 311 | 124 | 106 | 5 | permissive |
+| 9 | 546 | 546 | google-bert/bert-base-uncased | 1 | 1 | google-bert/bert-base-uncased | 545 | 342 | 144 | 52 | 7 | permissive |
+| 10 | 497 | 497 | google/gemma-2-9b | 1 | 1 | google/gemma-2-9b | 500 | 318 | 72 | 99 | 11 | restricted |
+| 11 | 453 | 453 | Qwen/Qwen3-8B-Base | 1 | 1 | Qwen/Qwen3-8B | 459 | 131 | 132 | 150 | 46 | permissive |
+| 12 | 420 | 420 | google/gemma-3-4b-pt | 1 | 1 | google/gemma-3-4b-pt | 420 | 317 | 30 | 71 | 2 | unknown |
+| 13 | 364 | 364 | mistralai/Mistral-7B-v0.1 | 1 | 1 | teknium/OpenHermes-2.5-Mistral-7B | 424 | 62 | 74 | 136 | 152 | permissive |
+| 14 | 362 | 362 | google/gemma-2-9b | 1 | 1 | unsloth/gemma-2-9b-bnb-4bit | 361 | 175 | 46 | 140 | 0 | permissive |
+| 15 | 355 | 355 | meta-llama/Llama-3.2-1B | 1 | 1 | unsloth/Llama-3.2-1B | 354 | 123 | 205 | 22 | 4 | restricted |
+| 16 | 269 | 269 | meta-llama/Llama-3.1-8B | 1 | 1 | meta-llama/Llama-3.1-8B-Instruct | 344 | 42 | 26 | 110 | 166 | restricted |
+| 17 | 268 | 268 | meta-llama/Llama-3.2-1B | 1 | 1 | unsloth/Llama-3.2-1B-bnb-4bit | 300 | 125 | 8 | 70 | 97 | permissive |
+| 18 | 262 | 262 | meta-llama/Llama-3.2-1B | 1 | 1 | unsloth/Llama-3.2-1B-unsloth-bnb-4bit | 261 | 205 | 18 | 38 | 0 | permissive |
+| 19 | 229 | 229 | Qwen/Qwen2.5-7B | 1 | 1 | Qwen/Qwen2.5-7B-Instruct-1M | 242 | 60 | 24 | 82 | 76 | permissive |
+| 20 | 206 | 206 | meta-llama/Llama-3.1-8B | 1 | 1 | NousResearch/Hermes-3-Llama-3.1-8B | 235 | 45 | 37 | 66 | 87 | restricted |
+| 21 | 151 | 151 | mistralai/Mistral-7B-v0.1 | 1 | 1 | NousResearch/Hermes-2-Pro-Mistral-7B | 161 | 29 | 25 | 50 | 57 | permissive |
+| 22 | 125 | 125 | google/gemma-3-4b-pt | 1 | 1 | unsloth/gemma-3-4b-pt-unsloth-bnb-4bit | 124 | 112 | 8 | 4 | 0 | permissive |
+| 23 | 109 | 109 | Qwen/Qwen3-8B-Base | 1 | 1 | Qwen/Qwen3-Embedding-8B | 108 | 46 | 18 | 44 | 0 | permissive |
+| 24 | 98 | 98 | Qwen/Qwen3-8B-Base | 1 | 1 | unsloth/Qwen3-8B-Base | 97 | 81 | 11 | 5 | 0 | permissive |
+| 25 | 76 | 76 | Qwen/Qwen3-8B-Base | 1 | 1 | unsloth/Qwen3-8B-Base-unsloth-bnb-4bit | 75 | 72 | 1 | 2 | 0 | permissive |
+| 26 | 65 | 65 | Qwen/Qwen3-8B-Base | 1 | 1 | Qwen/Qwen3-Reranker-8B | 64 | 9 | 6 | 49 | 0 | permissive |
+| 27 | 51 | 51 | meta-llama/Llama-3.1-8B | 1 | 1 | unsloth/Meta-Llama-3.1-8B-bnb-4bit | 50 | 17 | 17 | 16 | 0 | permissive |
+| 28 | 46 | 46 | mistralai/Mistral-7B-v0.1 | 1 | 1 | mistralai/Mistral-7B-Instruct-v0.1 | 45 | 10 | 10 | 10 | 15 | permissive |
+| 29 | 41 | 41 | mistralai/Mistral-7B-v0.1 | 1 | 1 | alignment-handbook/zephyr-7b-sft-full | 41 | 11 | 15 | 9 | 6 | permissive |
+| 30 | 40 | 40 | Qwen/Qwen2.5-7B | 1 | 1 | unsloth/Qwen2.5-7B-bnb-4bit | 39 | 23 | 9 | 7 | 0 | permissive |
+| 31 | 40 | 40 | Qwen/Qwen3-8B-Base | 1 | 1 | OpenDataArena/Qwen3-8B-ODA-Math-460k | 39 | 39 | 0 | 0 | 0 | unknown |
+| 32 | 39 | 39 | meta-llama/Llama-3.1-8B | 1 | 1 | unsloth/Llama-3.1-8B | 38 | 17 | 16 | 5 | 0 | permissive |
+| 33 | 37 | 37 | meta-llama/Llama-3.1-8B | 1 | 1 | NCSOFT/Llama-VARCO-8B-Instruct | 36 | 16 | 3 | 13 | 4 | unknown |
+| 34 | 31 | 31 | Qwen/Qwen3-8B-Base | 1 | 1 | jackf857/qwen3-8b-base-sft-ultrachat-4xh200-batch-128 | 30 | 30 | 0 | 0 | 0 | unknown |
+| 35 | 30 | 30 | meta-llama/Llama-3.1-8B | 1 | 1 | fdtn-ai/Foundation-Sec-8B | 29 | 8 | 3 | 16 | 2 | permissive |
+| 36 | 27 | 27 | meta-llama/Llama-3.1-8B | 1 | 1 | meta-llama/Llama-Guard-3-8B | 26 | 6 | 3 | 17 | 0 | restricted |
+| 37 | 27 | 27 | Qwen/Qwen2.5-7B | 1 | 1 | mehuldamani/qwen-base-verifier-sft-v1 | 26 | 26 | 0 | 0 | 0 | unknown |
+| 38 | 27 | 27 | mistralai/Mistral-7B-v0.1 | 1 | 1 | danish-foundation-models/munin-7b-alpha | 28 | 5 | 4 | 4 | 15 | permissive |
+| 39 | 26 | 26 | google/gemma-3-4b-pt | 1 | 1 | unsloth/gemma-3-4b-pt | 25 | 22 | 3 | 0 | 0 | permissive |
 
-*… 38 more rows in the CSV*
+*… 34 more rows in the CSV*
 
 **cross_family_links**
 
@@ -175,17 +175,17 @@ Own PageRank (d = 0.85), weighted PageRank and HITS, all checked against network
 
 ## 3. Lineage
 
-max generation 17, mean generation of derived models 1.57, models per generation {0: 10, 1: 6486, 2: 6045, 3: 294, 4: 93, 5: 19, 6: 6, 7: 3, 8: 2, 9: 2, 10: 3, 11: 3, 12: 3, 13: 5, 14: 7, 15: 4, 16: 3, 17: 3}. Branching uses HF's exact child counts; relation share compares population vs sample.
+max generation 17, mean generation of derived models 1.61, models per generation {0: 10, 1: 6486, 2: 7026, 3: 310, 4: 94, 5: 19, 6: 6, 7: 3, 8: 2, 9: 2, 10: 3, 11: 3, 12: 3, 13: 5, 14: 7, 15: 4, 16: 3, 17: 3}. Branching uses HF's exact child counts; relation share compares population vs sample.
 
 **lineage_generations**
 
 | generation | models | with_children | share_with_children | branching_mean | branching_median | branching_max | observed_children_mean | hf_finetune | hf_adapter | hf_quantized | hf_merge |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 0 | 10 | 10 | 1 | 2228 | 1738 | 7222 | 674.2 | 13485 | 6952 | 1184 | 664 |
-| 1 | 6486 | 760 | 0.1174 | 5.321 | 0 | 7302 | 0.9921 | 15458 | 12620 | 5005 | 1373 |
-| 2 | 6045 | 785 | 0.13 | 3.605 | 0 | 5360 | 0.0665 | 13559 | 4317 | 2862 | 1027 |
-| 3 | 294 | 108 | 0.3724 | 1.069 | 0 | 14 | 0.3503 | 11 | 2 | 202 | 95 |
-| 4 | 93 | 33 | 0.3548 | 1.215 | 0 | 9 | 0.2258 | 4 | 1 | 66 | 42 |
+| 1 | 6486 | 760 | 0.1174 | 5.321 | 0 | 7302 | 1.148 | 15458 | 12620 | 5005 | 1373 |
+| 2 | 7026 | 896 | 0.1277 | 3.245 | 0 | 5360 | 0.06291 | 13907 | 4689 | 3099 | 1078 |
+| 3 | 310 | 118 | 0.3856 | 1.085 | 0 | 14 | 0.3355 | 13 | 2 | 220 | 97 |
+| 4 | 94 | 33 | 0.3511 | 1.202 | 0 | 9 | 0.2234 | 4 | 1 | 66 | 42 |
 | 5 | 19 | 9 | 0.4737 | 1.789 | 0 | 10 | 0.6316 | 0 | 0 | 21 | 13 |
 | 6 | 6 | 2 | 0.3333 | 3 | 0 | 14 | 2.333 | 0 | 0 | 5 | 13 |
 | 7 | 3 | 2 | 0.6667 | 3 | 4 | 5 | 1.667 | 0 | 0 | 5 | 4 |
@@ -204,10 +204,10 @@ max generation 17, mean generation of derived models 1.57, models per generation
 
 | relation | population_count | sample_edges | population_share | sample_share |
 |---|---|---|---|---|
-| finetune | 42517 | 5150 | 0.5379 | 0.3743 |
-| adapter | 23892 | 3115 | 0.3023 | 0.2264 |
-| quantized | 9376 | 3680 | 0.1186 | 0.2674 |
-| merge | 3259 | 1815 | 0.04123 | 0.1319 |
+| finetune | 42867 | 5532 | 0.5353 | 0.3736 |
+| adapter | 24264 | 3418 | 0.303 | 0.2308 |
+| quantized | 9631 | 3935 | 0.1203 | 0.2657 |
+| merge | 3312 | 1924 | 0.04136 | 0.1299 |
 
 ## 4. License drift
 
@@ -217,58 +217,60 @@ Edges with both ends scraped. 'loosened' = child's license is less restrictive t
 
 | outcome | count |
 |---|---|
-| same | 7056 |
-| child_unknown | 3580 |
-| loosened | 1444 |
-| changed_same_category | 612 |
-| parent_unknown | 509 |
-| changed_custom | 356 |
-| tightened | 224 |
+| same | 7563 |
+| child_unknown | 3852 |
+| loosened | 1627 |
+| changed_same_category | 633 |
+| parent_unknown | 519 |
+| changed_custom | 390 |
+| tightened | 246 |
 
 **license_transitions**
 
 | parent_category | copyleft | noncommercial | other | permissive | restricted | unknown |
 |---|---|---|---|---|---|---|
 | copyleft | 2 | 0 | 0 | 0 | 0 | 1 |
-| noncommercial | 0 | 72 | 1 | 4 | 3 | 66 |
-| other | 0 | 2 | 69 | 10 | 0 | 24 |
-| permissive | 18 | 72 | 177 | 4721 | 73 | 2050 |
-| restricted | 14 | 61 | 166 | 1423 | 2804 | 1439 |
-| unknown | 0 | 0 | 3 | 40 | 9 | 457 |
+| noncommercial | 0 | 73 | 1 | 4 | 3 | 66 |
+| other | 0 | 2 | 69 | 11 | 0 | 24 |
+| permissive | 18 | 83 | 192 | 5024 | 78 | 2184 |
+| restricted | 14 | 67 | 184 | 1606 | 3028 | 1577 |
+| unknown | 0 | 0 | 3 | 40 | 9 | 467 |
 
 **license_by_family**
 
 | family | changed_custom | changed_same_category | child_unknown | loosened | parent_unknown | same | tightened | edges | drift_rate | conflict_rate |
 |---|---|---|---|---|---|---|---|---|---|---|
-| Qwen/Qwen2.5-7B | 43 | 42 | 793 | 0 | 191 | 892 | 10 | 1971 | 0.09625 | 0 |
-| Qwen/Qwen3-8B-Base | 37 | 53 | 279 | 0 | 67 | 973 | 13 | 1422 | 0.09572 | 0 |
+| Qwen/Qwen2.5-7B | 50 | 50 | 838 | 0 | 201 | 965 | 11 | 2115 | 0.1032 | 0 |
+| Qwen/Qwen3-8B-Base | 41 | 58 | 308 | 0 | 67 | 1084 | 16 | 1574 | 0.09591 | 0 |
 | deepseek-ai/DeepSeek-R1 | 22 | 182 | 110 | 0 | 4 | 164 | 64 | 546 | 0.6204 | 0 |
 | google-bert/bert-base-uncased | 5 | 88 | 122 | 0 | 0 | 321 | 9 | 545 | 0.2411 | 0 |
-| google/gemma-2-9b | 62 | 1 | 349 | 350 | 15 | 547 | 30 | 1354 | 0.4475 | 0.3535 |
-| google/gemma-3-4b-pt | 24 | 0 | 348 | 307 | 10 | 559 | 17 | 1265 | 0.3837 | 0.3385 |
-| meta-llama/Llama-3.1-8B | 41 | 89 | 510 | 228 | 141 | 949 | 17 | 1975 | 0.2832 | 0.1722 |
-| meta-llama/Llama-3.2-1B | 49 | 10 | 312 | 555 | 32 | 862 | 3 | 1823 | 0.4172 | 0.3753 |
+| google/gemma-2-9b | 75 | 1 | 394 | 396 | 15 | 588 | 32 | 1501 | 0.4615 | 0.3626 |
+| google/gemma-3-4b-pt | 26 | 0 | 400 | 332 | 10 | 626 | 20 | 1414 | 0.3765 | 0.3307 |
+| meta-llama/Llama-3.1-8B | 44 | 92 | 560 | 266 | 141 | 1008 | 23 | 2134 | 0.2966 | 0.1856 |
+| meta-llama/Llama-3.2-1B | 49 | 10 | 316 | 629 | 32 | 932 | 3 | 1971 | 0.4258 | 0.3876 |
 | microsoft/phi-2 | 45 | 31 | 156 | 0 | 11 | 517 | 6 | 766 | 0.1369 | 0 |
-| mistralai/Mistral-7B-v0.1 | 28 | 116 | 601 | 4 | 38 | 1272 | 55 | 2114 | 0.1376 | 0.002712 |
+| mistralai/Mistral-7B-v0.1 | 33 | 121 | 648 | 4 | 38 | 1358 | 62 | 2264 | 0.1394 | 0.002535 |
 
 **license_by_relation**
 
 | relation | changed_custom | changed_same_category | child_unknown | loosened | parent_unknown | same | tightened | edges | drift_rate | conflict_rate |
 |---|---|---|---|---|---|---|---|---|---|---|
-| adapter | 115 | 157 | 1190 | 156 | 21 | 1436 | 40 | 3115 | 0.2458 | 0.08193 |
-| finetune | 139 | 318 | 900 | 857 | 102 | 2716 | 118 | 5150 | 0.3452 | 0.2066 |
-| merge | 21 | 54 | 1158 | 53 | 173 | 309 | 47 | 1815 | 0.3616 | 0.1095 |
-| quantized | 77 | 83 | 329 | 378 | 213 | 2581 | 19 | 3680 | 0.1775 | 0.1205 |
+| adapter | 135 | 162 | 1292 | 167 | 21 | 1595 | 46 | 3418 | 0.2423 | 0.07933 |
+| finetune | 143 | 325 | 973 | 1010 | 111 | 2840 | 130 | 5532 | 0.3615 | 0.2271 |
+| merge | 26 | 58 | 1231 | 55 | 174 | 329 | 51 | 1924 | 0.3661 | 0.106 |
+| quantized | 82 | 88 | 353 | 395 | 213 | 2785 | 19 | 3935 | 0.1733 | 0.1172 |
 | unknown | 4 | 0 | 3 | 0 | 0 | 14 | 0 | 21 | 0.2222 | 0 |
 
 **license_conflicts**
 
 | child | parent | relation | family | child_license | parent_license |
 |---|---|---|---|---|---|
+| 1-800-SHARED-TASKS/CHIPSAL-subtaskA | unsloth/gemma-2-9b-bnb-4bit | finetune | google/gemma-2-9b | apache-2.0 | gemma |
 | 1-800-SHARED-TASKS/Kan_Gemma-2-9b-ChipsalSubtaskA-16bit | unsloth/gemma-2-9b-bnb-4bit | finetune | google/gemma-2-9b | apache-2.0 | gemma |
 | 1024m/CHIPSAL-C-GEMMA2-9B-001-16bit | unsloth/gemma-2-9b-bnb-4bit | finetune | google/gemma-2-9b | apache-2.0 | gemma |
 | 1998rajdeo/gemma-2-9b-bnb-4bit-csv | unsloth/gemma-2-9b-bnb-4bit | quantized | google/gemma-2-9b | apache-2.0 | gemma |
 | 2024-mcm-everitt-ryan/gemma-2-9b-job-bias-qlora-seq-cls | google/gemma-2-9b | quantized | google/gemma-2-9b | apache-2.0 | gemma |
+| 4blacks/model-gemma-1m-basic-model | unsloth/gemma-2-9b-bnb-4bit | finetune | google/gemma-2-9b | apache-2.0 | gemma |
 | 922-CA/gem-monika-ddlc-9b-v1 | unsloth/gemma-2-9b-bnb-4bit | finetune | google/gemma-2-9b | apache-2.0 | gemma |
 | 922-CA/gem-monika-ddlc-9b-v1-gguf | unsloth/gemma-2-9b-bnb-4bit | quantized | google/gemma-2-9b | apache-2.0 | gemma |
 | 922-Narra/gemma-2-9b-tagalog-chat | unsloth/gemma-2-9b-bnb-4bit | finetune | google/gemma-2-9b | apache-2.0 | gemma |
@@ -294,6 +296,8 @@ Edges with both ends scraped. 'loosened' = child's license is less restrictive t
 | ChrisX123/ChatgptDataset_GGUF__10000Instruction_VsGoemotion | unsloth/gemma-2-9b-bnb-4bit | quantized | google/gemma-2-9b | apache-2.0 | gemma |
 | ChrisX123/ChatgptDataset_GGUF__100Instruction_VsGoemotion | unsloth/gemma-2-9b-bnb-4bit | quantized | google/gemma-2-9b | apache-2.0 | gemma |
 | ChrisX123/ChatgptDataset_GGUF__1Instruction_VsGoemotion | unsloth/gemma-2-9b-bnb-4bit | quantized | google/gemma-2-9b | apache-2.0 | gemma |
+| ChrisX123/Goemotion_GGUF_10000Instruction | unsloth/gemma-2-9b-bnb-4bit | quantized | google/gemma-2-9b | apache-2.0 | gemma |
+| ChrisX123/Goemotion_GGUF_100Instruction | unsloth/gemma-2-9b-bnb-4bit | quantized | google/gemma-2-9b | apache-2.0 | gemma |
 | ChrisX123/Goemotion_GGUF_1Instruction | unsloth/gemma-2-9b-bnb-4bit | quantized | google/gemma-2-9b | apache-2.0 | gemma |
 | CogYB/CneoGET | unsloth/gemma-2-9b-bnb-4bit | quantized | google/gemma-2-9b | apache-2.0 | gemma |
 | Cran-May/Apollo2-9B-Q5_K_M-GGUF | FreedomIntelligence/Apollo2-9B | quantized | google/gemma-2-9b | apache-2.0 | gemma |
@@ -301,12 +305,8 @@ Edges with both ends scraped. 'loosened' = child's license is less restrictive t
 | Danielrahmai1991/tabehsonati | unsloth/gemma-2-9b-bnb-4bit | quantized | google/gemma-2-9b | apache-2.0 | gemma |
 | Danielrahmai1991/tabehsonati_v1 | unsloth/gemma-2-9b-bnb-4bit | quantized | google/gemma-2-9b | apache-2.0 | gemma |
 | Deeokay/gemma2-9B-GGUF | unsloth/gemma-2-9b-bnb-4bit | quantized | google/gemma-2-9b | apache-2.0 | gemma |
-| Denisijcu/Vertex-Core-Gemma | google/gemma-2-9b-it | adapter | google/gemma-2-9b | apache-2.0 | gemma |
-| Devavrat28/Gemmarathi2 | unsloth/gemma-2-9b-bnb-4bit | adapter | google/gemma-2-9b | apache-2.0 | gemma |
-| DiTy/gemma-2-9b-it-function-calling-GGUF | google/gemma-2-9b-it | quantized | google/gemma-2-9b | apache-2.0 | gemma |
-| DiTy/gemma-2-9b-it-russian-function-calling-GGUF | google/gemma-2-9b-it | quantized | google/gemma-2-9b | apache-2.0 | gemma |
 
-*… 1404 more rows in the CSV*
+*… 1587 more rows in the CSV*
 
 ## 5. Trends
 
@@ -322,45 +322,45 @@ Derivatives by creation quarter; seeds and pre-2022 placeholder dates excluded. 
 | 2022-Q4 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 |
 | 2023-Q1 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | 0 |
 | 2023-Q2 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 |
-| 2023-Q3 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 | 12 |
-| 2023-Q4 | 0 | 0 | 0 | 15 | 0 | 0 | 0 | 0 | 40 | 248 |
-| 2024-Q1 | 0 | 0 | 0 | 20 | 0 | 0 | 0 | 0 | 211 | 538 |
-| 2024-Q2 | 0 | 0 | 0 | 34 | 24 | 0 | 0 | 0 | 196 | 250 |
-| 2024-Q3 | 98 | 0 | 0 | 26 | 351 | 0 | 317 | 30 | 33 | 87 |
-| 2024-Q4 | 291 | 0 | 0 | 45 | 254 | 0 | 307 | 406 | 25 | 219 |
-| 2025-Q1 | 431 | 0 | 457 | 62 | 154 | 130 | 368 | 375 | 27 | 168 |
-| 2025-Q2 | 199 | 216 | 25 | 63 | 194 | 236 | 223 | 405 | 76 | 106 |
-| 2025-Q3 | 192 | 207 | 30 | 49 | 43 | 185 | 112 | 202 | 53 | 183 |
-| 2025-Q4 | 56 | 152 | 2 | 49 | 56 | 140 | 102 | 158 | 53 | 29 |
-| 2026-Q1 | 95 | 133 | 12 | 28 | 83 | 214 | 64 | 56 | 23 | 51 |
-| 2026-Q2 | 104 | 269 | 2 | 21 | 101 | 161 | 119 | 76 | 11 | 27 |
-| 2026-Q3 | 149 | 306 | 10 | 65 | 44 | 127 | 157 | 51 | 7 | 18 |
-| 2026-Q4 | 35 | 113 | 0 | 36 | 12 | 54 | 25 | 9 | 4 | 14 |
+| 2023-Q3 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 | 13 |
+| 2023-Q4 | 0 | 0 | 0 | 15 | 0 | 0 | 0 | 0 | 40 | 269 |
+| 2024-Q1 | 0 | 0 | 0 | 20 | 0 | 0 | 0 | 0 | 211 | 587 |
+| 2024-Q2 | 0 | 0 | 0 | 34 | 24 | 0 | 0 | 0 | 196 | 262 |
+| 2024-Q3 | 102 | 0 | 0 | 26 | 392 | 0 | 337 | 30 | 33 | 95 |
+| 2024-Q4 | 302 | 0 | 0 | 45 | 266 | 0 | 330 | 421 | 25 | 233 |
+| 2025-Q1 | 455 | 0 | 457 | 62 | 190 | 131 | 400 | 421 | 27 | 181 |
+| 2025-Q2 | 217 | 242 | 25 | 63 | 202 | 247 | 243 | 418 | 76 | 120 |
+| 2025-Q3 | 203 | 213 | 30 | 49 | 49 | 199 | 115 | 204 | 53 | 187 |
+| 2025-Q4 | 62 | 163 | 2 | 49 | 65 | 161 | 106 | 158 | 53 | 29 |
+| 2026-Q1 | 113 | 149 | 12 | 28 | 87 | 245 | 69 | 56 | 23 | 53 |
+| 2026-Q2 | 122 | 291 | 2 | 21 | 124 | 217 | 140 | 148 | 11 | 28 |
+| 2026-Q3 | 161 | 337 | 10 | 65 | 52 | 142 | 167 | 51 | 7 | 18 |
+| 2026-Q4 | 39 | 150 | 0 | 36 | 12 | 54 | 27 | 9 | 4 | 14 |
 
 **trend_task_quarterly**
 
-| quarter | feature-extraction | fill-mask | image-text-to-text | other | sentence-similarity | text-classification | text-generation |
+| quarter | feature-extraction | fill-mask | image-text-to-text | other | text-classification | text-generation | translation |
 |---|---|---|---|---|---|---|---|
-| 2022-Q1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 |
-| 2022-Q2 | 0 | 0 | 0 | 0 | 0 | 8 | 0 |
-| 2022-Q3 | 0 | 0 | 0 | 0 | 0 | 1 | 0 |
+| 2022-Q1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 |
+| 2022-Q2 | 0 | 0 | 0 | 0 | 8 | 0 | 0 |
+| 2022-Q3 | 0 | 0 | 0 | 0 | 1 | 0 | 0 |
 | 2022-Q4 | 0 | 0 | 0 | 3 | 0 | 0 | 0 |
-| 2023-Q1 | 0 | 2 | 0 | 1 | 0 | 1 | 0 |
-| 2023-Q2 | 0 | 1 | 0 | 0 | 0 | 1 | 0 |
-| 2023-Q3 | 0 | 2 | 0 | 5 | 0 | 2 | 12 |
-| 2023-Q4 | 0 | 8 | 1 | 1 | 0 | 6 | 287 |
-| 2024-Q1 | 1 | 11 | 0 | 4 | 0 | 8 | 745 |
-| 2024-Q2 | 0 | 16 | 0 | 6 | 7 | 4 | 471 |
-| 2024-Q3 | 1 | 10 | 3 | 12 | 6 | 9 | 901 |
-| 2024-Q4 | 0 | 13 | 1 | 37 | 11 | 23 | 1462 |
-| 2025-Q1 | 9 | 15 | 102 | 137 | 25 | 137 | 1747 |
-| 2025-Q2 | 10 | 14 | 198 | 54 | 7 | 81 | 1379 |
-| 2025-Q3 | 7 | 21 | 159 | 39 | 6 | 34 | 990 |
-| 2025-Q4 | 11 | 19 | 110 | 37 | 8 | 35 | 577 |
-| 2026-Q1 | 22 | 10 | 86 | 106 | 11 | 19 | 505 |
-| 2026-Q2 | 31 | 8 | 70 | 31 | 12 | 13 | 726 |
-| 2026-Q3 | 21 | 6 | 64 | 32 | 11 | 51 | 749 |
-| 2026-Q4 | 12 | 6 | 20 | 12 | 15 | 22 | 215 |
+| 2023-Q1 | 0 | 2 | 0 | 1 | 1 | 0 | 0 |
+| 2023-Q2 | 0 | 1 | 0 | 0 | 1 | 0 | 0 |
+| 2023-Q3 | 0 | 2 | 0 | 5 | 2 | 13 | 0 |
+| 2023-Q4 | 0 | 8 | 1 | 1 | 6 | 308 | 0 |
+| 2024-Q1 | 1 | 11 | 0 | 4 | 8 | 794 | 0 |
+| 2024-Q2 | 0 | 16 | 0 | 12 | 4 | 483 | 1 |
+| 2024-Q3 | 1 | 10 | 3 | 18 | 9 | 974 | 0 |
+| 2024-Q4 | 0 | 13 | 1 | 43 | 23 | 1537 | 5 |
+| 2025-Q1 | 9 | 15 | 103 | 146 | 138 | 1897 | 16 |
+| 2025-Q2 | 10 | 14 | 209 | 55 | 81 | 1478 | 6 |
+| 2025-Q3 | 7 | 21 | 171 | 45 | 34 | 1024 | 0 |
+| 2025-Q4 | 12 | 19 | 121 | 41 | 35 | 615 | 5 |
+| 2026-Q1 | 22 | 10 | 99 | 47 | 19 | 564 | 74 |
+| 2026-Q2 | 31 | 8 | 82 | 38 | 14 | 920 | 11 |
+| 2026-Q3 | 22 | 6 | 70 | 44 | 54 | 811 | 3 |
+| 2026-Q4 | 12 | 6 | 20 | 26 | 22 | 258 | 1 |
 
 **trend_relation_quarterly**
 
@@ -372,20 +372,20 @@ Derivatives by creation quarter; seeds and pre-2022 placeholder dates excluded. 
 | 2022-Q4 | 0 | 3 | 0 | 0 | 0 |
 | 2023-Q1 | 0 | 3 | 0 | 0 | 1 |
 | 2023-Q2 | 0 | 1 | 0 | 0 | 1 |
-| 2023-Q3 | 1 | 12 | 0 | 0 | 8 |
-| 2023-Q4 | 103 | 121 | 3 | 0 | 76 |
-| 2024-Q1 | 270 | 234 | 139 | 14 | 112 |
-| 2024-Q2 | 135 | 194 | 78 | 3 | 94 |
-| 2024-Q3 | 132 | 321 | 58 | 0 | 431 |
-| 2024-Q4 | 225 | 513 | 131 | 0 | 678 |
-| 2025-Q1 | 495 | 794 | 216 | 0 | 667 |
-| 2025-Q2 | 227 | 900 | 101 | 0 | 515 |
-| 2025-Q3 | 297 | 455 | 210 | 0 | 294 |
-| 2025-Q4 | 197 | 372 | 30 | 0 | 198 |
-| 2026-Q1 | 246 | 276 | 19 | 0 | 218 |
-| 2026-Q2 | 319 | 359 | 28 | 6 | 179 |
-| 2026-Q3 | 384 | 405 | 14 | 2 | 129 |
-| 2026-Q4 | 74 | 154 | 20 | 3 | 51 |
+| 2023-Q3 | 1 | 12 | 0 | 0 | 9 |
+| 2023-Q4 | 113 | 125 | 4 | 0 | 82 |
+| 2024-Q1 | 281 | 246 | 159 | 14 | 118 |
+| 2024-Q2 | 136 | 198 | 82 | 3 | 97 |
+| 2024-Q3 | 138 | 364 | 62 | 0 | 451 |
+| 2024-Q4 | 248 | 530 | 138 | 0 | 706 |
+| 2025-Q1 | 565 | 831 | 227 | 0 | 701 |
+| 2025-Q2 | 248 | 938 | 109 | 0 | 558 |
+| 2025-Q3 | 307 | 484 | 210 | 0 | 301 |
+| 2025-Q4 | 215 | 396 | 31 | 0 | 206 |
+| 2026-Q1 | 278 | 311 | 19 | 0 | 227 |
+| 2026-Q2 | 372 | 457 | 31 | 7 | 237 |
+| 2026-Q3 | 420 | 421 | 14 | 2 | 153 |
+| 2026-Q4 | 86 | 178 | 20 | 3 | 58 |
 
 **trend_relation_share_quarterly**
 
@@ -397,20 +397,20 @@ Derivatives by creation quarter; seeds and pre-2022 placeholder dates excluded. 
 | 2022-Q4 | 0 | 1 | 0 | 0 | 0 |
 | 2023-Q1 | 0 | 0.75 | 0 | 0 | 0.25 |
 | 2023-Q2 | 0 | 0.5 | 0 | 0 | 0.5 |
-| 2023-Q3 | 0.048 | 0.571 | 0 | 0 | 0.381 |
-| 2023-Q4 | 0.34 | 0.399 | 0.01 | 0 | 0.251 |
-| 2024-Q1 | 0.351 | 0.304 | 0.181 | 0.018 | 0.146 |
-| 2024-Q2 | 0.268 | 0.385 | 0.155 | 0.006 | 0.187 |
-| 2024-Q3 | 0.14 | 0.341 | 0.062 | 0 | 0.458 |
-| 2024-Q4 | 0.145 | 0.332 | 0.085 | 0 | 0.438 |
-| 2025-Q1 | 0.228 | 0.366 | 0.099 | 0 | 0.307 |
-| 2025-Q2 | 0.13 | 0.516 | 0.058 | 0 | 0.295 |
-| 2025-Q3 | 0.236 | 0.362 | 0.167 | 0 | 0.234 |
-| 2025-Q4 | 0.247 | 0.467 | 0.038 | 0 | 0.248 |
-| 2026-Q1 | 0.324 | 0.364 | 0.025 | 0 | 0.287 |
-| 2026-Q2 | 0.358 | 0.403 | 0.031 | 0.007 | 0.201 |
-| 2026-Q3 | 0.411 | 0.434 | 0.015 | 0.002 | 0.138 |
-| 2026-Q4 | 0.245 | 0.51 | 0.066 | 0.01 | 0.169 |
+| 2023-Q3 | 0.045 | 0.545 | 0 | 0 | 0.409 |
+| 2023-Q4 | 0.349 | 0.386 | 0.012 | 0 | 0.253 |
+| 2024-Q1 | 0.344 | 0.301 | 0.194 | 0.017 | 0.144 |
+| 2024-Q2 | 0.264 | 0.384 | 0.159 | 0.006 | 0.188 |
+| 2024-Q3 | 0.136 | 0.359 | 0.061 | 0 | 0.444 |
+| 2024-Q4 | 0.153 | 0.327 | 0.085 | 0 | 0.435 |
+| 2025-Q1 | 0.243 | 0.358 | 0.098 | 0 | 0.302 |
+| 2025-Q2 | 0.134 | 0.506 | 0.059 | 0 | 0.301 |
+| 2025-Q3 | 0.236 | 0.372 | 0.161 | 0 | 0.231 |
+| 2025-Q4 | 0.254 | 0.467 | 0.037 | 0 | 0.243 |
+| 2026-Q1 | 0.333 | 0.372 | 0.023 | 0 | 0.272 |
+| 2026-Q2 | 0.337 | 0.414 | 0.028 | 0.006 | 0.215 |
+| 2026-Q3 | 0.416 | 0.417 | 0.014 | 0.002 | 0.151 |
+| 2026-Q4 | 0.249 | 0.516 | 0.058 | 0.009 | 0.168 |
 
 ## 6. Data quality
 
@@ -418,23 +418,23 @@ Derivatives by creation quarter; seeds and pre-2022 placeholder dates excluded. 
 
 | metric | value | detail |
 |---|---|---|
-| models scraped | 13000 | of 20001 queued |
+| models scraped | 14000 | of 20001 queued |
 | crawl failures | 1 | 0.0 % |
 | models with a parse error | 0 | 0.0 % |
-| missing license | 3472 | 26.7 % |
-| missing pipeline_tag (as published) | 5212 | 40.1 % |
-|   of which filled from parent | 5211 | see pipeline_tag_source |
-| missing library_name | 2034 | 15.6 % |
+| missing license | 3720 | 26.6 % |
+| missing pipeline_tag (as published) | 5613 | 40.1 % |
+|   of which filled from parent | 5612 | see pipeline_tag_source |
+| missing library_name | 2158 | 15.4 % |
 | missing created_at | 0 | 0.0 % |
 | created_at is HF's pre-2022 placeholder | 2 | excluded from trends |
-| declared base_model values | 16555 |  |
-|   linked by HF | 15244 | 92.1 % |
-|   old name of a renamed repo | 827 | 5.0 % |
-|   not linked (broken parent link) | 484 | 2.9 % |
+| declared base_model values | 17705 |  |
+|   linked by HF | 16356 | 92.4 % |
+|   old name of a renamed repo | 851 | 4.8 % |
+|   not linked (broken parent link) | 498 | 2.8 % |
 |   malformed (URL/path/free text) | 7 |  |
-| listing edges confirmed by child's tags | 13440 | 100.0 % of 13440 |
-| tag edges to a parent outside the sample | 2420 | 14.9 % |
+| listing edges confirmed by child's tags | 14449 | 100.0 % of 14449 |
+| tag edges to a parent outside the sample | 2507 | 14.5 % |
 | child created >7 days before its parent | 23 | temporal anomaly |
 | self-loops | 1 |  |
 | relation conflicts (tags vs listing) | 0 |  |
-| API spot-check accuracy | 100.0% | 50 random models x 11 fields; every field 100 % |
+| API spot-check accuracy | 99.6% | 50 random models x 11 fields; lowest field: downloads (within 10 %) 96% |
