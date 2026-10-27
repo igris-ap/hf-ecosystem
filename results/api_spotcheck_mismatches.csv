@@ -1,3 +1,4 @@
 model,field,scraped,api
-DeepNeural/medical-ner,downloads (within 10 %),153,25
-Irfanuruchi/Phi-2-MLX-5bit,downloads (within 10 %),25,22
+atsuki-yamaguchi/gemma-2-9b-my-30K-5000-align,downloads (within 10 %),8,7
+blockblockblock/Hermes-2-Pro-Mistral-10.7B-bpw4.8,downloads (within 10 %),17,15
+rhirani/llama3.18B-Fine-tunedByRH,downloads (within 10 %),10,12
