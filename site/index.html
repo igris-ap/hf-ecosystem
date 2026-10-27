@@ -889,7 +889,7 @@ function renderFindings() {
   out.push(sec("rank", "1 · Influence ranking", `${short(rk[0].model)} and ${short(rk[1].model)} are the most influential bases`,
     `Weighted PageRank over every known lineage link: a model scores high when many models, and influential ones, derive from it. The crawl
      reads at most ${window.DEMO ? DEMO.config.cap : 300} children per relation, so the weighting adds the skipped ones back using Hugging Face's exact child counts.
-     That matters: <b class="mono">${esc(short(jump.model))}</b> sits at #${num(jump.plain_pagerank_rank)} by plain PageRank but #${jump.rank} once corrected,
+     That matters: <b class="mono">${esc(jump.model)}</b> sits at #${num(jump.plain_pagerank_rank)} by plain PageRank but #${jump.rank} once corrected,
      because it has ${num(jump.hf_children_total)} children on Hugging Face and only ${num(jump.derivatives_in_graph)} in our sample.`,
     `<div class="figure">${hbar(rk.slice(0, 15).map((r) => [r.model, r.weighted_pagerank, indexOf(r.model)]),
         { label: 290, right: 56, fmtv: (v) => pct(v, 1), max: rk[0].weighted_pagerank * 1.05 })}</div>
