@@ -1,4 +1,8 @@
 model,field,scraped,api
-atsuki-yamaguchi/gemma-2-9b-my-30K-5000-align,downloads (within 10 %),8,7
-blockblockblock/Hermes-2-Pro-Mistral-10.7B-bpw4.8,downloads (within 10 %),17,15
-rhirani/llama3.18B-Fine-tunedByRH,downloads (within 10 %),10,12
+kingabzpro/phi-2-role-play,downloads (within 10 %),14,12
+cutelemonlili/Qwen2.5-7B_lora_MATH_training_Qwen2.5-32B-Instruct_checkpoint-1330,downloads (within 10 %),16,12
+bilalzafar/CBDC-Stance,downloads (within 10 %),15,17
+LoneStriker/openchat-3.5-0106-5.0bpw-h6-exl2,downloads (within 10 %),26,23
+johngraph/final-12-23,downloads (within 10 %),14,12
+strongpear/Llama3.1-8B-QA_CoT-WIKI-Instruct-r64,downloads (within 10 %),10,12
+shravankasagoni/bert-qlora-imdb-sentiment-finetuned,downloads (within 10 %),3,4

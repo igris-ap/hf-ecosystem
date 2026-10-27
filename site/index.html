@@ -9,9 +9,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: one search bar on top; below it a two-column workbench. Left column =
-   the model's card, drawbacks and alternatives (what to decide); right column =
-   its lineage chain, graph and charts (the evidence). Stacks to one column on phones. */
+/* Three tabs under one header: Findings (what the data says), Explorer (one
+   model at a time: card, drawbacks and alternatives on the left, the lineage
+   evidence on the right) and How it works (a step-through of the pipeline on
+   real cached pages). The search bar sits in the header on every tab. */
 :root {
   --bg: #f4f6f5;          /* slightly green-grey paper */
   --surface: #ffffff;
@@ -26,6 +27,10 @@
   --self: #eb6834;
   --kid: #1baf7a;
   --sib: #a9aea9;
+  --r-finetune: #2a78d6;  /* relation colours: the charts' fixed slots (viz/palette.py) */
+  --r-adapter: #eb6834;
+  --r-quantized: #1baf7a;
+  --r-merge: #eda100;
   --crit: #c23b3b;
   --warn: #a86a00;
   --note: #47534e;
@@ -43,6 +48,7 @@
     --bg: #111715; --surface: #18201d; --sunken: #0d1311; --ink: #e8eeeb; --ink-2: #b7c2bd;
     --muted: #87938e; --line: #2a3531; --accent: #4fc1b0; --accent-wash: #16302b;
     --anc: #3987e5; --self: #d95926; --kid: #199e70; --sib: #5e6662;
+    --r-finetune: #3987e5; --r-adapter: #d95926; --r-quantized: #199e70; --r-merge: #d99500;
     --crit: #ef7d7d; --warn: #e3a93a; --note: #b7c2bd;
     --crit-wash: #3a1c1c; --warn-wash: #3a2e14; --note-wash: #222b28; --good: #5fcf86;
     color-scheme: dark;
@@ -52,6 +58,7 @@
   --bg: #111715; --surface: #18201d; --sunken: #0d1311; --ink: #e8eeeb; --ink-2: #b7c2bd;
   --muted: #87938e; --line: #2a3531; --accent: #4fc1b0; --accent-wash: #16302b;
   --anc: #3987e5; --self: #d95926; --kid: #199e70; --sib: #5e6662;
+  --r-finetune: #3987e5; --r-adapter: #d95926; --r-quantized: #199e70; --r-merge: #d99500;
   --crit: #ef7d7d; --warn: #e3a93a; --note: #b7c2bd;
   --crit-wash: #3a1c1c; --warn-wash: #3a2e14; --note-wash: #222b28; --good: #5fcf86;
   color-scheme: dark;
@@ -70,18 +77,27 @@ a { color: var(--accent); }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .mono { font-family: var(--font-mono); font-size: 0.92em; }
 .wrap { max-width: 1240px; margin: 0 auto; }
+[hidden] { display: none !important; }
 
-/* ---------- header + search ---------- */
+/* ---------- header, tabs, search ---------- */
 header.top {
   position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
-  background: var(--bg); padding-block: 18px 14px; border-bottom: 1px solid var(--line);
+  background: var(--bg); padding-block: 14px 12px; border-bottom: 1px solid var(--line);
 }
-.brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+.brand { display: flex; align-items: center; gap: 8px 16px; flex-wrap: wrap; margin-bottom: 10px; }
 .brand h1 { font: 700 1.35rem/1.1 var(--font-display); letter-spacing: -0.01em; margin: 0; }
 .brand .sub { color: var(--muted); font-size: 0.9rem; }
+.tabs { display: flex; gap: 4px; margin-left: auto; background: var(--sunken); padding: 3px; border-radius: 999px; }
+.tabs a {
+  font: 600 0.9rem var(--font-display); color: var(--ink-2); text-decoration: none;
+  padding: 5px 14px; border-radius: 999px; white-space: nowrap;
+}
+.tabs a:hover { color: var(--ink); }
+.tabs a[aria-current="page"] { background: var(--accent); color: var(--surface); }
+@media (max-width: 640px) { .tabs { margin-left: 0; width: 100%; } .tabs a { flex: 1; text-align: center; padding-inline: 6px; } }
 .search { position: relative; }
 .search input {
-  width: 100%; font: 500 1.05rem var(--font-mono); padding: 12px 14px; color: var(--ink);
+  width: 100%; font: 500 1.05rem var(--font-mono); padding: 11px 14px; color: var(--ink);
   background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
 }
 .search input:focus { outline: 2px solid var(--accent); outline-offset: 0; border-color: transparent; }
@@ -95,22 +111,26 @@ header.top {
 .suggest .id { font-family: var(--font-mono); font-size: 0.9rem; overflow-wrap: anywhere; min-width: 0; }
 .suggest .meta { color: var(--muted); font-size: 0.82rem; white-space: nowrap; }
 .suggest .none { color: var(--ink-2); cursor: default; }
-.examples { display: flex; flex-wrap: wrap; gap: 6px 8px; margin-top: 10px; align-items: center; font-size: 0.88rem; color: var(--muted); }
-.examples button {
+.examples { display: flex; flex-wrap: wrap; gap: 6px 8px; margin-top: 16px; align-items: center; font-size: 0.88rem; color: var(--muted); }
+.examples button, .pill {
   font: 500 0.82rem var(--font-mono); color: var(--ink-2); background: var(--surface);
   border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; cursor: pointer;
 }
-.examples button:hover { border-color: var(--accent); color: var(--accent); }
+.examples button:hover, .pill:hover { border-color: var(--accent); color: var(--accent); }
 
-/* ---------- workbench ---------- */
-main { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 20px; margin-top: 20px; }
-@media (max-width: 900px) { main { grid-template-columns: minmax(0, 1fr); } }
-.col { display: grid; gap: 20px; align-content: start; min-width: 0; }
+/* ---------- panels (shared) ---------- */
 section.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; min-width: 0; }
-section.panel > h2 { font: 600 0.78rem var(--font-display); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 12px; }
+section.panel > h2, .kicker { font: 600 0.78rem var(--font-display); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 12px; }
 .empty { color: var(--muted); font-size: 0.95rem; margin: 0; }
+.goto { all: unset; cursor: pointer; font-family: var(--font-mono); font-size: 0.92em; color: var(--accent); overflow-wrap: anywhere; }
+.goto:hover { text-decoration: underline; }
+.goto:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
 
-/* model card */
+/* ---------- explorer workbench ---------- */
+main.bench { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 20px; margin-top: 16px; }
+@media (max-width: 900px) { main.bench { grid-template-columns: minmax(0, 1fr); } }
+.col { display: grid; gap: 20px; align-content: start; min-width: 0; }
+
 .model-id { font: 600 1.25rem/1.3 var(--font-mono); margin: 0 0 6px; overflow-wrap: anywhere; text-wrap: balance; }
 .links { font-size: 0.9rem; margin-bottom: 12px; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
@@ -121,10 +141,9 @@ section.panel > h2 { font: 600 0.78rem var(--font-display); text-transform: uppe
 .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 12px; margin: 0; }
 .stats div { min-width: 0; }
 .stats dt { font-size: 0.75rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
-.stats dd { margin: 0; font: 600 1.15rem var(--font-display); font-variant-numeric: tabular-nums; }
+.stats dd { margin: 0; font: 600 1.15rem var(--font-display); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 .note { margin: 12px 0 0; font-size: 0.88rem; color: var(--ink-2); background: var(--note-wash); padding: 8px 10px; border-radius: 6px; }
 
-/* drawbacks */
 .issues { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
 .issue { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 10px; padding: 10px 12px; border-radius: 6px; }
 .issue.crit { background: var(--crit-wash); } .issue.warn { background: var(--warn-wash); } .issue.note { background: var(--note-wash); }
@@ -134,17 +153,13 @@ section.panel > h2 { font: 600 0.78rem var(--font-display); text-transform: uppe
 .issue p { margin: 2px 0 0; color: var(--ink-2); font-size: 0.92rem; }
 .ok { color: var(--good); font-weight: 600; margin: 0; }
 
-/* recommendations */
 .recs { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
 .rec { border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; }
-.rec button.goto { all: unset; cursor: pointer; font: 500 0.95rem var(--font-mono); color: var(--accent); overflow-wrap: anywhere; }
-.rec button.goto:hover { text-decoration: underline; }
-.rec button.goto:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+.rec .goto { font-size: 0.95rem; font-weight: 500; }
 .rec .rel { color: var(--muted); font-size: 0.85rem; }
 .why { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
 .why span { font-size: 0.8rem; padding: 1px 8px; border-radius: 999px; background: var(--accent-wash); color: var(--ink); }
 
-/* chain */
 .chains { display: grid; gap: 10px; }
 .chain { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; font-size: 0.88rem; padding-bottom: 10px; border-bottom: 1px dashed var(--line); }
 .chain:last-child { border-bottom: 0; padding-bottom: 0; }
@@ -154,23 +169,112 @@ section.panel > h2 { font: 600 0.78rem var(--font-display); text-transform: uppe
 .chain .arrow { color: var(--muted); font-size: 0.78rem; white-space: nowrap; }
 .chain .more { color: var(--muted); }
 
-/* graph */
-#graph { height: 460px; border-radius: 6px; background: var(--sunken); }
+.graph { height: 460px; border-radius: 6px; background: var(--sunken); }
 .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 10px; font-size: 0.85rem; color: var(--ink-2); }
 .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
+.legend i.sq { border-radius: 2px; }
 .legend svg { vertical-align: middle; margin-right: 6px; }
 
-/* charts */
+/* ---------- charts (inline SVG, coloured through CSS variables) ---------- */
 .charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+.chart { min-width: 0; }
 .chart h3 { font: 600 0.95rem var(--font-display); margin: 0 0 2px; }
 .chart .cap { color: var(--muted); font-size: 0.82rem; margin: 0 0 8px; }
-.chart svg { width: 100%; height: auto; display: block; }
-.chart svg text { fill: var(--ink-2); font-family: var(--font-body); }
-.chart svg .val { fill: var(--ink); font-variant-numeric: tabular-nums; }
-.chart svg .grid { stroke: var(--line); }
+.chart svg, .figure svg { width: 100%; height: auto; display: block; }
+svg text { fill: var(--ink-2); font-family: var(--font-body); }
+svg .val { fill: var(--ink); font-variant-numeric: tabular-nums; }
+svg .grid { stroke: var(--line); }
+svg [data-go] { cursor: pointer; }
+svg [data-go]:hover text { fill: var(--accent); }
+
+/* ---------- findings ---------- */
+.story { display: grid; gap: 20px; margin-top: 20px; }
+.hero { padding: 26px 22px; }
+.hero h2.lead { font: 700 clamp(1.4rem, 3.2vw, 2.1rem)/1.15 var(--font-display); letter-spacing: -0.015em; margin: 0 0 8px; text-wrap: balance; text-transform: none; color: var(--ink); }
+.hero p { color: var(--ink-2); margin: 0; max-width: 72ch; }
+.status { display: inline-block; font-size: 0.82rem; padding: 2px 10px; border-radius: 999px; margin-bottom: 12px; background: var(--warn-wash); color: var(--warn); font-weight: 600; }
+.status.final { background: var(--accent-wash); color: var(--accent); }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 20px; }
+.hero .tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (min-width: 1100px) { .hero .tiles { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .hero .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.tile { background: var(--sunken); border-radius: 6px; padding: 12px 14px; min-width: 0; }
+.tile b { display: block; font: 700 1.7rem/1.1 var(--font-display); font-variant-numeric: tabular-nums; }
+.tile span { color: var(--ink-2); font-size: 0.86rem; }
+.finding h3.headline { font: 700 1.3rem/1.25 var(--font-display); letter-spacing: -0.01em; margin: 0 0 6px; text-wrap: balance; }
+.finding > p, .finding .lede { color: var(--ink-2); margin: 0 0 14px; max-width: 80ch; }
+.split { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; align-items: start; }
+.toc { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+.toc a { font-size: 0.85rem; text-decoration: none; padding: 3px 10px; border: 1px solid var(--line); border-radius: 999px; color: var(--ink-2); background: var(--surface); }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+.scroll { overflow-x: auto; }
+table.tbl { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.tbl th { text-align: left; font: 600 0.72rem var(--font-display); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); padding: 6px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.tbl td { padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.tbl td.n, .tbl th.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tbl tr:last-child td { border-bottom: 0; }
+.tbl .indent td:first-child { padding-left: 22px; color: var(--ink-2); }
+.mix { display: flex; height: 10px; border-radius: 3px; overflow: hidden; min-width: 90px; background: var(--sunken); }
+.mix i { display: block; height: 100%; }
+.smalls { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; }
+.small h4 { font: 600 0.85rem var(--font-mono); margin: 0; }
+.small p { margin: 0 0 4px; color: var(--muted); font-size: 0.8rem; }
+
+/* ---------- how it works ---------- */
+.demo-head { margin-top: 20px; }
+.cases { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 12px; }
+.case-btn { all: unset; cursor: pointer; border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 8px 12px; display: grid; gap: 1px; max-width: 280px; }
+.case-btn b { font: 600 0.9rem var(--font-display); }
+.case-btn span { font: 0.76rem var(--font-mono); color: var(--muted); overflow-wrap: anywhere; }
+.case-btn[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-wash); }
+.case-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.steps { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; margin: 0 0 14px; padding: 0; counter-reset: step; }
+.steps button {
+  font: 600 0.84rem var(--font-display); color: var(--ink-2); background: var(--surface); border: 1px solid var(--line);
+  border-radius: 999px; padding: 4px 12px 4px 6px; cursor: pointer; display: inline-flex; gap: 6px; align-items: center;
+}
+.steps button .k { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--sunken); font-size: 0.75rem; }
+.steps button.done .k { background: var(--accent-wash); color: var(--accent); }
+.steps button[aria-current="step"] { border-color: var(--accent); color: var(--ink); }
+.steps button[aria-current="step"] .k { background: var(--accent); color: var(--surface); }
+.stage h3 { font: 700 1.3rem/1.25 var(--font-display); margin: 0 0 4px; }
+.stage .what { color: var(--ink-2); margin: 0 0 16px; max-width: 80ch; }
+.stage h4 { font: 600 0.78rem var(--font-display); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 18px 0 8px; }
+.req { font: 0.86rem/1.5 var(--font-mono); background: var(--sunken); padding: 8px 12px; border-radius: 6px; overflow-wrap: anywhere; }
+.req .verb { font-weight: 600; color: var(--accent); }
+.req .st { color: var(--good); font-weight: 600; }
+.req .dim { color: var(--muted); }
+pre.code {
+  margin: 0; background: var(--sunken); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px;
+  font: 12.5px/1.6 var(--font-mono); overflow: auto; max-height: 440px; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--ink);
+}
+pre.code .hl { display: block; background: var(--warn-wash); margin: 0 -12px; padding: 0 12px 0 9px; border-left: 3px solid var(--warn); }
+pre.code .dim { color: var(--muted); }
+.callout { border-left: 3px solid var(--accent); background: var(--accent-wash); padding: 8px 12px; border-radius: 0 6px 6px 0; font-size: 0.92rem; margin: 12px 0 0; }
+.callout.warn { border-color: var(--warn); background: var(--warn-wash); }
+.callout.crit { border-color: var(--crit); background: var(--crit-wash); }
+.ladder { display: grid; gap: 0; max-width: 640px; }
+.rung { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 12px; align-items: center; }
+.rung .lv { font: 600 0.75rem var(--font-display); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.rung .box { border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; background: var(--surface); }
+.rung .box.self { border-color: var(--self); box-shadow: inset 3px 0 0 var(--self); }
+.rung .box small { display: block; color: var(--muted); font-size: 0.8rem; }
+.rung .via { grid-column: 2; color: var(--muted); font-size: 0.82rem; padding: 4px 0 4px 14px; border-left: 2px dashed var(--line); margin-left: 14px; }
+.rules { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
+.rule { background: var(--sunken); border-radius: 6px; padding: 10px 12px; font-size: 0.9rem; }
+.rule b { display: block; font: 700 1.1rem var(--font-display); }
+.yes { color: var(--good); font-weight: 600; } .no { color: var(--crit); font-weight: 600; }
+.stepnav { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); }
+.stepnav button {
+  font: 600 0.95rem var(--font-display); padding: 8px 16px; border-radius: 6px; cursor: pointer;
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+}
+.stepnav button.primary { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+.stepnav button:disabled { opacity: .45; cursor: default; }
+.stepnav .pos { color: var(--muted); font-size: 0.88rem; }
 
 footer { margin-top: 28px; color: var(--muted); font-size: 0.85rem; }
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
 </style>
 </head>
 <body>
@@ -179,37 +283,74 @@ footer { margin-top: 28px; color: var(--muted); font-size: 0.85rem; }
     <div class="brand">
       <h1>Model Lineage Explorer</h1>
       <span class="sub" id="coverage">Loading lineage data…</span>
+      <nav class="tabs" aria-label="Sections">
+        <a href="#findings" data-tab="findings">Findings</a>
+        <a href="#explore" data-tab="explore">Explorer</a>
+        <a href="#how" data-tab="how">How it works</a>
+      </nav>
     </div>
     <div class="search" role="combobox" aria-haspopup="listbox" aria-owns="suggest" aria-expanded="false" id="combo">
       <label for="q" class="sub" style="position:absolute;left:-9999px">Model name</label>
       <input id="q" type="search" autocomplete="off" spellcheck="false"
-             placeholder="Type a model name, e.g. zephyr-7b-beta or Qwen/Qwen2.5-7B-Instruct" aria-controls="suggest">
+             placeholder="Search a model, e.g. zephyr-7b-beta or Qwen/Qwen2.5-7B-Instruct" aria-controls="suggest">
       <ul class="suggest" id="suggest" role="listbox" hidden></ul>
     </div>
-    <div class="examples" id="examples"><span>Try:</span></div>
   </header>
 
-  <main>
-    <div class="col">
-      <section class="panel" id="card" aria-live="polite"></section>
-      <section class="panel"><h2>Drawbacks</h2><div id="drawbacks"></div></section>
-      <section class="panel"><h2>Better alternatives</h2><div id="recs"></div></section>
-    </div>
-    <div class="col">
-      <section class="panel"><h2>Lineage chain</h2><div class="chains" id="chains"></div></section>
-      <section class="panel">
-        <h2>Family graph</h2>
-        <div id="graph" role="img" aria-label="Lineage graph around the selected model"></div>
-        <div class="legend" id="legend"></div>
-      </section>
-      <section class="panel"><h2>Numbers</h2><div class="charts" id="charts"></div></section>
-    </div>
-  </main>
+  <!-- ===================== Findings ===================== -->
+  <div id="tab-findings" data-panel="findings" hidden>
+    <div class="story" id="story"></div>
+  </div>
+
+  <!-- ===================== Explorer ===================== -->
+  <div id="tab-explore" data-panel="explore" hidden>
+    <div class="examples" id="examples"><span>Try:</span></div>
+    <main class="bench">
+      <div class="col">
+        <section class="panel" id="card" aria-live="polite"></section>
+        <section class="panel"><h2>Drawbacks</h2><div id="drawbacks"></div></section>
+        <section class="panel"><h2>Better alternatives</h2><div id="recs"></div></section>
+      </div>
+      <div class="col">
+        <section class="panel"><h2>Where it comes from</h2><div class="chains" id="chains"></div></section>
+        <section class="panel">
+          <h2>Family graph</h2>
+          <div id="graph" class="graph" role="img" aria-label="Lineage graph around the selected model"></div>
+          <div class="legend" id="legend"></div>
+        </section>
+        <section class="panel"><h2>Numbers</h2><div class="charts" id="charts"></div></section>
+      </div>
+    </main>
+  </div>
+
+  <!-- ===================== How it works ===================== -->
+  <div id="tab-how" data-panel="how" hidden>
+    <section class="panel demo-head">
+      <h2>Follow one model through the pipeline</h2>
+      <p class="empty" style="margin-bottom:10px">Every step below replays what the crawler really saw for this model: the cached
+        responses, the JSON inside them, and the database rows before and after cleaning. Pick a model, then use
+        <b>Next</b> (or the → key).</p>
+      <div class="cases" id="cases"></div>
+      <p class="note" id="case-blurb" style="margin-top:0"></p>
+    </section>
+    <section class="panel" style="margin-top:20px">
+      <ol class="steps" id="steps"></ol>
+      <div class="stage" id="stage" aria-live="polite"></div>
+      <div class="stepnav">
+        <button id="prev" type="button">← Back</button>
+        <span class="pos" id="pos"></span>
+        <button id="next" type="button" class="primary">Next →</button>
+      </div>
+    </section>
+  </div>
+
   <footer id="foot"></footer>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.9/standalone/umd/vis-network.min.js"></script>
 <script src="data.js"></script>
+<script src="findings.js"></script>
+<script src="demo.js"></script>
 <script>
 "use strict";
 const D = window.LINEAGE;
@@ -217,6 +358,7 @@ const F = Object.fromEntries(D.meta.fields.map((f, i) => [f, i]));
 const REL = D.meta.relations;
 const N = D.ids.length;
 const lowerIndex = new Map(D.ids.map((id, i) => [id.toLowerCase(), i]));
+const indexOf = (id) => (id == null ? undefined : lowerIndex.get(String(id).toLowerCase()));
 const parents = Array.from({ length: N }, () => []);   // [parentIndex, relation, flags]
 const children = Array.from({ length: N }, () => []);
 for (let k = 0; k < D.e.length; k += 4) {
@@ -227,11 +369,16 @@ for (let k = 0; k < D.e.length; k += 4) {
 const LEVEL = { permissive: 0, copyleft: 1, restricted: 2, noncommercial: 3 };
 const REL_VERB = { finetune: "fine-tuned", adapter: "adapter", quantized: "quantized", merge: "merged", unknown: "derived" };
 const REL_NOUN = { finetune: "fine-tune", adapter: "adapter", quantized: "quantization", merge: "merge", unknown: "derivative" };
+const RELS4 = ["finetune", "adapter", "quantized", "merge"];
 const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch]));
 const fmt = (n) => n == null ? "–" : n >= 1e6 ? (n / 1e6).toFixed(1).replace(/\.0$/, "") + "M" : n >= 1e3 ? (n / 1e3).toFixed(1).replace(/\.0$/, "") + "K" : String(n);
-const short = (id) => id.includes("/") ? id.split("/").slice(1).join("/") : id;
+const num = (n) => n == null ? "–" : Number(n).toLocaleString("en-US");
+const pct = (x, d = 0) => x == null ? "–" : (100 * x).toFixed(d) + " %";
+const short = (id) => id && id.includes("/") ? id.split("/").slice(1).join("/") : id;
+// a model id as a link into the explorer when it's in the data, plain text otherwise
+const link = (id) => { const i = indexOf(id); return i == null ? `<span class="mono">${esc(id)}</span>` : `<button class="goto" data-go="${i}">${esc(id)}</button>`; };
 
 // ---- model accessors ------------------------------------------------------------------
 const M = (i) => D.m[i];                     // null = only seen in a listing, not scraped
@@ -258,6 +405,26 @@ function hasLicenseConflict(i) {
     return cat in LEVEL && pc in LEVEL && LEVEL[cat] < LEVEL[pc];
   }).map(([p]) => p);
 }
+
+// ---- tabs (the hash is the state: #findings, #explore, #how, #model/<id>) ------------------
+let tab = null;
+function showTab(name) {
+  tab = name;
+  document.querySelectorAll("[data-panel]").forEach((el) => (el.hidden = el.dataset.panel !== name));
+  document.querySelectorAll(".tabs a").forEach((a) => a.dataset.tab === name ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current"));
+  // vis-network can't lay out inside a hidden element, so graphs draw when their tab shows
+  if (name === "explore" && pendingGraph != null) { renderGraph(pendingGraph, "graph", "legend"); pendingGraph = null; }
+  if (name === "how") renderStep();
+}
+function route() {
+  const h = decodeURIComponent(location.hash.slice(1));
+  if (h.startsWith("model/")) {
+    const i = indexOf(h.slice(6));
+    if (i != null) { select(i, { push: false }); return; }
+  }
+  showTab(["findings", "explore", "how"].includes(h) ? h : "findings");
+}
+window.addEventListener("hashchange", route);
 
 // ---- search ---------------------------------------------------------------------------
 const q = $("q"), list = $("suggest"), combo = $("combo");
@@ -313,11 +480,16 @@ list.addEventListener("mousedown", (e) => {
 q.addEventListener("blur", () => setTimeout(() => (list.hidden = true), 120));
 
 // ---- selection --------------------------------------------------------------------------
-let network = null;
-function select(i) {
+const networks = new Map();      // container id -> vis.Network
+let pendingGraph = null;
+function select(i, { push = true } = {}) {
   q.value = D.ids[i];
   list.hidden = true; combo.setAttribute("aria-expanded", "false");
-  renderCard(i); renderDrawbacks(i); renderRecs(i); renderChains(i); renderGraph(i); renderCharts(i);
+  renderCard(i); renderDrawbacks(i); renderRecs(i); renderChains(i, "chains"); renderCharts(i);
+  pendingGraph = i;
+  const hash = "#model/" + D.ids[i];
+  if (push && decodeURIComponent(location.hash) !== hash) history.pushState(null, "", hash);
+  showTab("explore");
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 document.addEventListener("click", (e) => {
@@ -335,11 +507,12 @@ function renderCard(i) {
   if (!M(i)) {
     const p = parents[i].map(([pi, r]) => `${REL_NOUN[r]} of <span class="mono">${esc(D.ids[pi])}</span>`).join("; ");
     $("card").innerHTML = html + `<div class="chips">${fam ? `<span class="chip">${fam} family</span>` : ""}</div>
-      <p class="note">Seen in its parent's listing (${p || "no parent recorded"}) but not scraped yet, so there's no metadata for it.
-      The crawl takes the most-downloaded children first; this one may appear in a later update.</p>`;
+      <p class="note">Seen in its parent's listing (${p || "no parent recorded"}) but not scraped, so there's no metadata for it.
+      The crawl takes the most-downloaded children first and stops at ${D.meta.scraped.toLocaleString()} models.</p>`;
     return;
   }
   const lic = get(i, "license"), cat = get(i, "license_category");
+  const seed = seedOf(i);
   const chips = [
     fam && `<span class="chip">${fam} family</span>`,
     rels.length ? `<span class="chip">${rels.map((r) => REL_NOUN[r]).join(" + ")}</span>` : `<span class="chip">base model</span>`,
@@ -348,6 +521,7 @@ function renderCard(i) {
     get(i, "gated") && get(i, "gated") !== "no" && `<span class="chip">gated</span>`,
   ].filter(Boolean).join("");
   const created = get(i, "created_at_is_floor") ? "≤ 2022-03" : get(i, "created_month") ?? "–";
+  const depth = get(i, "depth");
   html += `<div class="chips">${chips}</div>
     <dl class="stats">
       <div><dt>Downloads (30 d)</dt><dd>${fmt(dl(i))}</dd></div>
@@ -355,7 +529,8 @@ function renderCard(i) {
       <div><dt>Created</dt><dd>${created}</dd></div>
       <div><dt>Children on HF</dt><dd>${fmt(get(i, "hf_children_total"))}</dd></div>
       <div><dt>Influence rank</dt><dd>#${(i + 1).toLocaleString()}</dd></div>
-    </dl>`;
+    </dl>
+    ${seed != null ? `<p class="note">Originates from <b class="mono">${esc(D.meta.seeds[seed])}</b>${depth ? `, found ${depth} level${depth > 1 ? "s" : ""} below it in the crawl` : " (one of the 10 seed models)"}.</p>` : ""}`;
   $("card").innerHTML = html;
 }
 
@@ -369,7 +544,7 @@ const median = (xs) => { if (!xs.length) return 0; const s = [...xs].sort((a, b)
 
 function drawbacks(i) {
   const out = [];   // [severity, title, text]
-  if (!M(i)) return [["note", "Limited data", "This model was only seen in a listing, so its license, task and downloads aren't known yet."]];
+  if (!M(i)) return [["note", "Limited data", "This model was only seen in a listing, so its license, task and downloads aren't known."]];
   const lic = get(i, "license"), cat = get(i, "license_category");
   for (const p of hasLicenseConflict(i)) {
     out.push(["crit", "License likely conflicts with its parent",
@@ -475,7 +650,7 @@ function paths(i, limit = 12) {
   })(i, [[i, null]], new Set([i]));
   return out;
 }
-function renderChains(i) {
+function renderChains(i, target) {
   const ps = paths(i);
   const kids = children[i].length;
   // each step is [model, relation of the next model down to it]
@@ -483,14 +658,14 @@ function renderChains(i) {
       const node = n === i ? `<span class="node self">${esc(D.ids[n])}</span>` : `<button class="node" data-go="${n}">${esc(D.ids[n])}</button>`;
       return node + (k < path.length - 1 ? `<span class="arrow">→ ${REL_VERB[rel]} →</span>` : "");
     }).join("")}${kids ? `<span class="arrow">→</span><span class="more">${kids.toLocaleString()} known derivative${kids > 1 ? "s" : ""}</span>` : ""}</div>`).join("");
-  $("chains").innerHTML = ps.length === 1 && ps[0].length === 1
+  $(target).innerHTML = ps.length === 1 && ps[0].length === 1
     ? `<p class="empty">This is a base model: it doesn't derive from anything in the data. It has ${kids.toLocaleString()} known derivatives.</p>`
     : html + (ps.length >= 12 ? `<p class="empty">Showing the first 12 paths.</p>` : "");
 }
 
 // ---- graph ------------------------------------------------------------------------------------
 const DASH = { finetune: false, adapter: [6, 4], quantized: [2, 3], merge: [10, 3, 2, 3], unknown: [1, 4] };
-function renderGraph(i) {
+function renderGraph(i, target, legendTarget) {
   const role = new Map();
   // Big merges can have 30+ parents: show the 8 most influential (ids are sorted by
   // influence, so a lower index is a stronger model) with their chains.
@@ -556,52 +731,525 @@ function renderGraph(i) {
     physics: false, interaction: { hover: true, tooltipDelay: 100 },
     edges: { smooth: { type: "cubicBezier", forceDirection: "vertical", roundness: 0.4 } },
   };
-  if (network) network.destroy();
-  network = new vis.Network($("graph"), data, options);
+  if (networks.has(target)) networks.get(target).destroy();
+  const network = new vis.Network($(target), data, options);
+  networks.set(target, network);
   network.on("doubleClick", (e) => { if (e.nodes.length && e.nodes[0] !== i) select(e.nodes[0]); });
   const swatch = (v, t) => `<span><i style="background:${color[v]}"></i>${t}</span>`;
   const line = (r) => `<span><svg width="30" height="8" aria-hidden="true"><line x1="0" y1="4" x2="30" y2="4" stroke="${css("--muted")}" stroke-width="2" ${DASH[r] ? `stroke-dasharray="${DASH[r].join(" ")}"` : ""}/></svg>${r}</span>`;
-  $("legend").innerHTML = swatch("anc", "ancestors") + swatch("self", "this model") + swatch("kid", "derivatives") + swatch("sib", "siblings")
-    + ["finetune", "adapter", "quantized", "merge"].map(line).join("")
+  $(legendTarget).innerHTML = swatch("anc", "ancestors") + swatch("self", "this model") + swatch("kid", "derivatives") + swatch("sib", "siblings")
+    + RELS4.map(line).join("")
     + (allParents.length > MAX_PARENTS ? `<span>Showing the ${MAX_PARENTS} most influential of its ${allParents.length} parents (all are in the chain list).</span>` : "")
     + (children[i].length > 12 ? `<span>Showing 12 of ${children[i].length.toLocaleString()} known derivatives.</span>` : "")
     + `<span>Arrows point to the parent. Hover for names; double-click a model to open it.</span>`;
 }
 
-// ---- charts (inline SVG, drawn to scale) ---------------------------------------------------------
-function hbar(rows, { log = false, highlight = -1, unit = "" } = {}) {
-  // rows: [label, value]; one series, so one colour (the highlighted row = this model)
-  const W = 520, rowH = 26, left = 150, right = 70, top = 6;
+// ---- chart helpers (inline SVG, drawn to scale, coloured through CSS variables) -----------------
+const fill = (v) => `style="fill:var(${v})"`;
+const clip = (s, n) => s.length > n ? s.slice(0, n - 1) + "…" : s;
+function hbar(rows, { log = false, highlight = -1, unit = "", label = 150, right = 70, fmtv = fmt, colour = "--anc", max: fixedMax } = {}) {
+  // rows: [label, value, go?, colourVar?]; one series, so one colour (the highlighted row stands out)
+  const W = 560, rowH = 26, left = label, top = 6;
   const H = top + rows.length * rowH + 22;
-  const max = Math.max(1, ...rows.map((r) => r[1]));
+  const max = fixedMax ?? Math.max(1e-9, ...rows.map((r) => r[1]));
   const sx = (v) => left + (W - left - right) * (log ? Math.log10(v + 1) / Math.log10(max + 1) : v / max);
   let s = `<svg viewBox="0 0 ${W} ${H}" role="img">`;
   const ticks = log ? [1, 10, 100, 1e3, 1e4, 1e5, 1e6, 1e7].filter((t) => t <= max * 1.01) : [0, max / 2, max];
-  for (const t of ticks) s += `<line class="grid" x1="${sx(t)}" x2="${sx(t)}" y1="${top}" y2="${H - 18}"/><text x="${sx(t)}" y="${H - 4}" font-size="11" text-anchor="middle">${fmt(Math.round(t))}</text>`;
-  rows.forEach(([label, v], k) => {
+  for (const t of ticks) s += `<line class="grid" x1="${sx(t)}" x2="${sx(t)}" y1="${top}" y2="${H - 18}"/><text x="${sx(t)}" y="${H - 4}" font-size="11" text-anchor="middle">${fmtv(log ? t : t)}</text>`;
+  rows.forEach(([lab, v, go, cv], k) => {
     const y = top + k * rowH;
-    const fill = k === highlight ? css("--self") : css("--anc");
-    s += `<text x="${left - 8}" y="${y + 17}" font-size="12" text-anchor="end">${esc(label.length > 22 ? label.slice(0, 21) + "…" : label)}</text>`;
-    s += `<rect x="${left}" y="${y + 5}" width="${Math.max(2, sx(v) - left)}" height="16" rx="3" fill="${fill}"/>`;
-    s += `<text class="val" x="${sx(v) + 6}" y="${y + 17}" font-size="12">${fmt(v)}${unit}</text>`;
+    const c = k === highlight ? "--self" : cv || colour;
+    s += `<g${go != null ? ` data-go="${go}"` : ""}><title>${esc(lab)}: ${fmtv(v)}${unit}</title>`;
+    s += `<text x="${left - 8}" y="${y + 17}" font-size="12" text-anchor="end">${esc(clip(lab, Math.round(left / 6.6)))}</text>`;
+    s += `<rect x="${left}" y="${y + 5}" width="${Math.max(2, sx(v) - left)}" height="16" rx="3" ${fill(c)}/>`;
+    s += `<text class="val" x="${sx(v) + 6}" y="${y + 17}" font-size="12">${fmtv(v)}${unit}</text></g>`;
   });
   return s + "</svg>";
 }
+function gbar(rows, series) {
+  // grouped horizontal bars: rows [label, [v per series]]; series [[name, colourVar]]
+  const W = 560, left = 110, right = 56, barH = 13, gap = 3, groupGap = 12, top = 4;
+  const groupH = series.length * (barH + gap) + groupGap;
+  const H = top + rows.length * groupH + 18;
+  const max = Math.max(1e-9, ...rows.flatMap((r) => r[1]));
+  const sx = (v) => left + (W - left - right) * v / max;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img">`;
+  for (const t of [0, max / 2, max]) s += `<line class="grid" x1="${sx(t)}" x2="${sx(t)}" y1="${top}" y2="${H - 16}"/><text x="${sx(t)}" y="${H - 3}" font-size="11" text-anchor="middle">${pct(t)}</text>`;
+  rows.forEach(([lab, vs], k) => {
+    const y0 = top + k * groupH;
+    s += `<text x="${left - 8}" y="${y0 + (series.length * (barH + gap)) / 2 + 4}" font-size="12.5" text-anchor="end">${esc(lab)}</text>`;
+    vs.forEach((v, j) => {
+      const y = y0 + j * (barH + gap);
+      s += `<rect x="${left}" y="${y}" width="${Math.max(2, sx(v) - left)}" height="${barH}" rx="2" ${fill(series[j][1])}><title>${esc(series[j][0])}: ${pct(v, 1)}</title></rect>`;
+      s += `<text class="val" x="${sx(v) + 5}" y="${y + barH - 2}" font-size="11.5">${pct(v)}</text>`;
+    });
+  });
+  return s + "</svg>";
+}
+function vbar(rows, { log = false, colour = "--anc", fmtv = fmt } = {}) {
+  // vertical bars: rows [label, value, note?]
+  const W = 560, H = 220, left = 40, bottom = 34, top = 18;
+  const max = Math.max(1, ...rows.map((r) => r[1]));
+  const sy = (v) => H - bottom - (H - bottom - top) * (log ? Math.log10(v + 1) / Math.log10(max + 1) : v / max);
+  const bw = (W - left - 6) / rows.length;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img">`;
+  const ticks = log ? [1, 10, 100, 1e3, 1e4, 1e5].filter((t) => t <= max * 1.01) : [0, max / 2, max];
+  for (const t of ticks) s += `<line class="grid" x1="${left}" x2="${W}" y1="${sy(t)}" y2="${sy(t)}"/><text x="${left - 6}" y="${sy(t) + 4}" font-size="10.5" text-anchor="end">${fmtv(t)}</text>`;
+  rows.forEach(([lab, v, note], k) => {
+    const x = left + k * bw + 2;
+    s += `<g><title>${esc(note || lab)}: ${num(v)}</title><rect x="${x}" y="${sy(v)}" width="${Math.max(2, bw - 4)}" height="${Math.max(1, H - bottom - sy(v))}" rx="2" ${fill(colour)}/>`;
+    s += `<text x="${x + (bw - 4) / 2}" y="${H - bottom + 14}" font-size="10.5" text-anchor="middle">${esc(lab)}</text></g>`;
+    if (bw > 24) s += `<text class="val" x="${x + (bw - 4) / 2}" y="${sy(v) - 4}" font-size="10" text-anchor="middle">${fmt(v)}</text>`;
+  });
+  return s + "</svg>";
+}
+function stack100(labels, shares, keys, counts) {
+  // one 100 % stacked column per label; keys are relations (fixed colour slots)
+  const W = 560, H = 240, left = 34, bottom = 40, top = 8;
+  const bw = (W - left - 4) / labels.length;
+  const sy = (v) => top + (H - bottom - top) * (1 - v);
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img">`;
+  for (const t of [0, 0.25, 0.5, 0.75, 1]) s += `<line class="grid" x1="${left}" x2="${W}" y1="${sy(t)}" y2="${sy(t)}"/><text x="${left - 5}" y="${sy(t) + 4}" font-size="10" text-anchor="end">${t * 100}%</text>`;
+  labels.forEach((lab, k) => {
+    const x = left + k * bw + 1.5;
+    const tot = keys.reduce((a, key) => a + (shares[key][k] || 0), 0) || 1;
+    let acc = 0;
+    s += `<g><title>${esc(lab)} (${num(counts[k])} derivatives): ${keys.map((key) => `${key} ${pct(shares[key][k] / tot)}`).join(", ")}</title>`;
+    for (const key of keys) {
+      const v = (shares[key][k] || 0) / tot;
+      s += `<rect x="${x}" y="${sy(acc + v)}" width="${Math.max(1, bw - 3)}" height="${(H - bottom - top) * v}" ${fill("--r-" + key)}/>`;
+      acc += v;
+    }
+    s += `</g>`;
+    if (k % 2 === 0 || labels.length < 12) s += `<text x="${x + bw / 2}" y="${H - bottom + 13}" font-size="9.5" text-anchor="end" transform="rotate(-40 ${x + bw / 2} ${H - bottom + 13})">${esc(lab)}</text>`;
+  });
+  return s + "</svg>";
+}
+function spark(values, peak) {
+  const W = 200, H = 48, n = values.length, max = Math.max(1, ...values);
+  const bw = W / n;
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-hidden="true">` + values.map((v, k) =>
+    `<rect x="${k * bw + 0.5}" y="${H - 2 - (H - 4) * v / max}" width="${Math.max(1, bw - 1)}" height="${Math.max(0.5, (H - 4) * v / max)}" ${fill(k === peak ? "--self" : "--anc")}/>`).join("")
+    + `<line class="grid" x1="0" x2="${W}" y1="${H - 1.5}" y2="${H - 1.5}"/></svg>`;
+}
+const relLegend = () => `<div class="legend">${RELS4.map((r) => `<span><i class="sq" style="background:var(--r-${r})"></i>${REL_NOUN[r]}s</span>`).join("")}</div>`;
+
+// ---- explorer charts -----------------------------------------------------------------------------
 function renderCharts(i) {
   const parts = [];
   const kids = get(i, "hf_children");
   if (kids) {
-    const rows = ["finetune", "adapter", "quantized", "merge"].map((r, k) => [REL_NOUN[r] + "s", kids[k] || 0]);
+    const rows = RELS4.map((r, k) => [REL_NOUN[r] + "s", kids[k] || 0, null, "--r-" + r]);
     parts.push(`<div class="chart"><h3>What's built on it</h3><p class="cap">Direct children on Hugging Face, by relation (exact counts).</p>${hbar(rows)}</div>`);
   }
   const sibs = siblingsOf(i).sort((a, b) => dl(b) - dl(a)).slice(0, 9);
   if (M(i) && sibs.length) {
-    const rows = [...sibs, i].sort((a, b) => dl(b) - dl(a)).map((n) => [short(D.ids[n]), dl(n)]);
-    const hi = rows.findIndex(([l]) => l === short(D.ids[i]));
-    parts.push(`<div class="chart"><h3>Downloads vs its siblings</h3><p class="cap">Last 30 days, log scale; orange is this model.</p>${hbar(rows, { log: true, highlight: hi })}</div>`);
+    const rows = [...sibs, i].sort((a, b) => dl(b) - dl(a)).map((n) => [short(D.ids[n]), dl(n), n === i ? null : n]);
+    const hi = rows.findIndex(([, , go]) => go == null);
+    parts.push(`<div class="chart"><h3>Downloads vs its siblings</h3><p class="cap">Last 30 days, log scale; orange is this model. Click a bar to open it.</p>${hbar(rows, { log: true, highlight: hi })}</div>`);
   }
   $("charts").innerHTML = parts.join("") || `<p class="empty">No numbers to chart for this model yet.</p>`;
 }
+
+// ---- findings tab ---------------------------------------------------------------------------------
+const OUTCOME = {
+  same: "same license", child_unknown: "child declares none", loosened: "looser than parent (conflict)",
+  changed_same_category: "changed, same kind", parent_unknown: "parent declares none", changed_custom: "custom license", tightened: "stricter than parent",
+};
+function renderFindings() {
+  const R = window.FINDINGS;
+  if (!R) { $("story").innerHTML = `<section class="panel"><p class="empty">findings.js is missing. Run <span class="mono">python -m viz.site_findings</span>.</p></section>`; return; }
+  const g = R.glance;
+  const sec = (id, kicker, headline, lede, body) => `<section class="panel finding" id="f-${id}"><p class="kicker">${kicker}</p><h3 class="headline">${headline}</h3>${lede ? `<p class="lede">${lede}</p>` : ""}${body}</section>`;
+  const out = [];
+
+  // hero
+  const status = R.final
+    ? `<span class="status final">Final results · crawl finished</span>`
+    : `<span class="status">Snapshot of a crawl in progress · ${num(g.scraped)} of ${num(R.target)} models</span>`;
+  out.push(`<section class="panel hero">${status}
+    <h2 class="lead">${num(g.scraped)} Hugging Face models, traced back to ${D.meta.seeds.length} base models</h2>
+    <p>We crawled public model pages starting from ten popular base models (Llama, Qwen, Mistral, Gemma, Phi, DeepSeek, BERT), followed every
+      "fine-tuned / adapter / quantized / merged from" link three levels down, cleaned the metadata, and mined the resulting lineage graph.</p>
+    <div class="tiles">
+      <div class="tile"><b>${num(g.known)}</b><span>models seen in total (scraped + named by a parent)</span></div>
+      <div class="tile"><b>${num(g.edges)}</b><span>lineage links between them</span></div>
+      <div class="tile"><b>${g.communities}</b><span>communities, ${pct(g.purity)} pure by family</span></div>
+      <div class="tile"><b>${g.max_generation}</b><span>generations in the deepest chain</span></div>
+      <div class="tile"><b>${num(g.conflicts)}</b><span>derivatives with a looser license than their parent</span></div>
+      <div class="tile"><b>${esc(g.spotcheck)}</b><span>agreement with the official API (spot-check)</span></div>
+    </div>
+    <nav class="toc" aria-label="Findings">${[["rank", "Influence"], ["rel", "What derivatives are"], ["gen", "Dead ends"], ["lic", "License drift"], ["fam", "Families"], ["time", "Over time"], ["dq", "Data quality"], ["check", "Validation"]]
+      .map(([id, t]) => `<a href="#findings" data-jump="f-${id}">${t}</a>`).join("")}</nav>
+  </section>`);
+
+  // 1. influence
+  const rk = R.ranking;
+  const jump = rk.slice(0, 15).reduce((b, r) => (r.plain_pagerank_rank - r.rank > b.plain_pagerank_rank - b.rank ? r : b), rk[0]);
+  out.push(sec("rank", "1 · Influence ranking", `${short(rk[0].model)} and ${short(rk[1].model)} are the most influential bases`,
+    `Weighted PageRank over every known lineage link: a model scores high when many models, and influential ones, derive from it. The crawl
+     reads at most ${window.DEMO ? DEMO.config.cap : 300} children per relation, so the weighting adds the skipped ones back using Hugging Face's exact child counts.
+     That matters: <b class="mono">${esc(short(jump.model))}</b> sits at #${num(jump.plain_pagerank_rank)} by plain PageRank but #${jump.rank} once corrected,
+     because it has ${num(jump.hf_children_total)} children on Hugging Face and only ${num(jump.derivatives_in_graph)} in our sample.`,
+    `<div class="figure">${hbar(rk.slice(0, 15).map((r) => [r.model, r.weighted_pagerank, indexOf(r.model)]),
+        { label: 290, right: 56, fmtv: (v) => pct(v, 1), max: rk[0].weighted_pagerank * 1.05 })}</div>
+     <p class="cap" style="color:var(--muted);font-size:.85rem;margin:6px 0 0">Share of total influence. Click a bar to open the model.</p>
+     <div class="scroll" style="margin-top:12px"><table class="tbl"><thead><tr><th>#</th><th>Model</th><th class="n">Weighted PR</th><th class="n">Plain rank</th><th class="n">Children on HF</th><th class="n">In sample</th><th>License</th></tr></thead><tbody>
+     ${rk.slice(0, 10).map((r) => `<tr><td>${r.rank}</td><td>${link(r.model)}</td><td class="n">${r.weighted_pagerank.toFixed(4)}</td><td class="n">${num(r.plain_pagerank_rank)}</td><td class="n">${num(r.hf_children_total)}</td><td class="n">${num(r.derivatives_in_graph)}</td><td>${esc(r.license)}</td></tr>`).join("")}
+     </tbody></table></div>`));
+
+  // 2. relation mix
+  const rel = Object.fromEntries(R.relations.map((r) => [r.relation, r]));
+  const topRel = R.relations.reduce((a, b) => (b.population_share > a.population_share ? b : a));
+  out.push(sec("rel", "2 · What derivatives are", `${pct(topRel.population_share)} of derivatives are ${REL_NOUN[topRel.relation]}s; merges are rare (${pct(rel.merge?.population_share)})`,
+    `Counted over the direct children Hugging Face lists for every scraped model (${num(R.relations.reduce((a, r) => a + r.population_count, 0))} children).
+     Our crawl sample is deliberately balanced between relations, so it over-represents quantizations and merges; population numbers come from HF's own counts.`,
+    `<div class="figure">${gbar(R.relations.map((r) => [REL_NOUN[r.relation] + "s", [r.population_share, r.sample_share]]), [["All of Hugging Face (population)", "--anc"], ["Our crawl sample", "--sib"]])}</div>
+     <div class="legend"><span><i class="sq" style="background:var(--anc)"></i>all children on Hugging Face</span><span><i class="sq" style="background:var(--sib)"></i>our crawl sample</span></div>`));
+
+  // 3. generations
+  const g1 = R.generations.find((r) => r.generation === 1);
+  out.push(sec("gen", "3 · Lineage depth", `${pct(1 - g1.share_with_children)} of first-generation derivatives are dead ends`,
+    `Of ${num(g1.models)} direct derivatives of the seeds, only ${pct(g1.share_with_children)} have children of their own. The median is
+     ${g1.branching_median} children, but a few become major bases themselves (up to ${num(g1.branching_max)} children). The longest chain is
+     ${g.max_generation} generations deep.`,
+    `<div class="figure">${vbar(R.generations.map((r) => [String(r.generation), r.models, `generation ${r.generation}: ${pct(r.share_with_children)} have children`]), { log: true })}</div>
+     <p class="cap" style="color:var(--muted);font-size:.85rem;margin:6px 0 0">Scraped models per generation (log scale). Generation = longest chain of parents back to a seed; 0 = the seeds.</p>`));
+
+  // 4. licenses
+  const L = R.license;
+  const fams = L.by_family.slice().sort((a, b) => b.conflict_rate - a.conflict_rate);
+  const [tp, tc, tn] = L.top_pairs[0] || ["", "", 0];
+  out.push(sec("lic", "4 · License drift", `${num(g.conflicts)} derivatives claim a looser license than their parent allows`,
+    `Most often a <span class="mono">${esc(tp)}</span> model republished as <span class="mono">${esc(tc)}</span> (${num(tn)} times). Llama and Gemma
+     licenses require derivatives to keep their terms, so these licenses are likely invalid. Families with permissive base licenses (Qwen, Mistral, Phi,
+     DeepSeek, BERT) can hardly drift this way, so they sit at or near 0 %. Another ${num(g.child_unknown)} derivatives declare no license at all.`,
+    `<div class="split">
+      <div class="chart"><h3>Conflict rate by seed family</h3><p class="cap">Share of parent→child links where the child's license is looser.</p>
+        ${hbar(fams.map((r) => [short(r.family), r.conflict_rate]), { fmtv: (v) => pct(v), max: Math.max(...fams.map((r) => r.conflict_rate)) * 1.1 || 1, colour: "--crit" })}</div>
+      <div class="chart"><h3>Most common conflicts</h3><p class="cap">Parent license → child license.</p>
+        <table class="tbl"><thead><tr><th>Parent</th><th></th><th>Child</th><th class="n">Links</th></tr></thead><tbody>
+        ${L.top_pairs.map(([p, c, n]) => `<tr><td class="mono">${esc(p)}</td><td>→</td><td class="mono">${esc(c)}</td><td class="n">${num(n)}</td></tr>`).join("")}</tbody></table></div>
+     </div>
+     <div class="chart" style="margin-top:18px"><h3>Every parent→child link, by license outcome</h3><p class="cap">${num(g.pairs_compared)} links between scraped models.</p>
+      ${hbar(Object.entries(L.outcomes).sort((a, b) => b[1] - a[1]).map(([k, v]) => [OUTCOME[k] || k, v, null, k === "loosened" ? "--crit" : k === "child_unknown" ? "--warn" : "--anc"]), { label: 200 })}</div>`));
+
+  // 5. families
+  const cross = R.cross_family;
+  const mergeShare = cross.length ? cross.filter((c) => c.relation === "merge").length / cross.length : 0;
+  out.push(sec("fam", "5 · Model families", `Louvain finds ${g.communities} communities, and they follow the seed families (${pct(g.purity)} pure)`,
+    `Community detection on the lineage graph, with no family labels given to it, rediscovers the families. Big families split into sub-communities around
+     popular intermediate models (an Instruct version, an unsloth re-upload). Only ${cross.length} links cross families, ${pct(mergeShare)} of them merges.`,
+    `<div class="scroll"><table class="tbl"><thead><tr><th class="n">Size</th><th>Seed family</th><th>Most derived from</th><th>Relation mix</th><th>Main license</th></tr></thead><tbody>
+      ${R.communities.slice(0, 12).map((c) => {
+        const tot = RELS4.reduce((a, r) => a + c["rel_" + r], 0) || 1;
+        return `<tr><td class="n">${num(c.size)}</td><td>${esc(short(c.dominant_family))}</td><td>${link(c.most_derived_from)}</td>
+          <td><div class="mix" title="${RELS4.map((r) => `${r} ${c["rel_" + r]}`).join(", ")}">${RELS4.map((r) => `<i style="width:${100 * c["rel_" + r] / tot}%;background:var(--r-${r})"></i>`).join("")}</div></td>
+          <td>${esc(c.top_license_category)}</td></tr>`;
+      }).join("")}</tbody></table></div>${relLegend()}
+     <h4 class="kicker" style="margin-top:18px">Links that cross families</h4>
+     <ul class="issues">${cross.map((c) => `<li class="issue note"><span class="sev">${esc(c.relation)}</span><div>${link(c.child)} <span class="empty">(${esc(short(c.child_family))} community)</span><p>derives from ${link(c.parent)} (${esc(short(c.parent_family))})</p></div></li>`).join("")}</ul>`));
+
+  // 6. trends
+  const T = R.trends;
+  const keep = T.quarters.map((q, k) => k).filter((k) => T.counts[k] >= 20);
+  const qs = keep.map((k) => T.quarters[k]);
+  const share = Object.fromEntries(RELS4.map((r) => [r, keep.map((k) => T.share[r][k])]));
+  const last = keep[keep.length - 1];
+  const peakQ = keep.reduce((b, k) => (T.share.quantized[k] > T.share.quantized[b] ? k : b), keep[0]);
+  const mean = (ks) => ks.reduce((a, k) => a + T.share.adapter[k], 0) / Math.max(1, ks.length);
+  const adapterTrend = mean(keep.slice(-4)) > mean(keep.slice(-8, -4)) ? "adapters are on the rise again" : "fine-tunes remain the default";
+  out.push(sec("time", "6 · Over time", `Quantizations peaked in ${T.quarters[peakQ]} (${pct(T.share.quantized[peakQ])}); ${adapterTrend}`,
+    `How each quarter's new derivatives (in our sample) were made, by creation date. In ${T.quarters[last]}: ${RELS4.map((r) => `${REL_NOUN[r]}s ${pct(T.share[r][last])}`).join(", ")}.
+     Below, each family's derivatives arrive in a wave that peaks within a few quarters of the base model's release.`,
+    `<div class="figure">${stack100(qs, share, RELS4, keep.map((k) => T.counts[k]))}</div>${relLegend()}
+     <div class="smalls" style="margin-top:18px">${Object.entries(T.families).map(([seed, vals]) => {
+        const first = vals.findIndex((v) => v > 0);
+        const v = vals.slice(first < 0 ? 0 : first), qq = T.family_quarters.slice(first < 0 ? 0 : first);
+        const peak = v.indexOf(Math.max(...v));
+        return `<div class="small"><h4>${esc(short(seed))}</h4><p>peak ${esc(qq[peak])} · ${num(v[peak])} new</p>${spark(v, peak)}</div>`;
+      }).join("")}</div>`));
+
+  // 7. data quality
+  const Q = R.quality;
+  const qv = (m) => (Q.find((r) => r.metric === m) || {});
+  out.push(sec("dq", "7 · Data quality", `${esc(qv("missing license").detail)} of models declare no license, and ${pct(g.broken_links / g.declared_bases, 1)} of declared parents are broken links`,
+    `Model cards are free-form YAML written by uploaders, so cleaning matters. Every issue below is counted, kept as evidence in a
+     <span class="mono">quality_issues</span> table, and either fixed (renamed repos, inherited tasks) or flagged (doubtful dates, broken links).`,
+    `<div class="tiles" style="margin-top:0">
+      <div class="tile"><b>${esc(qv("missing license").detail)}</b><span>of models declare no license</span></div>
+      <div class="tile"><b>${esc(qv("missing pipeline_tag (as published)").detail)}</b><span>don't say their task (filled in from the parent)</span></div>
+      <div class="tile"><b>${esc(qv("  old name of a renamed repo").detail)}</b><span>of declared parents use a repo's old name (resolved)</span></div>
+      <div class="tile"><b>${num(g.temporal_anomalies)}</b><span>models created &gt;7 days before the parent they claim</span></div>
+      <div class="tile"><b>${esc(qv("listing edges confirmed by child's tags").detail.split(" ")[0])} %</b><span>of listing links confirmed by the child's own tags</span></div>
+     </div>
+     <div class="scroll" style="margin-top:16px"><table class="tbl"><thead><tr><th>Check</th><th class="n">Value</th><th>Detail</th></tr></thead><tbody>
+      ${Q.map((r) => `<tr class="${r.metric.startsWith("  ") ? "indent" : ""}"><td>${esc(r.metric.trim())}</td><td class="n">${esc(isNaN(+r.value) ? r.value : num(+r.value))}</td><td>${esc(r.detail ?? "")}</td></tr>`).join("")}
+     </tbody></table></div>`));
+
+  // 8. validation
+  const off = R.spotcheck.filter((r) => r.matches < r.compared).map((r) => r.field.split(" (")[0]);
+  out.push(sec("check", "8 · Validation", `Our own PageRank and HITS match networkx, and the scraped data matches the official API`,
+    `The ranking algorithms are written from scratch (power iteration) and checked against networkx on the same graph. Separately, 50 random scraped models were
+     re-fetched through the Hugging Face API and compared field by field.
+     ${off.length ? `Only ${off.join(" and ")} differ, because those counts keep moving between the scrape and the check.` : "Every field matched."}`,
+    `<div class="split">
+      <div class="scroll"><table class="tbl"><thead><tr><th>Algorithm</th><th class="n">Iterations</th><th class="n">Max diff vs networkx</th><th class="n">Top-20 overlap</th><th class="n">Spearman</th></tr></thead><tbody>
+        ${R.verification.map((r) => `<tr><td>${esc(r.algorithm)}</td><td class="n">${r.iterations}</td><td class="n">${Number(r.max_abs_diff).toExponential(1)}</td><td class="n">${r.top20_overlap}/20</td><td class="n">${Number(r.spearman).toFixed(3)}</td></tr>`).join("")}
+      </tbody></table></div>
+      <div class="scroll"><table class="tbl"><thead><tr><th>API spot-check field</th><th class="n">Match</th></tr></thead><tbody>
+        ${R.spotcheck.map((r) => `<tr><td>${esc(r.field)}</td><td class="n">${r.matches}/${r.compared}</td></tr>`).join("")}
+      </tbody></table></div>
+     </div>`));
+
+  $("story").innerHTML = out.join("");
+}
+document.addEventListener("click", (e) => {
+  const a = e.target.closest("[data-jump]");
+  if (!a) return;
+  e.preventDefault();
+  if (tab !== "findings") { history.pushState(null, "", "#findings"); showTab("findings"); }
+  const el = $(a.dataset.jump);
+  const y = el.getBoundingClientRect().top + window.scrollY - document.querySelector("header.top").offsetHeight - 12;
+  window.scrollTo({ top: y, behavior: "smooth" });
+});
+
+// ---- how it works: step through the pipeline for one real model ---------------------------------
+const X = window.DEMO;
+let caseNo = 0, stepNo = 0;
+const day = (s) => s ? s.replace("T", " ").slice(0, 16) + " UTC" : "–";
+const kb = (n) => (n / 1000).toFixed(0) + " KB";
+function codeBlock(text, marks = []) {
+  // escape, then highlight every line containing one of `marks`
+  return `<pre class="code">${text.split("\n").map((ln) => {
+    const e = esc(ln);
+    return marks.some((m) => m && ln.includes(m)) ? `<span class="hl">${e}</span>` : e;
+  }).join("\n")}</pre>`;
+}
+const json = (o) => JSON.stringify(o, null, 2);
+const request = (url, status, fetched, extra = "") =>
+  `<div class="req"><span class="verb">GET</span> ${esc(url)}<br><span class="st">${status} OK</span> <span class="dim">· fetched ${day(fetched)} · ${extra}served from the cache on every re-run</span></div>`;
+const yn = (b) => b ? `<span class="yes">✓ yes</span>` : `<span class="no">✗ no</span>`;
+const ISSUE_TEXT = {
+  missing_license: "No license on the card or in the tags. Counted under data quality and flagged as a drawback.",
+  missing_pipeline_tag: "No task declared. Cleaning copies the parent's task and marks it as inherited.",
+  declared_base_renamed: "The card names an old repo id; Hugging Face redirects it, so cleaning maps it to the current id.",
+  declared_base_not_linked: "The card names a base that Hugging Face can't link (typo, deleted or private repo).",
+  created_at_floor: "Hugging Face shows its 2022-03-03 placeholder date for older repos; excluded from trends.",
+  declared_base_malformed: "The card's base_model is a URL, path or free text, not a model id.",
+  child_older_than_parent: "Created more than a week before its claimed parent.",
+};
+
+const STEPS = [
+  ["Plan the crawl", stepPlan], ["Find it in a listing", stepListing], ["Fetch the model page", stepFetch],
+  ["Decode the embedded JSON", stepJson], ["Parse a record", stepParse], ["Clean the data", stepClean],
+  ["Place it in the tree", stepTree], ["Feed the findings", stepFindings],
+];
+
+function stepPlan(c) {
+  const C = X.config, i = indexOf(c.id), d = c.discovery;
+  // the chain from the seed to this model, through the parent whose listing found it
+  let chain = paths(i, 40).find((p) => D.ids[p[0][0]] === c.queue.root && (!d || p.some(([n]) => D.ids[n] === d.parent))) || paths(i)[0];
+  const perLevel = (k) => D.m.reduce((a, m) => a + (m && m[F.depth] === k ? 1 : 0), 0);
+  return {
+    what: `The crawl is a breadth-first search over lineage links. It starts from ${D.meta.seeds.length} seed models, reads each scraped model's
+      children listings, and picks the next level fairly: families take turns, and within a family the (parent, relation) lists take turns, each
+      list sorted by downloads. That's how <b class="mono">${esc(c.id)}</b> was reached.`,
+    body: `<h4>Rules it follows</h4><div class="rules">
+        <div class="rule"><b>robots.txt</b>checked before the first request; disallowed paths are never fetched</div>
+        <div class="rule"><b>1 request / ${C.min_interval} s</b>Hugging Face allows 100 pages per 5 minutes; the crawler also pauses when the RateLimit header says the window is used up</div>
+        <div class="rule"><b>everything cached</b>every response is stored gzipped; a crash or a re-run never fetches a page twice</div>
+        <div class="rule"><b>${C.cap} per relation · ${C.max_depth} levels · ${num(C.max_models)} models</b>the most-downloaded children first, so the budget goes to models people use</div>
+      </div>
+      <h4>Where this model sits in the BFS</h4>
+      <div class="ladder">${chain.map(([n, r], k) => {
+        const isSelf = n === i, lv = get(n, "depth");
+        return (k ? `<div class="rung"><span></span><div class="via">↓ ${REL_VERB[chain[k - 1][1]] || "derived"} (found in its ${esc(REL_NOUN[chain[k - 1][1]] || "")} listing)</div></div>` : "")
+          + `<div class="rung"><span class="lv">${lv == null ? "not crawled" : lv === 0 ? "level 0 · seed" : "level " + lv}</span><div class="box${isSelf ? " self" : ""}">
+            <span class="mono">${esc(D.ids[n])}</span><small>${M(n) ? `${fmt(dl(n))} downloads${lv != null ? ` · one of ${num(perLevel(lv))} models scraped at this level` : ""}` : "seen in a listing only"}</small></div></div>`;
+      }).join("")}</div>
+      <p class="callout">Queued at level ${c.queue.depth} under seed <span class="mono">${esc(c.queue.root)}</span>, as model #${num(c.queue.rank + 1)} in the crawl order.</p>`,
+  };
+}
+function stepListing(c) {
+  const d = c.discovery;
+  if (!d) return { what: "This model is a seed, so no listing was needed to find it.", body: "" };
+  return {
+    what: `Children are found on Hugging Face's own filtered model list: every model whose card says it is a ${REL_NOUN[d.relation]} of
+      <span class="mono">${esc(d.parent)}</span>, sorted by downloads. The page carries its data as JSON for a <span class="mono">ModelList</span>
+      component, so the crawler reads that instead of the visible HTML.`,
+    body: `<h4>Request</h4>${request(d.url, d.status, d.fetched_at)}
+      <h4>Embedded JSON (trimmed)</h4>${codeBlock(json(d.json), [`"${c.id}"`, '"base_model:'])}
+      <h4>What the parser takes from it</h4>
+      <table class="tbl"><tbody>
+        <tr><td>Filter actually applied</td><td class="mono">${esc(d.parsed.relation)} of ${esc(d.parsed.parent_id)}</td><td class="empty">read back from the page, not trusted from the URL</td></tr>
+        <tr><td>Children on HF</td><td class="n">${num(d.parsed.total)}</td><td class="empty">numTotalItems; the crawl reads at most ${X.config.cap}</td></tr>
+        <tr><td>Our model's position</td><td class="n">#${d.position}</td><td class="empty">by downloads, on page ${d.page}</td></tr>
+        <tr><td>Next page</td><td class="mono">${d.parsed.next_page ?? "none (last page)"}</td><td class="empty">from numItemsPerPage and pageIndex</td></tr>
+      </tbody></table>
+      <p class="callout">Each child becomes a <b>listing edge</b> (child → ${esc(short(d.parent))}, ${d.relation}) and a candidate for the next BFS level.</p>`,
+  };
+}
+function stepFetch(c) {
+  const p = c.page;
+  return {
+    what: `The model page is fetched once. Hugging Face renders it on the server and embeds each interactive component's data as HTML-escaped JSON in a
+      <span class="mono">data-props</span> attribute. The parser needs only <span class="mono">ModelHeader</span> (metadata) and the "Model tree" links (child counts).`,
+    body: `<h4>Request</h4>${request(p.url, p.status, p.fetched_at, `${kb(p.bytes)} of HTML, ${kb(p.bytes_gz)} gzipped on disk · `)}
+      <h4>Components embedded in the page</h4>
+      <div class="chips">${p.targets.map((t) => `<span class="chip" style="${t === "ModelHeader" ? "border-color:var(--warn);color:var(--ink);background:var(--warn-wash)" : ""}">${esc(t)}</span>`).join("")}</div>
+      <h4>Raw HTML the parser looks for</h4>${codeBlock(p.header_tag, ['data-target="ModelHeader"'])}
+      <h4>"Model tree" links pointing at this model</h4>
+      ${p.tree_links.length ? codeBlock(p.tree_links.map((l) => `<a href="${l.href}">${l.text.replace(/\s+/g, " ")}</a>`).join("\n"), ["models"])
+        : `<p class="empty">None: nothing on Hugging Face derives from this model, so no listing requests are needed for it.</p>`}
+      <p class="callout">Why the embedded JSON and not the visible text: the JSON is the same data the page itself renders from, so it survives redesigns; visible text changes with every restyle.</p>`,
+  };
+}
+function stepJson(c) {
+  const j = c.json;
+  const lic = j.cardData?.license;
+  return {
+    what: `Unescaped and decoded, <span class="mono">ModelHeader</span> holds the model's metadata. Lineage comes from Hugging Face's computed tags:
+      for every declared parent it adds <span class="mono">base_model:&lt;parent&gt;</span> and <span class="mono">base_model:&lt;relation&gt;:&lt;parent&gt;</span>.
+      Highlighted lines are the ones the parser uses. (The author's profile block is never read.)`,
+    body: codeBlock(json(j), ['"base_model:', '"license', '"pipeline_tag"', '"createdAt"', '"downloads"', '"base_model"', '"gated"'])
+      + (Array.isArray(lic) ? `<p class="callout crit">Note <span class="mono">"license": ${esc(JSON.stringify(lic))}</span>: the card gives the license as a <b>list</b>.
+          The database column is text, so storing it crashed the crawl at model 9,025. The fix normalises single-value fields
+          (<span class="mono">["llama3.1"] → "llama3.1"</span>) and turns anything else into a recorded parse error instead of a crash.</p>` : ""),
+  };
+}
+function stepParse(c) {
+  const p = c.parsed;
+  const src = {
+    id: "model.id", author: "model.author", license: "cardData.license, else the license: tag", license_name: "cardData.license_name",
+    pipeline_tag: "model.pipeline_tag", library_name: "model.library_name", tags: "model.tags", downloads: "model.downloads (last 30 days)",
+    downloads_all_time: "model.downloadsAllTime", likes: "model.likes", created_at: "model.createdAt", last_modified: "model.lastModified",
+    gated: "model.gated", card_base_model: "cardData.base_model (what the uploader typed)", card_base_model_relation: "cardData.base_model_relation",
+    card_datasets: "cardData.datasets", card_language: "cardData.language", parents: "tags base_model:<relation>:<parent>", children_counts: "Model tree links",
+  };
+  const show = (v) => v == null ? `<span class="empty">null</span>` : esc(typeof v === "string" ? v : JSON.stringify(v));
+  return {
+    what: `Each field is parsed on its own. If one fails it's logged and set to null, and its name goes into <span class="mono">parse_errors</span>,
+      so one bad field never loses the model. The record is committed to SQLite together with its edges in one transaction.`,
+    body: `<div class="scroll"><table class="tbl"><thead><tr><th>Field</th><th>Value</th><th>Read from</th></tr></thead><tbody>
+      ${Object.keys(src).map((k) => `<tr${k === "parents" || k === "children_counts" ? ` style="background:var(--warn-wash)"` : ""}><td class="mono">${k}</td><td class="mono" style="overflow-wrap:anywhere">${show(p[k])}</td><td class="empty">${esc(src[k])}</td></tr>`).join("")}
+      </tbody></table></div>
+      <p class="callout">The highlighted rows are the lineage: <b>parents</b> become tag edges in the <span class="mono">edges</span> table, and <b>children_counts</b>
+      tell the crawler which listings to read next (and give the exact counts the weighted PageRank uses).</p>`,
+  };
+}
+function stepClean(c) {
+  const r = c.raw, k = c.clean;
+  const created = (r.created_at || "").replace(".000Z", "Z");
+  const row = (field, before, after, rule, changed) =>
+    `<tr${changed ? ` style="background:var(--accent-wash)"` : ""}><td>${field}</td><td class="mono">${before}</td><td class="mono">${after}</td><td class="empty">${rule}</td></tr>`;
+  const v = (x) => x == null || x === "" ? `<span class="empty">null</span>` : esc(x);
+  const renamed = c.issues.filter(([t, d]) => t === "declared_base_renamed" && d);
+  const rows = [
+    row("License", v(r.license), `${v(k.license)} · <b>${esc(k.license_category)}</b>`, "normalised, then mapped to a category (permissive, copyleft, restricted, non-commercial, other, unknown)", true),
+    row("Task", v(r.pipeline_tag), `${v(k.pipeline_tag)}${k.pipeline_tag_source === "inherited" ? " (inherited)" : ""}`,
+      k.pipeline_tag_source === "inherited" ? "missing, so copied from the parent" : "kept as declared", k.pipeline_tag_source === "inherited"),
+    row("Created", v(created), `${v(k.created_month)}${k.created_at_is_floor ? " (placeholder)" : ""}`, `month for the trends; dates before ${X.config.created_at_floor} are HF's placeholder`, false),
+    row("Declared base", v(JSON.parse(r.card_base_model_json || "[]").join(", ")),
+      renamed.length ? renamed.map(([, d]) => v(d.split(" -> ")[1])).join(", ") : v(JSON.parse(k.declared_bases_json || "[]").join(", ")),
+      renamed.length ? "old repo name: matched to the current id through the renamed-repo map" : "checked against the linked parents", renamed.length > 0),
+    row("Children on HF", v(r.children_counts_json), v(k.hf_children_total), "summed; exact population counts", false),
+    row("BFS position", "–", `level ${k.depth} · ${esc(short(k.root))}`, "from the crawl queue (shallowest wins)", false),
+  ];
+  const edges = c.edges.map((e) => {
+    const gap = e.parent_created_at && created ? (new Date(created) - new Date(e.parent_created_at)) / 864e5 : null;
+    return `<tr${e.temporal_anomaly ? ` style="background:var(--crit-wash)"` : ""}><td>${link(e.parent)}</td><td>${e.relation}</td><td>${yn(e.in_tags)}</td><td>${yn(e.in_listing)}</td>
+      <td class="n">${gap == null ? "–" : (gap >= 0 ? "+" : "") + Math.round(gap) + " d"}</td><td>${e.temporal_anomaly ? `<span class="no">flagged</span>` : `<span class="yes">ok</span>`}</td></tr>`;
+  }).join("");
+  return {
+    what: `Cleaning never edits the raw tables: it rebuilds <span class="mono">clean_models</span>, <span class="mono">clean_edges</span> and
+      <span class="mono">quality_issues</span> from them on every run, so any rule can change without re-crawling. Rows that cleaning changed are highlighted.`,
+    body: `<h4>Model row: raw → clean</h4><div class="scroll"><table class="tbl"><thead><tr><th>Field</th><th>Raw (as scraped)</th><th>Clean</th><th>Rule</th></tr></thead><tbody>${rows.join("")}</tbody></table></div>
+      <h4>Lineage edges: the child's tags and the parent's listing, merged</h4>
+      <div class="scroll"><table class="tbl"><thead><tr><th>Parent</th><th>Relation</th><th>In child's tags</th><th>In parent's listing</th><th class="n">Created after parent</th><th>Date check</th></tr></thead><tbody>${edges}</tbody></table></div>
+      ${c.edges.some((e) => e.temporal_anomaly) ? `<p class="callout crit">This model was created <b>before</b> the parent it claims (by more than ${X.config.temporal_tolerance_days} days). Real lineage can't do that,
+        so the link is flagged as a temporal anomaly: kept in the graph, left out of the trends, and shown as a drawback.</p>` : ""}
+      <h4>Quality issues recorded</h4>
+      ${c.issues.length ? `<ul class="issues">${c.issues.map(([t, d]) => `<li class="issue note"><span class="sev">${esc(t.replace(/_/g, " "))}</span><div><strong>${esc(d ?? "")}</strong><p>${esc(ISSUE_TEXT[t] || "")}</p></div></li>`).join("")}</ul>`
+        : `<p class="ok">✓ None: this model's metadata was complete and consistent.</p>`}`,
+  };
+}
+function stepTree(c) {
+  const i = indexOf(c.id);
+  return {
+    what: `All clean edges form one directed graph (child → parent). This is the model's neighbourhood in it: its ancestors back to the seed, its siblings, and what
+      was built on it. Node size is influence (weighted PageRank).`,
+    body: `<div id="demo-graph" class="graph" role="img" aria-label="Lineage graph around ${esc(c.id)}"></div><div class="legend" id="demo-legend"></div>
+      <h4>Every chain back to a root</h4><div class="chains" id="demo-chains"></div>
+      <p style="margin-top:14px"><button class="pill" data-go="${i}">Open ${esc(short(c.id))} in the Explorer →</button></p>`,
+    after: () => { renderGraph(i, "demo-graph", "demo-legend"); renderChains(i, "demo-chains"); },
+  };
+}
+function stepFindings(c) {
+  const i = indexOf(c.id), R = window.FINDINGS;
+  const items = [];
+  for (const e of c.edges) {
+    const p = indexOf(e.parent);
+    const pc = p != null ? get(p, "license_category") : null, cc = c.clean.license_category;
+    let lic;
+    if (!c.clean.license) lic = `declares no license (one of ${num(R?.glance.child_unknown)} such derivatives)`;
+    else if (cc in LEVEL && pc in LEVEL && LEVEL[cc] < LEVEL[pc]) lic = `<b>looser</b> than its parent's ${esc(get(p, "license"))}: one of the ${num(R?.glance.conflicts)} license conflicts`;
+    else if (pc == null) lic = "parent's license unknown";
+    else lic = cc === pc ? `same kind as its parent's (${esc(cc)})` : `${esc(cc)} vs the parent's ${esc(pc)}`;
+    items.push([`<a href="#findings" data-jump="f-rel">What derivatives are</a>`, `adds one ${REL_NOUN[e.relation]} link (to ${esc(short(e.parent))})`]);
+    items.push([`<a href="#findings" data-jump="f-lic">License drift</a>`, `its license is ${lic}`]);
+    if (e.temporal_anomaly) items.push([`<a href="#findings" data-jump="f-dq">Data quality</a>`, `one of the ${num(R?.glance.temporal_anomalies)} temporal anomalies`]);
+  }
+  items.push([`<a href="#findings" data-jump="f-rank">Influence</a>`, `ranked #${num(i + 1)} of ${num(N)} by weighted PageRank`]);
+  if (c.edges.length && c.edges.every((e) => e.temporal_anomaly))
+    items.push([`<a href="#findings" data-jump="f-time">Over time</a>`, "left out of the trends: its only parent link has a doubtful date"]);
+  else if (c.clean.created_month) items.push([`<a href="#findings" data-jump="f-time">Over time</a>`, `counted in ${c.clean.created_month.slice(0, 4)}-Q${Math.ceil(+c.clean.created_month.slice(5) / 3)}'s derivatives`]);
+  for (const [t] of c.issues) items.push([`<a href="#findings" data-jump="f-dq">Data quality</a>`, `counted under “${esc(t.replace(/_/g, " "))}”`]);
+  const dbs = drawbacks(i);
+  return {
+    what: `The mining modules run over the whole clean graph: ranking, communities, lineage depth, license drift, trends and data quality. This is what
+      <b class="mono">${esc(c.id)}</b> contributes to them, and what the Explorer warns about when someone looks it up.`,
+    body: `<div class="scroll"><table class="tbl"><thead><tr><th>Finding</th><th>This model's part</th></tr></thead><tbody>
+        ${items.map(([a, b]) => `<tr><td style="white-space:nowrap">${a}</td><td>${b}</td></tr>`).join("")}</tbody></table></div>
+      <h4>Drawbacks the Explorer shows for it</h4>
+      <ul class="issues">${dbs.map(([s, t, x]) => `<li class="issue ${s}"><span class="sev"><span aria-hidden="true">${SEV[s][1]}</span>${SEV[s][0]}</span><div><strong>${esc(t)}</strong><p>${esc(x)}</p></div></li>`).join("")}</ul>
+      <p style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap"><button class="pill" data-go="${i}">Open in the Explorer →</button><a class="pill" href="#findings" style="text-decoration:none">See all findings →</a></p>`,
+  };
+}
+
+function renderCases() {
+  $("cases").innerHTML = X.cases.map((c, k) => `<button class="case-btn" type="button" data-case="${k}" aria-pressed="${k === caseNo}"><b>${esc(c.label)}</b><span>${esc(c.id)}</span></button>`).join("");
+  $("case-blurb").textContent = X.cases[caseNo].blurb;
+}
+function renderStep() {
+  if (!X) { $("stage").innerHTML = `<p class="empty">demo.js is missing. Run <span class="mono">python -m viz.site_demo</span>.</p>`; return; }
+  const c = X.cases[caseNo];
+  const [title, fn] = STEPS[stepNo];
+  const s = fn(c);
+  $("steps").innerHTML = STEPS.map(([t], k) => `<li><button type="button" data-step="${k}" class="${k < stepNo ? "done" : ""}"${k === stepNo ? ' aria-current="step"' : ""}><span class="k">${k + 1}</span>${esc(t)}</button></li>`).join("");
+  $("stage").innerHTML = `<h3>${stepNo + 1}. ${esc(title)}</h3><p class="what">${s.what}</p>${s.body}`;
+  $("prev").disabled = stepNo === 0;
+  $("next").textContent = stepNo === STEPS.length - 1 ? "Next model →" : "Next →";
+  $("pos").textContent = `Step ${stepNo + 1} of ${STEPS.length}`;
+  if (s.after) s.after();
+}
+function go(step, model = caseNo) {
+  caseNo = model; stepNo = step;
+  renderCases(); renderStep();
+  // after Next at the bottom of a long step, bring the new step's title back under the header
+  const header = document.querySelector("header.top").offsetHeight;
+  const top = $("steps").getBoundingClientRect().top;
+  if (top < header) window.scrollTo({ top: window.scrollY + top - header - 12, behavior: "smooth" });
+}
+$("cases").addEventListener("click", (e) => { const b = e.target.closest("[data-case]"); if (b) go(0, +b.dataset.case); });
+$("steps").addEventListener("click", (e) => { const b = e.target.closest("[data-step]"); if (b) go(+b.dataset.step); });
+$("prev").addEventListener("click", () => stepNo > 0 && go(stepNo - 1));
+$("next").addEventListener("click", () => stepNo < STEPS.length - 1 ? go(stepNo + 1) : go(0, (caseNo + 1) % X.cases.length));
+document.addEventListener("keydown", (e) => {
+  if (tab !== "how" || e.target.closest("input, textarea")) return;
+  if (e.key === "ArrowRight") $("next").click();
+  if (e.key === "ArrowLeft" && stepNo > 0) $("prev").click();
+});
 
 // ---- boot ----------------------------------------------------------------------------------------
 (function boot() {
@@ -619,8 +1267,14 @@ function renderCharts(i) {
     ["merge", (() => { let best = -1; for (let k = 0; k < N; k++) if (M(k) && relationsOf(k).includes("merge") && (best < 0 || parents[k].length > parents[best].length)) best = k; return best; })()],
   ].filter(([, k]) => k >= 0);
   $("examples").insertAdjacentHTML("beforeend", ex.map(([t, k]) => `<button data-go="${k}" title="${t}">${esc(short(D.ids[k]))}</button>`).join(""));
-  select(ex.length ? ex[0][1] : 0);
-  q.value = "";
+  renderFindings();
+  if (X) renderCases();
+  // the explorer always has a model loaded, so switching to its tab never shows an empty bench
+  const first = ex.length ? ex[0][1] : 0;
+  renderCard(first); renderDrawbacks(first); renderRecs(first); renderChains(first, "chains"); renderCharts(first);
+  pendingGraph = first;
+  route();
+  if (tab !== "explore") q.value = "";
 })();
 </script>
 </body>

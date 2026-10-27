@@ -23,21 +23,21 @@ behind it.
 
 ## Results
 
-> **Snapshot of a crawl in progress:** 16,011 of 20,000 models scraped (updated 2026-10-27 13:51 India Standard Time). This section is regenerated every 1,000 models.
+> **Snapshot of a crawl in progress:** 17,001 of 20,000 models scraped (updated 2026-10-27 14:41 India Standard Time). This section is regenerated every 1,000 models.
 
 ### At a glance
 
 | | |
 |---|---|
-| Models scraped | 15,996 |
-| Models seen in total (incl. unscraped children and parents) | 22,524 |
-| Lineage edges | 25,452 |
+| Models scraped | 16,983 |
+| Models seen in total (incl. unscraped children and parents) | 22,543 |
+| Lineage edges | 25,593 |
 | Model families found (Louvain) | 68, matching the seed families with 100 % purity |
 | Deepest derivation chain | 18 generations |
-| Likely license conflicts | 1,935 of 16,961 parent-child pairs |
-| Scraped models with no license | 4280 (26.7 %) |
-| Broken parent links in model cards | 539 (2.7 %) |
-| API spot-check | 99.5% match (50 random models x 11 fields; lowest field: downloads (within 10 %) 94%) |
+| Likely license conflicts | 2,019 of 17,984 parent-child pairs |
+| Scraped models with no license | 4579 (26.9 %) |
+| Broken parent links in model cards | 552 (2.6 %) |
+| API spot-check | 98.7% match (50 random models x 11 fields; lowest field: downloads (within 10 %) 86%) |
 
 ### Most influential models
 
@@ -45,24 +45,24 @@ Weighted PageRank over all known lineage edges (see *Why a weighted PageRank*, b
 
 | # | Model | Weighted PageRank | Plain rank | Direct children on HF | Seed family |
 |---|---|---|---|---|---|
-| 1 | `Qwen/Qwen2.5-7B` | 0.0668 | 3 | 2,086 | Qwen2.5-7B |
+| 1 | `Qwen/Qwen2.5-7B` | 0.0667 | 3 | 2,086 | Qwen2.5-7B |
 | 2 | `meta-llama/Llama-3.1-8B` | 0.0637 | 2 | 3,267 | Llama-3.1-8B |
-| 3 | `Qwen/Qwen2.5-7B-Instruct` | 0.0497 | 8 | 6,669 | Qwen2.5-7B |
-| 4 | `meta-llama/Llama-3.1-8B-Instruct` | 0.0475 | 9 | 7,302 | Llama-3.1-8B |
-| 5 | `mistralai/Mistral-7B-v0.1` | 0.0353 | 1 | 4,000 | Mistral-7B-v0.1 |
-| 6 | `google-bert/bert-base-uncased` | 0.0302 | 18 | 7,222 | bert-base-uncased |
+| 3 | `Qwen/Qwen2.5-7B-Instruct` | 0.0496 | 8 | 6,669 | Qwen2.5-7B |
+| 4 | `meta-llama/Llama-3.1-8B-Instruct` | 0.0476 | 9 | 7,302 | Llama-3.1-8B |
+| 5 | `mistralai/Mistral-7B-v0.1` | 0.0352 | 1 | 4,000 | Mistral-7B-v0.1 |
+| 6 | `google-bert/bert-base-uncased` | 0.0301 | 18 | 7,222 | bert-base-uncased |
 | 7 | `Qwen/Qwen3-8B-Base` | 0.0299 | 5 | 856 | Qwen3-8B-Base |
-| 8 | `Qwen/Qwen3-8B` | 0.0282 | 10 | 5,133 | Qwen3-8B-Base |
-| 9 | `unsloth/Qwen2.5-7B-Instruct` | 0.0223 | 1683 | 5,360 | Qwen2.5-7B |
-| 10 | `google/gemma-3-4b-pt` | 0.0205 | 7 | 395 | gemma-3-4b-pt |
+| 8 | `Qwen/Qwen3-8B` | 0.0284 | 10 | 5,133 | Qwen3-8B-Base |
+| 9 | `unsloth/Qwen2.5-7B-Instruct` | 0.0222 | 1705 | 5,360 | Qwen2.5-7B |
+| 10 | `google/gemma-3-4b-pt` | 0.0204 | 7 | 395 | gemma-3-4b-pt |
 
 ### Findings so far
 
-- **What derivatives are made of.** Across the direct children Hugging Face lists for every scraped model: fine-tunes 53 %, adapters 30 %, quantizations 12 %, merges 4 %. The crawl sample is deliberately balanced, so it shows each at roughly 25 % instead.
+- **What derivatives are made of.** Across the direct children Hugging Face lists for every scraped model: fine-tunes 53 %, adapters 30 %, quantizations 13 %, merges 4 %. The crawl sample is deliberately balanced, so it shows each at roughly 25 % instead.
 - **Most derivatives are dead ends.** Of 6,481 first-generation derivatives, 88 % have no children of their own. The median is 0 children, but the mean is 5, pulled up by a few models that are major bases themselves (up to 7,302 children).
-- **License drift.** 1,935 derivatives carry a *less* restrictive license than their parent. The most common case is a `gemma` model republished as `apache-2.0` (802 times). The highest conflict rates are gemma-2-9b 40 %, Llama-3.2-1B 39 %, gemma-3-4b-pt 32 %. Another 4,482 derivatives declare no license at all.
+- **License drift.** 2,019 derivatives carry a *less* restrictive license than their parent. The most common case is a `gemma` model republished as `apache-2.0` (807 times). The highest conflict rates are gemma-2-9b 40 %, Llama-3.2-1B 39 %, gemma-3-4b-pt 32 %. Another 4,792 derivatives declare no license at all.
 - **Families mostly stay apart.** Louvain finds 68 communities that match the seed families with 100 % purity. The exceptions are 6 lineage links between families, 100 % of them merges.
-- **Latest quarter (2026-Q4, 439 sampled derivatives):** finetune 48 %, adapter 31 %, quantized 16 %, merge 5 %, mixed 1 %.
+- **Latest quarter (2026-Q4, 485 sampled derivatives):** finetune 47 %, adapter 32 %, quantized 16 %, merge 4 %, mixed 1 %.
 
 ### Figures
 
@@ -104,7 +104,7 @@ flowchart LR
 | 3. Validate | `python -m validate.api_spotcheck` | Compares 50 random scraped records with Hugging Face's official API |
 | 4. Mine | `python -m mining.report` | Runs all analyses → `results/*.csv` and `results/summary.md` |
 | 5. Visualise | `python -m viz.charts` · `python -m viz.family_tree` | Static figures → `results/figures/`, interactive pages → `results/tree/` |
-| 6. Explorer | `python -m viz.site_data` | Data for the Model Lineage Explorer → `site/data.js` |
+| 6. Explorer | `python -m viz.site_data` · `python -m viz.site_findings` · `python -m viz.site_demo` | Data for the Model Lineage Explorer → `site/data.js`, `site/findings.js`, `site/demo.js` |
 
 Each step reads only what the previous one wrote, so any step can be re-run on its own.
 
@@ -281,9 +281,20 @@ Method details and caveats: [`docs/mining.md`](docs/mining.md).
 
 ## Model Lineage Explorer (`site/`)
 
-A search page for one model at a time. Open `site/index.html` in a browser; it needs an
-internet connection for its fonts and graph library. Type any model name (or paste a Hugging
-Face URL), and the page shows:
+Open `site/index.html` in a browser; it needs an internet connection for its fonts and graph
+library. The search bar works from every tab, and the site has three tabs:
+
+- **Findings:** every result in this README as interactive charts and tables (influence ranking,
+  relation mix, lineage depth, license drift, communities, trends, data quality, validation).
+  Click any model in them to open it in the Explorer.
+- **Explorer:** one model at a time (below).
+- **How it works:** a step-through of the pipeline for five real models, replayed from the crawl
+  cache: the listing page that surfaced the model, the model page's embedded JSON, the parsed
+  record, the raw vs cleaned row with the quality issues cleaning raised, its place in the tree,
+  and what it adds to each finding. The five cases cover a typical quantization, a malformed
+  model card, a license conflict, a renamed parent and a doubtful lineage claim.
+
+In the Explorer, type any model name (or paste a Hugging Face URL), and the page shows:
 
 - **The model card:** family, relation to its parent, license and its category, task, downloads,
   likes, children on Hugging Face, and influence rank.
@@ -307,7 +318,9 @@ Face URL), and the page shows:
 
 Drawbacks and alternatives are rule-based readings of public metadata, not quality
 evaluations. Models only seen in a listing (not scraped yet) appear with whatever lineage is
-known. `site/data.js` is regenerated by `python -m viz.site_data` and by the snapshot watcher.
+known. `site/data.js` and `site/findings.js` are regenerated by `python -m viz.site_data` /
+`python -m viz.site_findings` and by the snapshot watcher. `site/demo.js` comes from
+`python -m viz.site_demo`, which reads the crawl cache, so it only runs where the crawl did.
 
 ## 5. Visualisation (`viz/`)
 
@@ -422,7 +435,7 @@ mining/                graph · ranking · communities · lineage · licenses ·
 viz/                   charts.py · family_tree.py · palette.py
 validate/              api_spotcheck.py
 results/               generated tables, summary.md, figures/, tree/
-site/                  Model Lineage Explorer (index.html + data.js)
+site/                  Model Lineage Explorer (index.html + data.js, findings.js, demo.js)
 sample_data/           500-model database for running without a crawl
 samples/               saved real pages used by the parser tests
 docs/                  page_structure · cleaning · mining · ethics
