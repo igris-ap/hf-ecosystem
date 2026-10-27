@@ -327,6 +327,7 @@ file system or any static host.
 | Tab | What it shows | Data |
 |---|---|---|
 | **Findings** | every result as charts and tables, each with a one-sentence headline computed from the data | `findings.js`, exported from `results/*.csv` |
+| **Graph** | the most influential 150–1,000 models as one force-directed network, by family or license | `data.js` |
 | **Explorer** | one model: card, origin, drawbacks, better alternatives, every chain back to a root, family graph, charts | `data.js`, exported from the graph |
 | **How it works** | the pipeline replayed for 5 real models, step by step | `demo.js`, exported from the crawl cache |
 
@@ -348,9 +349,14 @@ file system or any static host.
   for a license conflict and minus 1 for a doubtful lineage date, and must beat the model by a
   margin. Candidates are limited to the same base because the data has no parameter counts, and an
   8B model isn't a drop-in replacement for a 1B one. Each comes with its reasons.
-- **The family graph shows only edges that explain the model** (ancestor chain, siblings to the
-  shared parent, derivatives to it), in explicit rows by generation. Big merges show their 8 most
-  influential parents. Showing every edge produced unreadable spaghetti.
+- **Both graphs use the results-tree encoding:** force-directed layout (frozen once it settles,
+  so dragging stays smooth), size = weighted PageRank, shape = family, dash = relation, arrows to
+  the parent. The whole-graph view colours at most 3 families (or the license classes), because
+  only 3 hues stay distinguishable when any two nodes can touch.
+- **The model graph shows only edges that explain the model** (ancestor chain, siblings to the
+  shared parent, derivatives to it). Big merges show their 8 most influential parents. Showing
+  every edge produced unreadable spaghetti. An earlier version used strict rows by generation,
+  but with 16 derivatives in one row it zoomed out until labels vanished.
 - **The demo replays the cache, it doesn't simulate.** Every request line, JSON excerpt and table
   in **How it works** is the real response and the real database row. Only whitelisted JSON keys
   are exported, so no author profile data reaches the site. The five cases were picked to show one
