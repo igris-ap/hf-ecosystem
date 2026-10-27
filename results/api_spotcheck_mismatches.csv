@@ -1,8 +1,7 @@
 model,field,scraped,api
-kingabzpro/phi-2-role-play,downloads (within 10 %),14,12
-cutelemonlili/Qwen2.5-7B_lora_MATH_training_Qwen2.5-32B-Instruct_checkpoint-1330,downloads (within 10 %),16,12
-bilalzafar/CBDC-Stance,downloads (within 10 %),15,17
-LoneStriker/openchat-3.5-0106-5.0bpw-h6-exl2,downloads (within 10 %),26,23
-johngraph/final-12-23,downloads (within 10 %),14,12
-strongpear/Llama3.1-8B-QA_CoT-WIKI-Instruct-r64,downloads (within 10 %),10,12
-shravankasagoni/bert-qlora-imdb-sentiment-finetuned,downloads (within 10 %),3,4
+mradermacher/llama-3.1-tulu-2-8b-GGUF,downloads (within 10 %),198,232
+yangao381/FlowerTune-Code-Llama-3.2-1B-PEFT,downloads (within 10 %),9,8
+hcy5561/distilroberta-base-sentence-transformer-snli,downloads (within 10 %),93,80
+zenlm/zen-reranker-8B,downloads (within 10 %),23,19
+swadeshb/g3-4b-hiper,downloads (within 10 %),13,5
+winglian/zephyr-deita-kto-3ep-v3-r512-bsz16-cosine,downloads (within 10 %),7,5

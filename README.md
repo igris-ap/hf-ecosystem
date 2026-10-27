@@ -23,21 +23,21 @@ behind it.
 
 ## Results
 
-> **Snapshot of a crawl in progress:** 17,001 of 20,000 models scraped (updated 2026-10-27 14:41 India Standard Time). This section is regenerated every 1,000 models.
+> **Snapshot of a crawl in progress:** 18,023 of 20,000 models scraped (updated 2026-10-27 15:32 India Standard Time). This section is regenerated every 1,000 models.
 
 ### At a glance
 
 | | |
 |---|---|
-| Models scraped | 16,983 |
-| Models seen in total (incl. unscraped children and parents) | 22,543 |
-| Lineage edges | 25,593 |
-| Model families found (Louvain) | 68, matching the seed families with 100 % purity |
+| Models scraped | 18,000 |
+| Models seen in total (incl. unscraped children and parents) | 22,564 |
+| Lineage edges | 25,764 |
+| Model families found (Louvain) | 62, matching the seed families with 100 % purity |
 | Deepest derivation chain | 18 generations |
-| Likely license conflicts | 2,019 of 17,984 parent-child pairs |
-| Scraped models with no license | 4579 (26.9 %) |
-| Broken parent links in model cards | 552 (2.6 %) |
-| API spot-check | 98.7% match (50 random models x 11 fields; lowest field: downloads (within 10 %) 86%) |
+| Likely license conflicts | 2,119 of 19,054 parent-child pairs |
+| Scraped models with no license | 4929 (27.3 %) |
+| Broken parent links in model cards | 557 (2.5 %) |
+| API spot-check | 98.9% match (50 random models x 11 fields; lowest field: downloads (within 10 %) 88%) |
 
 ### Most influential models
 
@@ -45,24 +45,24 @@ Weighted PageRank over all known lineage edges (see *Why a weighted PageRank*, b
 
 | # | Model | Weighted PageRank | Plain rank | Direct children on HF | Seed family |
 |---|---|---|---|---|---|
-| 1 | `Qwen/Qwen2.5-7B` | 0.0667 | 3 | 2,086 | Qwen2.5-7B |
-| 2 | `meta-llama/Llama-3.1-8B` | 0.0637 | 2 | 3,267 | Llama-3.1-8B |
+| 1 | `Qwen/Qwen2.5-7B` | 0.0666 | 3 | 2,086 | Qwen2.5-7B |
+| 2 | `meta-llama/Llama-3.1-8B` | 0.0636 | 2 | 3,267 | Llama-3.1-8B |
 | 3 | `Qwen/Qwen2.5-7B-Instruct` | 0.0496 | 8 | 6,669 | Qwen2.5-7B |
 | 4 | `meta-llama/Llama-3.1-8B-Instruct` | 0.0476 | 9 | 7,302 | Llama-3.1-8B |
-| 5 | `mistralai/Mistral-7B-v0.1` | 0.0352 | 1 | 4,000 | Mistral-7B-v0.1 |
-| 6 | `google-bert/bert-base-uncased` | 0.0301 | 18 | 7,222 | bert-base-uncased |
-| 7 | `Qwen/Qwen3-8B-Base` | 0.0299 | 5 | 856 | Qwen3-8B-Base |
-| 8 | `Qwen/Qwen3-8B` | 0.0284 | 10 | 5,133 | Qwen3-8B-Base |
-| 9 | `unsloth/Qwen2.5-7B-Instruct` | 0.0222 | 1705 | 5,360 | Qwen2.5-7B |
-| 10 | `google/gemma-3-4b-pt` | 0.0204 | 7 | 395 | gemma-3-4b-pt |
+| 5 | `mistralai/Mistral-7B-v0.1` | 0.0351 | 1 | 4,000 | Mistral-7B-v0.1 |
+| 6 | `google-bert/bert-base-uncased` | 0.0299 | 18 | 7,222 | bert-base-uncased |
+| 7 | `Qwen/Qwen3-8B-Base` | 0.0298 | 5 | 856 | Qwen3-8B-Base |
+| 8 | `Qwen/Qwen3-8B` | 0.0283 | 10 | 5,133 | Qwen3-8B-Base |
+| 9 | `unsloth/Qwen2.5-7B-Instruct` | 0.0221 | 1730 | 5,360 | Qwen2.5-7B |
+| 10 | `google/gemma-3-4b-pt` | 0.0203 | 7 | 395 | gemma-3-4b-pt |
 
 ### Findings so far
 
 - **What derivatives are made of.** Across the direct children Hugging Face lists for every scraped model: fine-tunes 53 %, adapters 30 %, quantizations 13 %, merges 4 %. The crawl sample is deliberately balanced, so it shows each at roughly 25 % instead.
 - **Most derivatives are dead ends.** Of 6,481 first-generation derivatives, 88 % have no children of their own. The median is 0 children, but the mean is 5, pulled up by a few models that are major bases themselves (up to 7,302 children).
-- **License drift.** 2,019 derivatives carry a *less* restrictive license than their parent. The most common case is a `gemma` model republished as `apache-2.0` (807 times). The highest conflict rates are gemma-2-9b 40 %, Llama-3.2-1B 39 %, gemma-3-4b-pt 32 %. Another 4,792 derivatives declare no license at all.
-- **Families mostly stay apart.** Louvain finds 68 communities that match the seed families with 100 % purity. The exceptions are 6 lineage links between families, 100 % of them merges.
-- **Latest quarter (2026-Q4, 485 sampled derivatives):** finetune 47 %, adapter 32 %, quantized 16 %, merge 4 %, mixed 1 %.
+- **License drift.** 2,119 derivatives carry a *less* restrictive license than their parent. The most common case is a `gemma` model republished as `apache-2.0` (807 times). The highest conflict rates are gemma-2-9b 40 %, Llama-3.2-1B 39 %, gemma-3-4b-pt 32 %. Another 5,183 derivatives declare no license at all.
+- **Families mostly stay apart.** Louvain finds 62 communities that match the seed families with 100 % purity. The exceptions are 6 lineage links between families, 100 % of them merges.
+- **Latest quarter (2026-Q4, 514 sampled derivatives):** finetune 46 %, adapter 32 %, quantized 18 %, merge 4 %, mixed 1 %.
 
 ### Figures
 
@@ -282,11 +282,14 @@ Method details and caveats: [`docs/mining.md`](docs/mining.md).
 ## Model Lineage Explorer (`site/`)
 
 Open `site/index.html` in a browser; it needs an internet connection for its fonts and graph
-library. The search bar works from every tab, and the site has three tabs:
+library. The search bar works from every tab, and the site has four tabs:
 
 - **Findings:** every result in this README as interactive charts and tables (influence ranking,
   relation mix, lineage depth, license drift, communities, trends, data quality, validation).
   Click any model in them to open it in the Explorer.
+- **Graph:** the whole lineage graph, force-directed like `results/tree/`: the 150–1,000 most
+  influential models, all families or one, coloured by family or by license (which shows where
+  license conflicts sit). Click a model for its details; double-click to open it in the Explorer.
 - **Explorer:** one model at a time (below).
 - **How it works:** a step-through of the pipeline for five real models, replayed from the crawl
   cache: the listing page that surfaced the model, the model page's embedded JSON, the parsed
@@ -300,8 +303,9 @@ In the Explorer, type any model name (or paste a Hugging Face URL), and the page
   likes, children on Hugging Face, and influence rank.
 - **The lineage chain:** every path from an original base model down to this one, with the
   relation at each step. Click any model in a chain to jump to it.
-- **The family graph:** ancestors, siblings and derivatives (size = influence, edge style =
-  relation). For merges with dozens of parents it shows the 8 strongest.
+- **The family graph:** ancestors, siblings and derivatives in a force-directed layout (size =
+  influence, shape = family, edge style = relation). For merges with dozens of parents it shows
+  the 8 strongest. A button jumps to the model's place in the whole lineage graph.
 - **Charts:** what's built on the model (by relation), and its downloads against its siblings'.
 - **Drawbacks**, read from the metadata and ordered by severity:
   - a license less restrictive than the parent's (likely conflict);

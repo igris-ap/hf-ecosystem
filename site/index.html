@@ -220,6 +220,28 @@ table.tbl { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
 .small h4 { font: 600 0.85rem var(--font-mono); margin: 0; }
 .small p { margin: 0 0 4px; color: var(--muted); font-size: 0.8rem; }
 
+/* ---------- ecosystem graph ---------- */
+.gbar { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: end; margin-bottom: 12px; }
+.gbar label, .gbar .lbl { display: grid; gap: 3px; font: 600 0.72rem var(--font-display); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.gbar select {
+  font: 500 0.92rem var(--font-body); color: var(--ink); background: var(--surface);
+  border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; min-width: 150px;
+}
+.gbar .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.gbar .seg button { font: 500 0.9rem var(--font-body); border: 0; background: var(--surface); color: var(--ink-2); padding: 6px 12px; cursor: pointer; }
+.gbar .seg button + button { border-left: 1px solid var(--line); }
+.gbar .seg button[aria-pressed="true"] { background: var(--accent); color: var(--surface); }
+.gwrap { position: relative; }
+#eco { height: min(76vh, 760px); min-height: 460px; border-radius: 6px; background: var(--sunken); }
+.gstatus { position: absolute; left: 12px; top: 10px; font-size: 0.85rem; color: var(--ink-2); background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; pointer-events: none; }
+.ginfo { position: absolute; right: 12px; top: 12px; width: min(320px, calc(100% - 24px)); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; box-shadow: 0 8px 24px rgba(0,0,0,.15); font-size: 0.9rem; }
+.ginfo .model-id { font-size: 1rem; margin-bottom: 8px; }
+.ginfo .x { position: absolute; right: 8px; top: 6px; border: 0; background: none; color: var(--muted); font-size: 1.1rem; cursor: pointer; }
+.ginfo dl { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; margin: 0 0 10px; }
+.ginfo dt { color: var(--muted); } .ginfo dd { margin: 0; overflow-wrap: anywhere; }
+@media (max-width: 640px) { .ginfo { position: static; width: auto; margin-top: 10px; box-shadow: none; } }
+.legend .shape { display: inline-block; width: 1.1em; text-align: center; margin-right: 4px; font-size: 1rem; line-height: 1; }
+
 /* ---------- how it works ---------- */
 .demo-head { margin-top: 20px; }
 .cases { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 12px; }
@@ -285,6 +307,7 @@ footer { margin-top: 28px; color: var(--muted); font-size: 0.85rem; }
       <span class="sub" id="coverage">Loading lineage data…</span>
       <nav class="tabs" aria-label="Sections">
         <a href="#findings" data-tab="findings">Findings</a>
+        <a href="#graph" data-tab="graph">Graph</a>
         <a href="#explore" data-tab="explore">Explorer</a>
         <a href="#how" data-tab="how">How it works</a>
       </nav>
@@ -300,6 +323,29 @@ footer { margin-top: 28px; color: var(--muted); font-size: 0.85rem; }
   <!-- ===================== Findings ===================== -->
   <div id="tab-findings" data-panel="findings" hidden>
     <div class="story" id="story"></div>
+  </div>
+
+  <!-- ===================== Ecosystem graph ===================== -->
+  <div id="tab-graph" data-panel="graph" hidden>
+    <section class="panel" style="margin-top:20px">
+      <h2>The whole lineage graph</h2>
+      <div class="gbar">
+        <label>Family<select id="g-family"></select></label>
+        <label>Models shown<select id="g-top">
+          <option value="150">150</option><option value="300" selected>300</option>
+          <option value="600">600</option><option value="1000">1,000</option></select></label>
+        <div class="lbl" role="group" aria-labelledby="g-colour-l"><span id="g-colour-l">Colour by</span><span class="seg" id="g-colour">
+          <button type="button" data-colour="family" aria-pressed="true">Family</button>
+          <button type="button" data-colour="license" aria-pressed="false">License</button></span></div>
+        <label id="g-hl-wrap">Coloured families<select id="g-hl"></select></label>
+      </div>
+      <div class="gwrap">
+        <div id="eco" role="img" aria-label="Force-directed lineage graph of the most influential models"></div>
+        <span class="gstatus" id="g-status"></span>
+        <div class="ginfo" id="g-info" hidden></div>
+      </div>
+      <div class="legend" id="g-legend"></div>
+    </section>
   </div>
 
   <!-- ===================== Explorer ===================== -->
@@ -415,6 +461,7 @@ function showTab(name) {
   // vis-network can't lay out inside a hidden element, so graphs draw when their tab shows
   if (name === "explore" && pendingGraph != null) { renderGraph(pendingGraph, "graph", "legend"); pendingGraph = null; }
   if (name === "how") renderStep();
+  if (name === "graph" && eco.dirty) renderEco();
 }
 function route() {
   const h = decodeURIComponent(location.hash.slice(1));
@@ -422,7 +469,7 @@ function route() {
     const i = indexOf(h.slice(6));
     if (i != null) { select(i, { push: false }); return; }
   }
-  showTab(["findings", "explore", "how"].includes(h) ? h : "findings");
+  showTab(["findings", "graph", "explore", "how"].includes(h) ? h : "findings");
 }
 window.addEventListener("hashchange", route);
 
@@ -684,33 +731,27 @@ function renderGraph(i, target, legendTarget) {
     for (const p of allParents) for (const [c] of children[p].slice().sort((a, b) => a[0] - b[0]).slice(0, 8))
       if (!role.has(c) && added < 10) { role.set(c, "sib"); added++; }
   }
-  for (const [c] of children[i].slice().sort((a, b) => a[0] - b[0]).slice(0, 12)) if (!role.has(c)) role.set(c, "kid");
+  for (const [c] of children[i].slice().sort((a, b) => a[0] - b[0]).slice(0, 16)) if (!role.has(c)) role.set(c, "kid");
   const color = { anc: css("--anc"), self: css("--self"), kid: css("--kid"), sib: css("--sib") };
   const ids = [...role.keys()];
   const maxPr = Math.max(...ids.map((n) => D.pr[n]));
-  // labels: this model, its ancestors, and the 3 most influential others; the rest on hover
-  const top = new Set(ids.filter((n) => role.get(n) === "sib" || role.get(n) === "kid").sort((a, b) => a - b).slice(0, 3));
+  // labels: this model, its ancestors, and the 4 most influential others; the rest on hover
+  const top = new Set(ids.filter((n) => role.get(n) === "sib" || role.get(n) === "kid").sort((a, b) => a - b).slice(0, 4));
   const labelled = (n) => n === i || role.get(n) === "anc" || top.has(n);
+  // a re-upload often has the same name as the original (unsloth/X vs Qwen/X): those keep their org
+  const nameCount = {};
+  for (const n of ids) if (labelled(n)) nameCount[short(D.ids[n])] = (nameCount[short(D.ids[n])] || 0) + 1;
+  const tag = (n) => n !== i && nameCount[short(D.ids[n])] > 1 ? D.ids[n] : short(D.ids[n]);
 
-  // Rows are set explicitly: ancestors by generation, this model and its siblings
-  // on one row, derivatives on the row below.
-  const gen = new Map();
-  (function depth(n) {
-    if (gen.has(n)) return gen.get(n);
-    gen.set(n, 0);                                   // guard; real value below
-    const ps = parents[n].filter(([p]) => role.get(p) === "anc");
-    const g = ps.length ? 1 + Math.max(...ps.map(([p]) => depth(p))) : 0;
-    gen.set(n, g); return g;
-  })(i);
-  const selfRow = gen.get(i);
-  const row = (n) => role.get(n) === "anc" ? gen.get(n) ?? 0 : role.get(n) === "kid" ? selfRow + 1 : selfRow;
-  for (const n of ids) if (role.get(n) === "anc" && !gen.has(n)) gen.set(n, 0);
-
+  // Force-directed, like the results tree: ancestors pull the chain upward from the
+  // model, derivatives and siblings fan out around their parent. Shape = family.
   const nodes = ids.map((n) => ({
-    id: n, level: row(n), label: labelled(n) ? short(D.ids[n]) : " ", title: D.ids[n],
-    size: 8 + 22 * Math.sqrt(D.pr[n] / maxPr), shape: "dot",
-    color: { background: color[role.get(n)], border: css("--surface"), highlight: { background: color[role.get(n)], border: css("--ink") } },
-    borderWidth: 2, font: { color: css("--ink"), size: n === i ? 16 : 12, face: "JetBrains Mono, monospace", strokeWidth: 3, strokeColor: css("--sunken") },
+    id: n, label: labelled(n) ? tag(n) : " ",
+    title: `${D.ids[n]}\n${M(n) ? `${get(n, "license") || "no license"} · ${fmt(dl(n))} downloads` : "seen in a listing only"}`,
+    size: n === i ? 26 : 9 + 24 * Math.sqrt(D.pr[n] / maxPr), shape: SHAPE[family(n)] || "dot",
+    color: { background: color[role.get(n)], border: css("--surface"), highlight: { background: color[role.get(n)], border: css("--ink") }, hover: { background: color[role.get(n)], border: css("--ink") } },
+    borderWidth: n === i ? 3 : 1.5,
+    font: { color: n === i || role.get(n) === "anc" ? css("--ink") : css("--ink-2"), size: n === i ? 20 : 15, face: "JetBrains Mono, monospace", strokeWidth: 4, strokeColor: css("--sunken") },
   }));
   // Only edges that explain this model: the ancestor chain, siblings to the shared
   // parent, derivatives to this model. A derivative's *other* parents (merges point
@@ -727,21 +768,32 @@ function renderGraph(i, target, legendTarget) {
     edges.push({ from: n, to: p, dashes: DASH[r], title: r, arrows: { to: { enabled: true, scaleFactor: 0.45 } }, color: { color: css("--muted") }, width: 1.2 });
   const data = { nodes: new vis.DataSet(nodes), edges: new vis.DataSet(edges) };
   const options = {
-    layout: { hierarchical: { enabled: true, direction: "UD", sortMethod: "directed", levelSeparation: 130, nodeSpacing: 175 } },
-    physics: false, interaction: { hover: true, tooltipDelay: 100 },
-    edges: { smooth: { type: "cubicBezier", forceDirection: "vertical", roundness: 0.4 } },
+    physics: { solver: "barnesHut", barnesHut: { gravitationalConstant: -3000, centralGravity: 0.35, springLength: 110, springConstant: 0.04, avoidOverlap: 0.6 },
+               stabilization: { iterations: 400 } },
+    interaction: { hover: true, tooltipDelay: 100 },
+    nodes: { scaling: { label: { drawThreshold: 1, maxVisible: 24 } } },
+    edges: { smooth: false },
+    layout: { randomSeed: 7 },                         // the same model always gets the same picture
   };
   if (networks.has(target)) networks.get(target).destroy();
   const network = new vis.Network($(target), data, options);
   networks.set(target, network);
+  network.once("stabilizationIterationsDone", () => {
+    network.setOptions({ physics: false });
+    // fit() frames the nodes, not their labels: zoom out a little so edge labels aren't cut off
+    network.fit();
+    network.moveTo({ scale: network.getScale() * 0.85 });
+  });
   network.on("doubleClick", (e) => { if (e.nodes.length && e.nodes[0] !== i) select(e.nodes[0]); });
   const swatch = (v, t) => `<span><i style="background:${color[v]}"></i>${t}</span>`;
   const line = (r) => `<span><svg width="30" height="8" aria-hidden="true"><line x1="0" y1="4" x2="30" y2="4" stroke="${css("--muted")}" stroke-width="2" ${DASH[r] ? `stroke-dasharray="${DASH[r].join(" ")}"` : ""}/></svg>${r}</span>`;
   $(legendTarget).innerHTML = swatch("anc", "ancestors") + swatch("self", "this model") + swatch("kid", "derivatives") + swatch("sib", "siblings")
     + RELS4.map(line).join("")
     + (allParents.length > MAX_PARENTS ? `<span>Showing the ${MAX_PARENTS} most influential of its ${allParents.length} parents (all are in the chain list).</span>` : "")
-    + (children[i].length > 12 ? `<span>Showing 12 of ${children[i].length.toLocaleString()} known derivatives.</span>` : "")
-    + `<span>Arrows point to the parent. Hover for names; double-click a model to open it.</span>`;
+    + (children[i].length > 16 ? `<span>Showing the 16 most influential of ${children[i].length.toLocaleString()} known derivatives.</span>` : "")
+    + `<span>Shape = family (${FAMILY_ORDER.map((f) => GLYPH[SHAPE[f]] + " " + f).join(", ")}).</span>`
+    + `<span>Arrows point to the parent. Hover for names; double-click a model to open it.</span>`
+    + (M(i) ? `<span><button class="pill" type="button" data-graph="${i}">Show it in the whole lineage graph →</button></span>` : "");
 }
 
 // ---- chart helpers (inline SVG, drawn to scale, coloured through CSS variables) -----------------
@@ -1013,6 +1065,158 @@ document.addEventListener("click", (e) => {
   const y = el.getBoundingClientRect().top + window.scrollY - document.querySelector("header.top").offsetHeight - 12;
   window.scrollTo({ top: y, behavior: "smooth" });
 });
+
+// ---- ecosystem graph: the most influential models, laid out by force ---------------------------
+// Same encoding as results/tree (viz/family_tree.py): size = weighted PageRank, shape = family,
+// colour = family for at most 3 families (only 3 hues stay distinguishable when every pair of
+// nodes can touch, see viz/palette.py), edge dash = relation, arrows point child -> parent.
+const FAMILY_ORDER = ["Llama", "Qwen", "Mistral", "Gemma", "Phi", "DeepSeek", "BERT"];
+const SHAPE = { Llama: "dot", Qwen: "square", Mistral: "triangle", Gemma: "diamond", Phi: "star", DeepSeek: "triangleDown", BERT: "hexagon" };
+const GLYPH = { dot: "●", square: "■", triangle: "▲", diamond: "◆", star: "★", triangleDown: "▼", hexagon: "⬢" };
+const SLOT3 = ["--anc", "--self", "--kid"];
+const eco = { family: "", top: 300, colour: "family", hl: null, focus: null, dirty: true };
+const famTotals = (() => {
+  const t = Object.fromEntries(FAMILY_ORDER.map((f) => [f, 0]));
+  for (let k = 0; k < N; k++) if (M(k)) { const f = family(k); if (f in t) t[f] += D.pr[k]; }
+  return t;
+})();
+// colour choices: every family on its own, plus the three most influential together (the default)
+const HL_OPTIONS = [FAMILY_ORDER.slice().sort((a, b) => famTotals[b] - famTotals[a]).slice(0, 3), ...FAMILY_ORDER.map((f) => [f])];
+eco.hl = HL_OPTIONS[0];
+
+function licenseClass(i) {
+  if (hasLicenseConflict(i).length) return "conflict";
+  const c = get(i, "license_category");
+  return c === "permissive" ? "permissive" : c === "restricted" || c === "noncommercial" || c === "copyleft" ? "restricted" : "none";
+}
+const LIC_STYLE = { permissive: ["--kid", "permissive"], restricted: ["--anc", "keeps restrictions (Llama, Gemma, …)"], conflict: ["--self", "looser than its parent (likely conflict)"], none: ["--sib", "no or custom license"] };
+
+function ecoNodes() {
+  const out = [];
+  for (let k = 0; k < N && out.length < eco.top; k++)            // ids are sorted by influence
+    if (M(k) && (!eco.family || family(k) === eco.family)) out.push(k);
+  const set = new Set(out);
+  if (eco.focus != null && !set.has(eco.focus)) {                   // bring a searched model in, with its chain
+    for (const path of paths(eco.focus, 6)) for (const [n] of path) if (!set.has(n) && M(n)) { set.add(n); out.push(n); }
+    if (!set.has(eco.focus)) out.push(eco.focus);
+  }
+  return out;
+}
+
+function renderEco() {
+  eco.dirty = false;
+  const ids = ecoNodes();
+  const set = new Set(ids);
+  const maxPr = Math.max(...ids.map((n) => D.pr[n]));
+  const labelled = new Set(ids.slice(0, ids.length > 150 ? 14 : 8));
+  // a re-upload often has the same name as the original (unsloth/X vs Qwen/X): those keep their org
+  const nameCount = {};
+  for (const n of labelled) nameCount[short(D.ids[n])] = (nameCount[short(D.ids[n])] || 0) + 1;
+  const tag = (n) => nameCount[short(D.ids[n])] > 1 ? D.ids[n] : short(D.ids[n]);
+  const fill = (n) => {
+    if (eco.colour === "license") return css(LIC_STYLE[licenseClass(n)][0]);
+    const k = eco.hl.indexOf(family(n));
+    return css(k >= 0 ? SLOT3[k] : "--sib");
+  };
+  const nodes = ids.map((n) => {
+    const seed = get(n, "depth") === 0, fam = family(n);
+    return {
+      id: n, shape: SHAPE[fam] || "dot",
+      size: 7 + 34 * Math.sqrt(D.pr[n] / maxPr),
+      label: seed || labelled.has(n) || n === eco.focus ? (seed ? `${fam}: ${short(D.ids[n])}` : tag(n)) : " ",
+      title: `${D.ids[n]}\n${fam || "?"} family · influence #${(n + 1).toLocaleString()}\n${get(n, "license") || "no license"} · ${fmt(dl(n))} downloads`,
+      color: { background: fill(n), border: css("--surface"), highlight: { background: fill(n), border: css("--ink") }, hover: { background: fill(n), border: css("--ink") } },
+      borderWidth: n === eco.focus ? 4 : 1.5,
+      font: { size: seed ? 34 : 18, color: seed ? css("--ink") : css("--ink-2"), face: "Archivo, system-ui, sans-serif", strokeWidth: 4, strokeColor: css("--sunken") },
+    };
+  });
+  const edges = [];
+  for (const n of ids) for (const [p, r] of parents[n]) if (set.has(p))
+    edges.push({ from: n, to: p, dashes: DASH[r], title: r, color: { color: css("--muted"), opacity: 0.55 }, width: 1, arrows: { to: { enabled: true, scaleFactor: 0.35 } } });
+  // Long springs spread a small graph out; big graphs need short ones or the clusters drift apart.
+  const spring = ids.length > 400 ? 35 : ids.length > 150 ? 50 : 120;
+  const options = {
+    physics: { solver: "barnesHut", barnesHut: { gravitationalConstant: -2600, centralGravity: 0.5, springLength: spring, springConstant: 0.05, avoidOverlap: 0.4 },
+               stabilization: { iterations: ids.length > 600 ? 300 : 500, updateInterval: 25 } },
+    interaction: { hover: true, tooltipDelay: 120, navigationButtons: false, hideEdgesOnDrag: ids.length > 400 },
+    // vis hides labels that would draw under 5 px; the zoomed-out overview still needs the seed names
+    nodes: { scaling: { label: { drawThreshold: 1, maxVisible: 26 } } },
+    edges: { smooth: false },
+  };
+  if (networks.has("eco")) networks.get("eco").destroy();
+  const net = new vis.Network($("eco"), { nodes: new vis.DataSet(nodes), edges: new vis.DataSet(edges) }, options);
+  networks.set("eco", net);
+  const status = $("g-status");
+  status.hidden = false;
+  status.textContent = `Laying out ${ids.length.toLocaleString()} models…`;
+  net.on("stabilizationProgress", (e) => (status.textContent = `Laying out ${ids.length.toLocaleString()} models… ${Math.round(100 * e.iterations / e.total)} %`));
+  net.once("stabilizationIterationsDone", () => {
+    net.setOptions({ physics: false });            // frozen: dragging and zooming stay smooth
+    status.textContent = `${ids.length.toLocaleString()} models · ${edges.length.toLocaleString()} links · scroll to zoom, drag to pan, click a model`;
+    if (eco.focus != null) { net.selectNodes([eco.focus]); net.focus(eco.focus, { scale: 1.1, animation: { duration: 600 } }); ecoInfo(eco.focus); }
+  });
+  net.on("click", (e) => (e.nodes.length ? ecoInfo(e.nodes[0]) : ($("g-info").hidden = true)));
+  net.on("doubleClick", (e) => { if (e.nodes.length) select(e.nodes[0]); });
+  ecoLegend(ids.length);
+}
+
+function ecoInfo(i) {
+  const lic = get(i, "license");
+  const conflict = hasLicenseConflict(i);
+  $("g-info").hidden = false;
+  $("g-info").innerHTML = `<button class="x" type="button" aria-label="Close" onclick="this.parentNode.hidden=true">×</button>
+    <p class="model-id">${esc(D.ids[i])}</p>
+    <dl>
+      <dt>Family</dt><dd>${esc(family(i) ?? "–")}${get(i, "depth") === 0 ? " (seed)" : ""}</dd>
+      <dt>Derived from</dt><dd>${parents[i].length ? parents[i].slice(0, 3).map(([p, r]) => `${esc(short(D.ids[p]))} <span class="empty">(${r})</span>`).join(", ") + (parents[i].length > 3 ? ` +${parents[i].length - 3}` : "") : "nothing (base model)"}</dd>
+      <dt>License</dt><dd>${esc(lic ?? "none")}${conflict.length ? ` <span class="no">looser than parent</span>` : ""}</dd>
+      <dt>Downloads</dt><dd>${fmt(dl(i))} (30 d)</dd>
+      <dt>Children</dt><dd>${fmt(get(i, "hf_children_total"))} on HF</dd>
+      <dt>Influence</dt><dd>#${(i + 1).toLocaleString()}</dd>
+    </dl>
+    <button class="pill" data-go="${i}">Open in the Explorer →</button>`;
+}
+
+function ecoLegend(count) {
+  const fams = FAMILY_ORDER.filter((f) => !eco.family || f === eco.family);
+  const colourOf = (f) => eco.colour === "family" && eco.hl.includes(f) ? `var(${SLOT3[eco.hl.indexOf(f)]})` : "var(--sib)";
+  const shapes = fams.map((f) => `<span><span class="shape" style="color:${colourOf(f)}">${GLYPH[SHAPE[f]]}</span>${f}</span>`).join("");
+  const lic = eco.colour === "license"
+    ? Object.values(LIC_STYLE).map(([v, t]) => `<span><i style="background:var(${v})"></i>${t}</span>`).join("") : "";
+  const line = (r) => `<span><svg width="30" height="8" aria-hidden="true"><line x1="0" y1="4" x2="30" y2="4" stroke="${css("--muted")}" stroke-width="2" ${DASH[r] ? `stroke-dasharray="${DASH[r].join(" ")}"` : ""}/></svg>${r}</span>`;
+  $("g-legend").innerHTML = shapes + lic + RELS4.map(line).join("")
+    + `<span>The ${count.toLocaleString()} most influential ${eco.family ? eco.family + " " : ""}models by weighted PageRank; size = influence; arrows point to the parent.`
+    + (eco.colour === "family" && !eco.family ? ` Colours mark at most 3 families (more can't be told apart in a network); the rest are grey and told apart by shape.` : "")
+    + ` Double-click a model to open it in the Explorer.</span>`;
+}
+
+function ecoShow(i) {          // from the Explorer: show this model in the big graph
+  eco.focus = i;
+  if (eco.family && family(i) !== eco.family) { eco.family = family(i) || ""; $("g-family").value = eco.family; }
+  eco.dirty = true;
+  history.pushState(null, "", "#graph");
+  showTab("graph");
+}
+(function ecoControls() {
+  $("g-family").innerHTML = `<option value="">All families</option>` + FAMILY_ORDER.map((f) => `<option>${f}</option>`).join("");
+  $("g-hl").innerHTML = HL_OPTIONS.map((h, k) => `<option value="${k}">${h.join(" + ")}${k === 0 ? " (most influential)" : ""}</option>`).join("");
+  const redraw = () => { eco.dirty = true; $("g-info").hidden = true; if (tab === "graph") renderEco(); };
+  $("g-family").addEventListener("change", (e) => {
+    eco.family = e.target.value; eco.focus = null;
+    if (eco.family) { eco.hl = [eco.family]; $("g-hl").value = String(HL_OPTIONS.findIndex((h) => h.length === 1 && h[0] === eco.family)); }
+    redraw();
+  });
+  $("g-top").addEventListener("change", (e) => { eco.top = +e.target.value; redraw(); });
+  $("g-hl").addEventListener("change", (e) => { eco.hl = HL_OPTIONS[+e.target.value]; redraw(); });
+  $("g-colour").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-colour]"); if (!b) return;
+    eco.colour = b.dataset.colour;
+    $("g-colour").querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", x === b));
+    $("g-hl-wrap").hidden = eco.colour !== "family";
+    redraw();
+  });
+  document.addEventListener("click", (e) => { const b = e.target.closest("[data-graph]"); if (b) ecoShow(+b.dataset.graph); });
+})();
 
 // ---- how it works: step through the pipeline for one real model ---------------------------------
 const X = window.DEMO;
