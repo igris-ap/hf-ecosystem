@@ -1,7 +1,9 @@
 model,field,scraped,api
-mradermacher/llama-3.1-tulu-2-8b-GGUF,downloads (within 10 %),198,232
-yangao381/FlowerTune-Code-Llama-3.2-1B-PEFT,downloads (within 10 %),9,8
-hcy5561/distilroberta-base-sentence-transformer-snli,downloads (within 10 %),93,80
-zenlm/zen-reranker-8B,downloads (within 10 %),23,19
-swadeshb/g3-4b-hiper,downloads (within 10 %),13,5
-winglian/zephyr-deita-kto-3ep-v3-r512-bsz16-cosine,downloads (within 10 %),7,5
+JinNian0072/Qwen2.5-Coder-7B-lora-cpp-abdiff-v1,downloads (within 10 %),9,11
+mradermacher/LlamaUz-3.1-8b-ct-GGUF,downloads (within 10 %),47,55
+Karl28/RSIPO-SFT-Qwen2.5-7B-Instruct-ALFWorld,downloads (within 10 %),119,319
+Excommunicado/World-Cup-2023-LoRA-Adapter,downloads (within 10 %),8,9
+xummer/gemma2-9b-gsm8k-P1-culturax-t1M-seed42-lora-es,downloads (within 10 %),8,7
+DeepDream2045/99b62d7d-898a-457d-9c86-b908e579ba08,downloads (within 10 %),2,3
+lejelly/grid-search-w1_0_3_w2_0_4_w3_0_1-mistral-7b,downloads (within 10 %),11,9
+FOLZi/FinID_v2_8B_Chat,downloads (within 10 %),11,8
